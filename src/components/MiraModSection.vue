@@ -1,89 +1,77 @@
 <template>
-  <section id="miramod" class="py-28" style="background:#F7F8FA;">
-    <!-- Decorative gradient orbs -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute -top-20 -left-20 w-80 h-80 rounded-full opacity-10" style="background:radial-gradient(circle,#10B981,transparent);filter:blur(60px);"/>
-      <div class="absolute top-1/2 -right-20 w-96 h-96 rounded-full opacity-10" style="background:radial-gradient(circle,#059669,transparent);filter:blur(80px);"/>
-    </div>
+  <section id="miramod" class="py-28">
     <div class="max-w-7xl mx-auto px-6">
+
+      <!-- Section header -->
       <div class="text-center mb-16">
         <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
           模豆 · <span style="color:#10B981;">AI智能策略生成</span>
         </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
-          AI替你写好：文章、代码、关键词库，拿到就能发<br />
-          内置6类语义实体库 + 各大模型内容偏好模板
+          内置6类语义实体库，AI替你写好文章、代码、关键词库<br />
+          各引擎风格一键适配，拿到就能发
         </p>
       </div>
 
-      <!-- Bento layout: left = content preview, right = entity cards -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
+      <!-- Tabbed card -->
+      <div class="glass-card p-8 rounded-2xl max-w-5xl mx-auto">
 
-        <!-- Left: Generated article mockup -->
-        <div class="glass-card p-7">
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#10B981,#059669);">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            </div>
-            <div>
-              <div class="text-sm font-semibold text-gray-900">GEO优化文章草稿</div>
-              <div class="text-xs text-gray-400">基于「智能客服」行业 · DeepSeek风格</div>
-            </div>
-          </div>
-
-          <!-- Article content mock -->
-          <div class="space-y-3 mb-6">
-            <div class="h-4 rounded-full w-full" style="background:linear-gradient(90deg,rgba(16,185,129,0.12) 30%, transparent 100%);"/>
-            <div class="h-4 rounded-full w-4/5" style="background:linear-gradient(90deg,rgba(16,185,129,0.12) 30%, transparent 100%);"/>
-            <div class="h-4 rounded-full w-3/4" style="background:linear-gradient(90deg,rgba(16,185,129,0.12) 30%, transparent 100%);"/>
-            <div class="h-4 rounded-full w-5/6" style="background:linear-gradient(90deg,rgba(16,185,129,0.12) 30%, transparent 100%);"/>
-          </div>
-
-          <!-- Style tags - green -->
-          <div class="flex flex-wrap gap-2 mb-6">
-            <span v-for="tag in ['DeepSeek风格','B2B深度论证','数据支撑','6类语义植入']" :key="tag"
-              class="text-xs px-3 py-1.5 rounded-full font-medium"
-              style="background:rgba(16,185,129,0.10);color:#059669;">
-              {{ tag }}
-            </span>
-          </div>
-
-          <!-- Engine style cards - each with its own color -->
-          <div class="grid grid-cols-2 gap-3">
-            <div v-for="engine in engineStyles" :key="engine.name"
-              class="p-4 rounded-xl border" style="background:rgba(255,255,255,0.6);border-color:rgba(0,0,0,0.06);">
-              <div class="text-xs font-semibold mb-1.5" :style="{ color: engine.color }">{{ engine.name }}</div>
-              <div class="text-xs text-gray-500 leading-relaxed">{{ engine.style }}</div>
-            </div>
-          </div>
+        <!-- Tab switcher -->
+        <div class="flex items-center gap-2 mb-8">
+          <button
+            v-for="tab in ['语义实体库','引擎适配','品牌人设']"
+            :key="tab"
+            @click="activeTab = tab"
+            class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+            :class="activeTab === tab ? 'text-white' : 'bg-gray-100 text-gray-500'"
+            :style="activeTab === tab ? 'background:#10B981;' : ''"
+          >
+            {{ tab }}
+          </button>
         </div>
 
-        <!-- Right: 6 entity types grid -->
-        <div class="grid grid-cols-2 gap-4">
+        <!-- Tab 1: 6 entity types -->
+        <div v-if="activeTab === '语义实体库'" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div v-for="entity in entityCards" :key="entity.name"
-            class="glass-card p-5">
+            class="p-5 rounded-xl" style="background:#FAFAFA;border:1px solid #F0F0F0;">
             <div class="flex items-center gap-2 mb-3">
-              <div class="w-2 h-2 rounded-full"
-                :style="{ background: entity.color, boxShadow: `0 0 8px ${entity.color}` }"/>
+              <div class="w-2.5 h-2.5 rounded-full"
+                :style="{ background: entity.color, boxShadow: `0 0 6px ${entity.color}` }"/>
               <span class="text-sm font-semibold text-gray-900">{{ entity.name }}</span>
             </div>
             <div class="space-y-1.5">
               <div v-for="word in entity.words" :key="word"
-                class="text-xs text-gray-500 pl-4 truncate">
-                · {{ word }}
-              </div>
+                class="text-xs text-gray-500 pl-3 truncate">· {{ word }}</div>
             </div>
           </div>
+        </div>
 
-          <!-- Brand persona card -->
-          <div class="col-span-2 glass-card p-5">
-            <div class="flex items-center gap-2 mb-3">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#165DFF" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-              <span class="text-sm font-semibold text-gray-900">一句话AI品牌人设定位</span>
-            </div>
-            <p class="text-sm text-gray-600 italic leading-relaxed">
-              "专注中小企业财税自动化的SaaS工具，3步实现账务合规"
-            </p>
+        <!-- Tab 2: Engine styles -->
+        <div v-if="activeTab === '引擎适配'" class="grid grid-cols-2 gap-4">
+          <div v-for="engine in engineStyles" :key="engine.name"
+            class="p-5 rounded-xl border" style="background:#FAFAFA;border-color:#F0F0F0;">
+            <div class="text-sm font-bold mb-1.5" :style="{ color: engine.color }">{{ engine.name }}</div>
+            <div class="text-xs text-gray-500 leading-relaxed">{{ engine.style }}</div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Brand persona -->
+        <div v-if="activeTab === '品牌人设'" class="p-6 rounded-xl" style="background:#FAFAFA;border:1px solid #F0F0F0;">
+          <div class="flex items-center gap-2 mb-4">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#165DFF" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+            </svg>
+            <span class="text-sm font-semibold text-gray-900">AI品牌人设定位</span>
+          </div>
+          <p class="text-base text-gray-700 italic leading-relaxed">
+            "专注中小企业财税自动化的SaaS工具，3步实现账务合规"
+          </p>
+          <div class="mt-5 flex flex-wrap gap-2">
+            <span v-for="tag in ['B2B专业定位','数据驱动','合规可信','降本增效']" :key="tag"
+              class="text-xs px-3 py-1.5 rounded-full font-medium"
+              style="background:rgba(16,185,129,0.10);color:#059669;">
+              {{ tag }}
+            </span>
           </div>
         </div>
 
@@ -93,6 +81,10 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+const activeTab = ref('语义实体库')
+
 const entityCards = [
   { name: '产品词',     color: '#165DFF', words: ['智能客服系统','AI客服机器人','全渠道客服平台'] },
   { name: '服务词',     color: '#10B981', words: ['7×24小时服务','智能工单管理','多语言支持'] },
