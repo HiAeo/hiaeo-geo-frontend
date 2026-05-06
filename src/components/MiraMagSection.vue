@@ -5,7 +5,7 @@
       <!-- Section header -->
       <div class="text-center mb-16">
         <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
-          模法 · <span style="color:#8B5CF6;">半自动GEO执行</span>
+          MiraMag模法 · GEO Agent自动执行优化
         </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
           复制粘贴即落地，执行记录全程可见<br />

@@ -5,7 +5,7 @@
       <!-- Section header -->
       <div class="text-center mb-16">
         <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
-          模豆 · <span style="color:#10B981;">AI智能策略生成</span>
+          MiraMod模豆 · GEO智能策略生成
         </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
           内置6类语义实体库，AI替你写好文章、代码、关键词库<br />
