@@ -5,7 +5,7 @@
       <!-- Section header (centered, no label) -->
       <div class="text-center mb-16">
         <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-          诊断 · 策略 · 执行
+          AI诊断 · GEO策略 · Agent执行
         </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
           你只需要输入公司名、产品及官网，剩下的事交给魔鲸GEO Claw
@@ -25,7 +25,7 @@
           </div>
 
           <div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">模镜 · AI可见度诊断</h3>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">MiraSeek模镜· AI可见度诊断</h3>
             <p class="text-gray-500 text-sm leading-relaxed">实时抓取 DeepSeek、豆包、Kimi 等主流大模型的回答数据，精准量化品牌实体独占率与替代风险指数。</p>
           </div>
 
@@ -65,7 +65,7 @@
           </div>
 
           <div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">模豆 · AI智能策略生成</h3>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">MiraMod模豆 · GEO智能策略生成</h3>
             <p class="text-gray-500 text-sm leading-relaxed">内置6类语义实体库与各大模型内容偏好模板，AI替你写好文章、代码、关键词库，拿到就能发。</p>
           </div>
 
@@ -96,7 +96,7 @@
           </div>
 
           <div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">模法 · 半自动GEO执行</h3>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">MiraMag模法 · GEO Agent自动执行优化</h3>
             <p class="text-gray-500 text-sm leading-relaxed">复制粘贴即落地，GEO Claw执行记录全程可见。不碰服务器，不自动机发，安全合规的半自动执行。</p>
           </div>
 

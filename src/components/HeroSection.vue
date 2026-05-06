@@ -1,19 +1,20 @@
 <template>
   <section class="hero-section">
     <div class="container">
-      <div class="hero-content">
+      <div class="hero-content" style="text-align: center;">
         <h1 class="hero-title">
-          魔鲸GEO，让AI生成式引擎优化像呼吸一样简单
+          MirusAI魔鲸智能，让GEO生成式引擎优化像呼吸一样简单
         </h1>
         <p class="hero-desc">
           一站式生成式引擎优化平台，从诊断、策略到自动执行，全链路AI赋能。
         </p>
         <div class="hero-actions">
-          <a class="btn-outline" href="#">预约演示</a>
+          <a class="btn-primary" href="#">预约演示</a>
+          <a class="btn-outline-inverse" href="#">获取邀请码</a>
         </div>
       </div>
 
-      <div class="hero-visual glass-card">
+      <div class="hero-visual glass-card" style="display: inline-block; margin: 0 auto 24px;">
         <div class="visual-content">
           <h3>全球领先AI模型支持</h3>
           <div class="icon-group">
@@ -63,6 +64,28 @@
 .hero-actions {
   display: flex;
   gap: 16px;
+  justify-content: center;
+}
+
+.btn-primary {
+  display: inline-block;
+  padding: 12px 32px;
+  background: #111827;
+  color: #FFFFFF;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.btn-outline-inverse {
+  display: inline-block;
+  padding: 12px 32px;
+  background: #FFFFFF;
+  color: #111827;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
 }
 
 .hero-visual {
