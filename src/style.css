@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    --color-bg: #F7F8FA;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-[#F7F8FA] text-gray-900 font-sans;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.24); }
+}
+
+@layer components {
+  /* ── Glass Card ── */
+  .glass-card {
+    @apply relative rounded-2xl overflow-hidden;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  /* ── Bento Grid Item ── */
+  .bento-item {
+    @apply glass-card p-6;
+  }
+
+  /* ── Buttons: only black/gray/white ── */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-white transition-all duration-200;
+    background: #111827;
+  }
+
+  .btn-primary:hover {
+    background: #000000;
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-gray-900 transition-all duration-200;
+    background: #F3F4F6;
+  }
+
+  .btn-secondary:hover {
+    background: #E5E7EB;
+    transform: translateY(-1px);
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-gray-900 transition-all duration-200;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+  }
+
+  .btn-outline:hover {
+    background: #F9FAFB;
+    border-color: #D1D5DB;
+    transform: translateY(-1px);
+  }
+
+  /* ── Breathing Animation Card ── */
+  .card-breathing {
+    animation: cardBreathing 4s ease-in-out infinite;
+  }
+
+  @keyframes cardBreathing {
+    0%, 100% { transform: scale(1);    opacity: 0.85; }
+    50%       { transform: scale(1.015); opacity: 1; }
+  }
+
+  /* ── Section ── */
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
