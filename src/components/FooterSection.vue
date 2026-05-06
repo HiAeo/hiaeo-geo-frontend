@@ -5,15 +5,10 @@
       <!-- Top: Logo + Slogan -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pb-12 border-b border-white/10">
         <div class="flex items-center gap-3">
-          <img src="/logo.png" alt="HiAeo" class="h-9 w-auto" />
+          <img src="/logo-white.png" alt="HiAeo" class="h-5 w-auto" />
         </div>
 
-        <!-- CTA row -->
-        <div class="flex items-center gap-3">
-          <button class="px-5 py-2.5 rounded-xl text-sm font-medium bg-white text-gray-900 hover:bg-gray-100 transition-colors">
-            免费诊断一次
-          </button>
-        </div>
+        <!-- CTA row removed per request -->
       </div>
 
       <!-- Link columns -->

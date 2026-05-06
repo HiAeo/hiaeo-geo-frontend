@@ -4,7 +4,7 @@
 
       <!-- Logo -->
       <div class="flex items-center gap-3 cursor-pointer" @click="$emit('scrollTo', 'hero')">
-        <img src="/logo.png" alt="MirusAI" class="h-9 w-auto" />
+        <img src="/logo-hollow.png" alt="HiAeo" class="h-5 w-auto" />
       </div>
 
       <!-- Desktop nav links -->
@@ -17,14 +17,11 @@
 
       <!-- CTA buttons -->
       <div class="flex items-center gap-3">
-        <button class="hidden sm:block px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-colors"
-          style="background:#165DFF;"
-          @click="$emit('scrollTo', 'pricing')">
-          免费诊断一次
-        </button>
-        <button class="hidden sm:block px-5 py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors bg-white"
-          @click="$emit('scrollTo', 'features')">
-          查看演示
+
+        <!-- Language toggle -->
+        <button class="hidden sm:block px-5 py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors bg-white cursor-pointer"
+          @click="lang = lang === 'zh' ? 'en' : 'zh'">
+          {{ lang === 'zh' ? 'EN' : '中文' }}
         </button>
 
         <!-- Mobile menu button -->
@@ -43,8 +40,6 @@
         {{ link.label }}
       </a>
       <div class="flex flex-col gap-2 pt-3 border-t border-gray-100">
-        <button class="w-full py-2.5 rounded-xl text-sm font-medium text-white" style="background:#165DFF;">免费诊断一次</button>
-        <button class="w-full py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 bg-white">查看演示</button>
       </div>
     </div>
   </nav>
@@ -56,6 +51,7 @@ import { ref } from 'vue'
 defineEmits(['scrollTo'])
 
 const mobileOpen = ref(false)
+const lang = ref('zh')
 
 const navLinks = [
   { label: '产品功能', href: '#features' },

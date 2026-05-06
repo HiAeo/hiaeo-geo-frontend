@@ -9,7 +9,6 @@
           一站式生成式引擎优化平台，从诊断、策略到自动执行，全链路AI赋能。
         </p>
         <div class="hero-actions">
-          <a class="btn-primary" href="#">免费诊断一次</a>
           <a class="btn-outline" href="#">预约演示</a>
         </div>
       </div>
