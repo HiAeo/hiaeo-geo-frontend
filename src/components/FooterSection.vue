@@ -5,7 +5,7 @@
       <!-- Top: Logo + Slogan -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pt-8 pb-12 border-b border-white/10">
         <div class="flex items-center gap-3">
-          <img src="/logo-white.png" alt="HiAeo" class="h-5.5 w-auto" />
+          <img src="/logo-white.png" alt="HiAeo" class="h-6 w-auto" />
         </div>
 
         <!-- CTA row removed per request -->
