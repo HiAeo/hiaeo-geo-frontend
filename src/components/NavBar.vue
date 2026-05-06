@@ -4,7 +4,7 @@
 
       <!-- Logo -->
       <div class="flex items-center gap-3 cursor-pointer" @click="$emit('scrollTo', 'hero')">
-        <img src="/logo-hollow.png" alt="HiAeo" class="h-5 w-auto" />
+        <img src="/logo-hollow.png" alt="HiAeo" class="h-5.5 w-auto" />
       </div>
 
       <!-- Desktop nav links -->
