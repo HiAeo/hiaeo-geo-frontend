@@ -1,5 +1,5 @@
 <template>
-  <section id="miramag" class="py-28">
+  <section id="miramag" class="py-14">
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Section header -->

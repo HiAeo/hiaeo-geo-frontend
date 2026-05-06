@@ -1,5 +1,5 @@
 <template>
-  <section id="features" class="py-28">
+  <section id="features" class="py-14">
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Section header (centered, no label) -->

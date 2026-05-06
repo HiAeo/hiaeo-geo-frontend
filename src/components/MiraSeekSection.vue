@@ -1,11 +1,11 @@
 <template>
-  <section id="miraseek" class="py-28">
+  <section id="miraseek" class="py-14">
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Section header -->
       <div class="text-center mb-16">
         <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
-          模镜 · <span style="color:#165DFF;">AI可见度诊断</span>
+          模镜 · <span style="color:#1F2937;">AI可见度诊断</span>
         </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
           实时抓取 DeepSeek、豆包、Kimi 等主流大模型的回答数据<br />
