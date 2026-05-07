@@ -6,22 +6,19 @@
     <!-- 板块1: Hero -->
     <HeroSection />
 
-    <!-- 板块2: 三步闭环概览 -->
-    <BentoGridSection />
-
-    <!-- 板块3: 模镜 MiraSeek -->
+    <!-- 板块2: 模镜 MiraSeek -->
     <MiraSeekSection />
 
-    <!-- 板块4: 模豆 MiraMod -->
+    <!-- 板块3: 模豆 MiraMod -->
     <MiraModSection />
 
-    <!-- 板块5: 模法 MiraMag -->
+    <!-- 板块4: 模法 MiraMag -->
     <MiraMagSection />
 
-    <!-- 板块6: 魔鲸Hub -->
+    <!-- 板块5: 魔鲸Hub -->
     <HubSection />
 
-    <!-- 板块7: 客户成长路径与案例 -->
+    <!-- 板块6: 客户成长路径与案例 -->
     <GrowthSection />
 
     <!-- Footer -->

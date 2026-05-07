@@ -1,5 +1,5 @@
 <template>
-  <section id="cases" class="py-14">
+  <section id="cases" class="py-10">
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Section header -->
@@ -16,7 +16,7 @@
       <div class="glass-card p-8 rounded-2xl max-w-5xl mx-auto">
 
         <!-- Tab switcher: stages + cases -->
-        <div class="flex items-center gap-2 mb-8 flex-wrap">
+        <div class="flex items-center gap-2 mb-4 flex-wrap">
           <button
             v-for="(stage,i) in stages"
             :key="stage.name"
@@ -42,21 +42,21 @@
         <!-- Stage detail view -->
         <div v-for="(stage,i) in stages" :key="stage.name"
           v-show="activeTab === 'stage-'+i"
-          class="p-6 rounded-2xl"
+          class="p-4 rounded-2xl"
           :style="`border:2px solid ${stage.color}20;background:${stage.color}08;`">
-          <div class="flex items-center gap-4 mb-5">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white"
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
               :style="{ background: stage.color }">
               {{ stage.num }}
             </div>
             <div>
-              <div class="text-lg font-bold text-gray-900">{{ stage.name }}</div>
-              <div class="text-sm" :style="{ color: stage.color }">GEO分 {{ stage.score }}</div>
+              <div class="text-sm font-bold text-gray-900">{{ stage.name }}</div>
+              <div class="text-xs" :style="{ color: stage.color }">GEO分 {{ stage.score }}</div>
             </div>
           </div>
-          <div class="space-y-3">
+          <div class="space-y-2">
             <div v-for="task in stage.tasks" :key="task"
-              class="flex items-center gap-3 p-3 rounded-xl"
+              class="flex items-center gap-2.5 p-2 rounded-xl"
               style="background:white;border:1px solid #F0F0F0;">
               <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ background: stage.color }"/>
               <span class="text-sm text-gray-600">{{ task }}</span>
@@ -67,39 +67,35 @@
         <!-- Case studies view -->
         <div v-for="c in cases" :key="'detail-'+c.company"
           v-show="activeTab === 'case-'+c.company"
-          class="p-6 rounded-2xl"
+          class="p-4 rounded-2xl"
           :style="`border:2px solid ${c.color}20;background:${c.color}08;`">
-          <!-- Company header -->
-          <div class="flex items-center gap-4 mb-5">
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold text-white"
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white"
               :style="{ background: c.color }">
               {{ c.company[0] }}
             </div>
             <div>
-              <div class="text-lg font-bold text-gray-900">{{ c.company }}</div>
-              <div class="text-sm text-gray-400">{{ c.industry }}</div>
+              <div class="text-sm font-bold text-gray-900">{{ c.company }}</div>
+              <div class="text-xs text-gray-400">{{ c.industry }}</div>
             </div>
           </div>
-          <!-- Metrics -->
-          <div class="grid grid-cols-2 gap-4 mb-5">
+          <div class="grid grid-cols-2 gap-3 mb-3">
             <div v-for="m in c.metrics" :key="m.label"
-              class="p-4 rounded-xl bg-white border border-gray-100">
-              <div class="text-lg font-bold" :style="{ color: c.color }">
+              class="p-3 rounded-xl bg-white border border-gray-100">
+              <div class="text-base font-bold" :style="{ color: c.color }">
                 {{ m.before }} <span class="text-gray-300 font-normal">→</span> {{ m.after }}
               </div>
               <div class="text-xs text-gray-400 mt-0.5">{{ m.label }}</div>
             </div>
           </div>
-          <!-- Quote -->
-          <p class="text-sm text-gray-500 italic leading-relaxed p-4 rounded-xl bg-white border border-gray-100">
+          <p class="text-xs text-gray-500 italic leading-relaxed p-3 rounded-xl bg-white border border-gray-100">
             "{{ c.quote }}"
           </p>
         </div>
 
-        <!-- All stages overview (shown when activeTab is empty/default) -->
-        <div v-if="activeTab === ''" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div v-if="activeTab === ''" class="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div v-for="(stage,i) in stages" :key="stage.name"
-            class="p-5 rounded-xl text-center cursor-pointer transition-all duration-200"
+            class="p-4 rounded-xl text-center cursor-pointer transition-all duration-200"
             style="background:#FAFAFA;border:1px solid #F0F0F0;"
             @click="activeTab = 'stage-'+i">
             <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white mx-auto mb-3"

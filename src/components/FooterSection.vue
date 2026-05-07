@@ -3,16 +3,14 @@
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Top: Logo + Slogan -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 pt-8 pb-12 border-b border-white/10">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pt-8 pb-8 border-b border-white/10">
         <div class="flex items-center gap-3">
           <img src="/logo-white.png" alt="HiAeo" class="h-6 w-auto" />
         </div>
-
-        <!-- CTA row removed per request -->
       </div>
 
       <!-- Link columns -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
         <div v-for="col in footerCols" :key="col.title">
           <div class="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">{{ col.title }}</div>
           <div class="space-y-3">
@@ -26,11 +24,11 @@
       </div>
 
       <!-- Bottom -->
-      <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-white/10">
-        <div class="text-xs text-white/40">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 pb-8 border-t border-white/10">
+        <div class="text-xs text-white/40 pt-4">
           © 2026 HiAeo. 让AI生成式引擎优化像呼吸一样简单。
         </div>
-        <div class="flex items-center gap-5 text-xs text-white/40">
+        <div class="flex items-center gap-5 text-xs text-white/40 pt-4">
           <a href="#" class="hover:text-white/60 transition-colors">隐私政策</a>
           <span>·</span>
           <a href="#" class="hover:text-white/60 transition-colors">服务条款</a>
