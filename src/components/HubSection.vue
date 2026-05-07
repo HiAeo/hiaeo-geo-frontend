@@ -12,111 +12,168 @@
         </p>
       </div>
 
-      <!-- Hub dashboard mockup -->
+      <!-- Hub dashboard -->
       <div class="hub-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 scroll-animate delay-200">
         <div class="p-12">
-        <!-- Tab switcher -->
-        <div class="flex items-center gap-2 mb-8">
-          <button
-            v-for="tab in ['老板视图','运营视图','技术视图']"
-            :key="tab"
-            @click="activeTab = tab"
-            class="hub-tab px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
-            :class="{ 'hub-tab-active': activeTab === tab, 'hub-tab-inactive': activeTab !== tab }"
-          >
-            {{ tab }}
-          </button>
-        </div>
-
-        <!-- Boss view -->
-        <div v-if="activeTab === '老板视图'">
-          <!-- Loading skeleton -->
-          <div v-if="loading" class="grid grid-cols-2 md:grid-cols-4 gap-5">
-            <div v-for="i in 4" :key="i" class="p-5 rounded-xl hub-metric-card animate-pulse">
-              <div class="h-3 w-16 bg-gray-200 rounded mb-3"></div>
-              <div class="h-8 w-20 bg-gray-200 rounded mb-2"></div>
-              <div class="h-1 bg-gray-200 rounded"></div>
-            </div>
+          <!-- Tab switcher -->
+          <div class="flex items-center gap-2 mb-8">
+            <button
+              v-for="tab in ['老板视图','运营视图','技术视图']"
+              :key="tab"
+              @click="activeTab = tab"
+              class="hub-tab px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
+              :class="{ 'hub-tab-active': activeTab === tab, 'hub-tab-inactive': activeTab !== tab }"
+            >
+              {{ tab }}
+            </button>
           </div>
-          <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-5">
-          <div v-for="metric in bossMetrics" :key="metric.label"
-            class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer hub-metric-card">
-            <div class="text-xs mb-3 hub-label">{{ metric.label }}</div>
-            <div class="text-3xl font-bold mb-2" :style="{ color: metric.color }">{{ metric.value }}</div>
-            <div class="flex items-center gap-2">
-              <div class="flex-1 h-1 rounded-full overflow-hidden hub-progress-bg">
-                <div class="h-full rounded-full transition-all duration-500" :style="{ width: metric.pct+'%', background: metric.color }"/>
-              </div>
-              <span class="text-xs font-medium hub-label">
-                {{ metric.trend > 0 ? '↑' : '↓' }}{{ Math.abs(metric.trend) }}%
-              </span>
-            </div>
-          </div>
-        </div>
 
-        <!-- Ops view -->
-        <div v-if="activeTab === '运营视图'" class="space-y-5">
-          <!-- Pending review -->
-          <div class="p-5 rounded-xl transition-all duration-300 hub-panel">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-sm font-semibold hub-text-primary">待审核内容</span>
-              <span class="text-xs px-2.5 py-1 rounded-full transition-all duration-200 hover:scale-105 hub-badge">{{ pendingCount }} 篇待审</span>
-            </div>
-            <div class="space-y-3">
-              <div v-for="item in pendingItems" :key="item.title"
-                class="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 hover:-translate-y-0.5 cursor-pointer hub-list-item">
-                <div class="w-2 h-2 rounded-full shrink-0" :style="{ background: item.color }"/>
-                <div class="flex-1">
-                  <div class="text-sm hub-text-secondary">{{ item.title }}</div>
-                  <div class="text-xs mt-0.5 hub-text-tertiary">{{ item.meta }}</div>
+          <!-- Boss view -->
+          <div v-if="activeTab === '老板视图'" class="grid grid-cols-2 md:grid-cols-4 gap-5">
+            <div class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer hub-metric-card">
+              <div class="text-xs mb-3 hub-label">GEO健康分</div>
+              <div class="text-3xl font-bold mb-2" style="color: #165DFF">72</div>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 h-1 rounded-full overflow-hidden hub-progress-bg">
+                  <div class="h-full rounded-full transition-all duration-500" style="width: 72%; background: #165DFF"/>
                 </div>
-                <button class="text-xs px-3 py-1.5 rounded-lg font-medium text-white transition-all duration-200 hover:scale-105 active:scale-95"
-                  :style="{ background: item.color }"
-                  @click="handleReview(item, 'approve')">
-                  审核
-                </button>
+                <span class="text-xs font-medium hub-label">↑8%</span>
+              </div>
+            </div>
+            <div class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer hub-metric-card">
+              <div class="text-xs mb-3 hub-label">DeepSeek提及率</div>
+              <div class="text-3xl font-bold mb-2" style="color: #00A3FF">+34%</div>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 h-1 rounded-full overflow-hidden hub-progress-bg">
+                  <div class="h-full rounded-full transition-all duration-500" style="width: 60%; background: #00A3FF"/>
+                </div>
+                <span class="text-xs font-medium hub-label">↑34%</span>
+              </div>
+            </div>
+            <div class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer hub-metric-card">
+              <div class="text-xs mb-3 hub-label">竞品压制率</div>
+              <div class="text-3xl font-bold mb-2" style="color: #8B5CF6">+12%</div>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 h-1 rounded-full overflow-hidden hub-progress-bg">
+                  <div class="h-full rounded-full transition-all duration-500" style="width: 55%; background: #8B5CF6"/>
+                </div>
+                <span class="text-xs font-medium hub-label">↑12%</span>
+              </div>
+            </div>
+            <div class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer hub-metric-card">
+              <div class="text-xs mb-3 hub-label">ROI预估</div>
+              <div class="text-3xl font-bold mb-2" style="color: #10B981">+23%</div>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 h-1 rounded-full overflow-hidden hub-progress-bg">
+                  <div class="h-full rounded-full transition-all duration-500" style="width: 65%; background: #10B981"/>
+                </div>
+                <span class="text-xs font-medium hub-label">↑23%</span>
               </div>
             </div>
           </div>
 
-          <!-- Next step suggestions -->
-          <div class="p-5 rounded-xl transition-all duration-300 hub-panel">
-            <div class="text-sm font-semibold mb-3 hub-text-primary">下一步建议</div>
-            <div class="space-y-2">
-              <div v-for="(tip,i) in opTips" :key="i"
-                class="flex items-start gap-3 text-sm transition-all duration-200 cursor-pointer hub-tip">
-                <span class="text-xs font-bold mt-0.5 shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hub-step">
-                  {{ i+1 }}
-                </span>
-                <span class="leading-relaxed">{{ tip }}</span>
+          <!-- Ops view -->
+          <div v-if="activeTab === '运营视图'" class="space-y-5">
+            <div class="p-5 rounded-xl transition-all duration-300 hub-panel">
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-sm font-semibold hub-text-primary">待审核内容</span>
+                <span class="text-xs px-2.5 py-1 rounded-full transition-all duration-200 hover:scale-105 hub-badge">3 篇待审</span>
+              </div>
+              <div class="space-y-3">
+                <div class="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 hover:-translate-y-0.5 cursor-pointer hub-list-item">
+                  <div class="w-2 h-2 rounded-full shrink-0" style="background: #00A3FF"/>
+                  <div class="flex-1">
+                    <div class="text-sm hub-text-secondary">《中小企业如何选客服系统》</div>
+                    <div class="text-xs mt-0.5 hub-text-tertiary">DeepSeek风格 · 小红书 · 预计提升12%</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 hover:-translate-y-0.5 cursor-pointer hub-list-item">
+                  <div class="w-2 h-2 rounded-full shrink-0" style="background: #A78BFA"/>
+                  <div class="flex-1">
+                    <div class="text-sm hub-text-secondary">JSON-LD结构化数据配置</div>
+                    <div class="text-xs mt-0.5 hub-text-tertiary">官网部署 · 技术视图参考</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 hover:-translate-y-0.5 cursor-pointer hub-list-item">
+                  <div class="w-2 h-2 rounded-full shrink-0" style="background: #8B6CFF"/>
+                  <div class="flex-1">
+                    <div class="text-sm hub-text-secondary">竞品对比页FAQ扩展</div>
+                    <div class="text-xs mt-0.5 hub-text-tertiary">Kimi风格 · 预计提升6%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-xl transition-all duration-300 hub-panel">
+              <div class="text-sm font-semibold mb-3 hub-text-primary">下一步建议</div>
+              <div class="space-y-2">
+                <div class="flex items-start gap-3 text-sm transition-all duration-200 cursor-pointer hub-tip">
+                  <span class="text-xs font-bold mt-0.5 shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hub-step">1</span>
+                  <span class="leading-relaxed">豆包提及率仍低于行业平均，建议补充2篇豆包风格的短视频脚本，适配生活化种草场景</span>
+                </div>
+                <div class="flex items-start gap-3 text-sm transition-all duration-200 cursor-pointer hub-tip">
+                  <span class="text-xs font-bold mt-0.5 shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hub-step">2</span>
+                  <span class="leading-relaxed">本周已发布3篇DeepSeek风格内容，建议下周切换豆包/Kimi风格内容进行A/B测试</span>
+                </div>
+                <div class="flex items-start gap-3 text-sm transition-all duration-200 cursor-pointer hub-tip">
+                  <span class="text-xs font-bold mt-0.5 shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hub-step">3</span>
+                  <span class="leading-relaxed">官网「关于我们」页缺少核心优势关键词，建议更新为AI人设定位版本</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Tech view -->
-        <div v-if="activeTab === '技术视图'" class="space-y-4">
-          <div v-for="task in techTasks" :key="task.label"
-            class="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer hub-task-item">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300"
-              :style="{ background: task.done ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)' }">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                :stroke="task.done ? '#10B981' : '#F59E0B'" stroke-width="2">
-                <path v-if="task.done" d="M4 17l6-6-6-6"/><path d="M12 19h8"/>
-              </svg>
+          <!-- Tech view -->
+          <div v-if="activeTab === '技术视图'" class="space-y-4">
+            <div class="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer hub-task-item">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300" style="background: rgba(16,185,129,0.15)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+                  <path d="M4 17l6-6-6-6"/><path d="M12 19h8"/>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="text-sm font-medium hub-text-secondary">部署JSON-LD结构化数据</div>
+                <div class="text-xs mt-0.5 hub-text-tertiary">参考模法生成代码片段，部署至官网<head>标签内</div>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-full shrink-0 transition-all duration-200 hover:scale-105" style="background:rgba(16,185,129,0.15);color:#10B981;">已完成</span>
             </div>
-            <div class="flex-1">
-              <div class="text-sm font-medium hub-text-secondary">{{ task.label }}</div>
-              <div class="text-xs mt-0.5 hub-text-tertiary">{{ task.detail }}</div>
+            <div class="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer hub-task-item">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300" style="background: rgba(16,185,129,0.15)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+                  <path d="M4 17l6-6-6-6"/><path d="M12 19h8"/>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="text-sm font-medium hub-text-secondary">完善sitemap.xml</div>
+                <div class="text-xs mt-0.5 hub-text-tertiary">建议新增「解决方案」「行业案例」等栏目 sitemap</div>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-full shrink-0 transition-all duration-200 hover:scale-105" style="background:rgba(16,185,129,0.15);color:#10B981;">已完成</span>
             </div>
-            <span class="text-xs px-2.5 py-1 rounded-full shrink-0 transition-all duration-200 hover:scale-105"
-              :style="task.done
-                ? 'background:rgba(16,185,129,0.15);color:#10B981;'
-                : 'background:rgba(245,158,11,0.15);color:#F59E0B;'">
-              {{ task.done ? '已完成' : '待处理' }}
-            </span>
+            <div class="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer hub-task-item">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300" style="background: rgba(245,158,11,0.15)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2">
+                  <path d="M12 19h8"/>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="text-sm font-medium hub-text-secondary">添加客服核心页面Meta标签</div>
+                <div class="text-xs mt-0.5 hub-text-tertiary">title/description 需包含品牌核心关键词</div>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-full shrink-0 transition-all duration-200 hover:scale-105" style="background:rgba(245,158,11,0.15);color:#F59E0B;">待处理</span>
+            </div>
+            <div class="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer hub-task-item">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300" style="background: rgba(245,158,11,0.15)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2">
+                  <path d="M12 19h8"/>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="text-sm font-medium hub-text-secondary">提交Bing Webmaster Tools</div>
+                <div class="text-xs mt-0.5 hub-text-tertiary">全站提交索引，提升 Bing/ChatGPT 爬虫友好度</div>
+              </div>
+              <span class="text-xs px-2.5 py-1 rounded-full shrink-0 transition-all duration-200 hover:scale-105" style="background:rgba(245,158,11,0.15);color:#F59E0B;">待处理</span>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </div>
@@ -124,77 +181,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useApi } from '../composables/useApi'
-
-defineEmits(['open-contact'])
-
-const {
-  getBossMetrics,
-  getPendingItems,
-  getOpTips,
-  getTechTasks,
-  reviewItem
-} = useApi()
+import { ref } from 'vue'
 
 const activeTab = ref('老板视图')
-const loading = ref(false)
-
-// 数据状态
-const bossMetrics = ref([])
-const pendingItems = ref([])
-const opTips = ref([])
-const techTasks = ref([])
-const pendingCount = ref(0)
-
-// 数据是否已加载过
-const isInitialized = ref(false)
-
-// 加载数据（仅在首次或数据为空时加载）
-const loadData = async () => {
-  // 已加载过的视图数据不再重复请求
-  if (isInitialized.value) return
-  
-  loading.value = true
-  try {
-    // 并行加载所有数据
-    const [metricsRes, itemsRes, tipsRes, tasksRes] = await Promise.all([
-      getBossMetrics(),
-      getPendingItems(),
-      getOpTips(),
-      getTechTasks()
-    ])
-    
-    bossMetrics.value = metricsRes.data || []
-    pendingItems.value = itemsRes.data || []
-    pendingCount.value = itemsRes.total || itemsRes.data?.length || 0
-    opTips.value = tipsRes.data || []
-    techTasks.value = tasksRes.data || []
-    
-    isInitialized.value = true
-  } catch (error) {
-    console.error('加载Hub数据失败:', error)
-  } finally {
-    loading.value = false
-  }
-}
-
-// 处理审核
-const handleReview = async (item, action) => {
-  try {
-    await reviewItem(item.title, action)
-    // 从列表中移除已审核项
-    pendingItems.value = pendingItems.value.filter(i => i.title !== item.title)
-    pendingCount.value = pendingItems.value.length
-  } catch (error) {
-    console.error('审核失败:', error)
-  }
-}
-
-// 页面加载时获取数据
-onMounted(() => {
-  loadData()
-})
 </script>
 
 <style scoped>
