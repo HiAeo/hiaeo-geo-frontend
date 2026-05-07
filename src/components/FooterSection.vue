@@ -90,8 +90,8 @@ const footerCols = [
 
 <style scoped>
 .footer-section {
-  background: #111827;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
 }
 
 .footer-top {
@@ -162,33 +162,34 @@ const footerCols = [
 .footer-col-title {
   font-size: 13px;
   font-weight: 600;
-  color: white;
+  color: var(--text-primary);
   margin-bottom: 16px;
 }
 
 .footer-link {
   display: block;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-tertiary);
   transition: all 0.2s ease;
   padding: 4px 0;
 }
 
 .footer-link:hover {
-  color: white;
+  color: var(--text-primary);
   transform: translateX(4px);
 }
 
 .footer-bottom {
   padding: 24px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--border-color);
 }
 
 .footer-legal-link {
+  color: var(--text-tertiary);
   transition: all 0.2s ease;
 }
 
 .footer-legal-link:hover {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
 }
 </style>

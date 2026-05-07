@@ -8,11 +8,11 @@
           style="background: rgba(22, 93, 255, 0.1); color: #165DFF; border: 1px solid rgba(22, 93, 255, 0.2);">
           定价方案
         </span>
-        <h2 class="text-4xl sm:text-5xl font-bold mb-4" style="color: white;">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-4" style="color: var(--text-primary);">
           从免费诊断到企业级全闭环<br />
           按需选择，即开即用
         </h2>
-        <p class="text-lg max-w-2xl mx-auto" style="color: rgba(255,255,255,0.6);">
+        <p class="text-lg max-w-2xl mx-auto" style="color: var(--text-secondary);">
           基础版轻量起步，专业版解锁完整策略，企业版专属数据隔离与API对接
         </p>
       </div>
@@ -23,13 +23,13 @@
         <!-- Free -->
         <div class="pricing-card">
           <div class="pricing-header">
-            <div class="text-sm font-medium mb-1" style="color: rgba(255,255,255,0.5);">免费试用</div>
-            <div class="text-3xl font-bold mb-1" style="color: white;">¥0</div>
-            <div class="text-xs" style="color: rgba(255,255,255,0.4);">永久免费</div>
+            <div class="text-sm font-medium mb-1" style="color: var(--text-tertiary);">免费试用</div>
+            <div class="text-3xl font-bold mb-1" style="color: var(--text-primary);">¥0</div>
+            <div class="text-xs" style="color: var(--text-tertiary);">永久免费</div>
           </div>
-          <div class="h-px my-6" style="background: rgba(255,255,255,0.1);"/>
+          <div class="h-px my-6" style="background: var(--border-color);"/>
           <div class="space-y-3 flex-1">
-            <div v-for="f in free" :key="f" class="flex items-start gap-3 text-sm" style="color: rgba(255,255,255,0.7);">
+            <div v-for="f in free" :key="f" class="flex items-start gap-3 text-sm" style="color: var(--text-secondary);">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0 mt-0.5" style="color: #10B981;">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
@@ -47,13 +47,13 @@
           <div class="popular-badge">推荐方案</div>
 
           <div class="pricing-header">
-            <div class="text-sm font-medium mb-1" style="color: rgba(255,255,255,0.5);">专业版</div>
-            <div class="text-3xl font-bold mb-1" style="color: white;">¥99<span class="text-base font-normal" style="color: rgba(255,255,255,0.4);">/月</span></div>
-            <div class="text-xs" style="color: rgba(255,255,255,0.4);">年付享8折优惠</div>
+            <div class="text-sm font-medium mb-1" style="color: var(--text-tertiary);">专业版</div>
+            <div class="text-3xl font-bold mb-1" style="color: var(--text-primary);">¥99<span class="text-base font-normal" style="color: var(--text-tertiary);">/月</span></div>
+            <div class="text-xs" style="color: var(--text-tertiary);">年付享8折优惠</div>
           </div>
-          <div class="h-px my-6" style="background: rgba(255,255,255,0.1);"/>
+          <div class="h-px my-6" style="background: var(--border-color);"/>
           <div class="space-y-3 flex-1">
-            <div v-for="f in pro" :key="f" class="flex items-start gap-3 text-sm" style="color: rgba(255,255,255,0.8);">
+            <div v-for="f in pro" :key="f" class="flex items-start gap-3 text-sm" style="color: var(--text-secondary);">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0 mt-0.5" style="color: #165DFF;">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
@@ -68,13 +68,13 @@
         <!-- Enterprise -->
         <div class="pricing-card">
           <div class="pricing-header">
-            <div class="text-sm font-medium mb-1" style="color: rgba(255,255,255,0.5);">企业版</div>
-            <div class="text-3xl font-bold mb-1" style="color: white;">¥299<span class="text-base font-normal" style="color: rgba(255,255,255,0.4);">/月</span></div>
-            <div class="text-xs" style="color: rgba(255,255,255,0.4);">支持私有化部署</div>
+            <div class="text-sm font-medium mb-1" style="color: var(--text-tertiary);">企业版</div>
+            <div class="text-3xl font-bold mb-1" style="color: var(--text-primary);">¥299<span class="text-base font-normal" style="color: var(--text-tertiary);">/月</span></div>
+            <div class="text-xs" style="color: var(--text-tertiary);">支持私有化部署</div>
           </div>
-          <div class="h-px my-6" style="background: rgba(255,255,255,0.1);"/>
+          <div class="h-px my-6" style="background: var(--border-color);"/>
           <div class="space-y-3 flex-1">
-            <div v-for="f in enterprise" :key="f" class="flex items-start gap-3 text-sm" style="color: rgba(255,255,255,0.7);">
+            <div v-for="f in enterprise" :key="f" class="flex items-start gap-3 text-sm" style="color: var(--text-secondary);">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0 mt-0.5" style="color: #8B5CF6;">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
@@ -90,7 +90,7 @@
       <!-- Trust badges -->
       <div class="flex items-center justify-center gap-8 mt-16 flex-wrap">
         <div v-for="badge in trustBadges" :key="badge"
-          class="flex items-center gap-2 text-sm" style="color: rgba(255,255,255,0.4);">
+          class="flex items-center gap-2 text-sm" style="color: var(--text-tertiary);">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: #10B981;">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
@@ -144,9 +144,9 @@ const trustBadges = [
 
 <style scoped>
 .pricing-card {
-  background: rgba(17, 24, 39, 0.6);
+  background: var(--bg-card);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 28px;
   display: flex;
@@ -156,7 +156,7 @@ const trustBadges = [
 
 .pricing-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--border-color-hover);
 }
 
 .pricing-card-popular {
@@ -198,14 +198,14 @@ const trustBadges = [
 }
 
 .pricing-btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.8);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   transition: all 0.2s ease;
 }
 
 .pricing-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--bg-glass-hover);
+  border-color: var(--border-color-hover);
 }
 </style>

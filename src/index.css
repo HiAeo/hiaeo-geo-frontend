@@ -1,29 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 :root {
+  /* Theme: Dark (default) */
+  --bg-primary: #0A0A0F;
+  --bg-secondary: #111827;
+  --bg-card: rgba(17, 24, 39, 0.6);
+  --bg-card-hover: rgba(17, 24, 39, 0.8);
+  --bg-section: #0A0A0F;
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --bg-glass-hover: rgba(255, 255, 255, 0.08);
+  
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-color-hover: rgba(255, 255, 255, 0.15);
+  
   /* Brand Colors */
   --color-primary: #165DFF;
   --color-primary-hover: #0040ED;
   --color-primary-light: #3370FF;
-  
-  /* Background Colors */
-  --bg-dark: #0A0A0F;
-  --bg-card-dark: #111827;
-  --bg-light: #F7F8FA;
-  --bg-card-light: #FFFFFF;
-  --bg-section: #F3F4F6;
-  
-  /* Text Colors */
-  --text-primary-dark: #FFFFFF;
-  --text-primary-light: #111827;
-  --text-secondary-dark: #E5E7EB;
-  --text-secondary-light: #1F2937;
-  --text-tertiary-dark: #9CA3AF;
-  --text-tertiary-light: #4B5563;
   
   /* Semantic Colors */
   --color-success: #10B981;
@@ -39,8 +40,8 @@
   --radius-full: 9999px;
   
   /* Shadows */
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
-  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.4);
   --shadow-glow: 0 0 40px rgba(22, 93, 255, 0.15);
   
   /* Transitions */
@@ -48,6 +49,28 @@
   --transition-normal: 200ms ease;
   --transition-slow: 300ms ease;
   --transition-slower: 400ms ease;
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --bg-primary: #F7F8FA;
+  --bg-secondary: #FFFFFF;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-hover: rgba(255, 255, 255, 1);
+  --bg-section: #F3F4F6;
+  --bg-glass: rgba(255, 255, 255, 0.8);
+  --bg-glass-hover: rgba(255, 255, 255, 1);
+  
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-tertiary: #9CA3AF;
+  
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-color-hover: rgba(0, 0, 0, 0.15);
+  
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 40px rgba(22, 93, 255, 0.15);
 }
 
 @layer base {

@@ -1,7 +1,7 @@
 <template>
   <section id="features" class="py-20 relative overflow-hidden">
     <!-- Background -->
-    <div class="absolute inset-0 bg-gradient-to-b from-[#0A0A0F] to-[#0A0A0F]"></div>
+    <div class="absolute inset-0 bento-bg"></div>
     
     <div class="max-w-7xl mx-auto px-6 relative z-10">
 
@@ -167,6 +167,10 @@ const executionSteps = [
 </script>
 
 <style scoped>
+.bento-bg {
+  background: var(--bg-primary);
+}
+
 .bento-card {
   background: rgba(17, 24, 39, 0.6);
   backdrop-filter: blur(16px);

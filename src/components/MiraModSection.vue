@@ -4,17 +4,17 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-3" style="color:white;">
           <span style="font-weight:800">Mira</span><span style="font-weight:400">Mod</span>模豆 · GEO智能策略生成
         </h2>
-        <p class="text-gray-500 text-lg max-w-2xl mx-auto">
+        <p class="text-lg max-w-2xl mx-auto" style="color:rgba(255,255,255,0.6);">
           内置6类语义实体库，AI替你写好文章、代码、关键词库<br />
           各引擎风格一键适配，拿到就能发
         </p>
       </div>
 
       <!-- Tabbed card -->
-      <div class="glass-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
+      <div class="glass-card-dark rounded-2xl max-w-5xl mx-auto transition-all duration-300">
         <div style="padding:48px;">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">
@@ -23,8 +23,7 @@
             :key="tab"
             @click="activeTab = tab"
             class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
-            :class="activeTab === tab ? 'text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
-            :style="activeTab === tab ? 'background:#10B981;' : ''"
+            :style="activeTab === tab ? 'background:#10B981;color:white;' : 'background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);'"
           >
             {{ tab }}
           </button>
@@ -33,16 +32,16 @@
         <!-- Tab 1: 6 entity types -->
         <div v-if="activeTab === '语义实体库'" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div v-for="entity in entityCards" :key="entity.name"
-            class="p-5 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
-            style="background:#FAFAFA;border:1px solid #F0F0F0;">
+            class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
             <div class="flex items-center gap-2 mb-3">
               <div class="w-2.5 h-2.5 rounded-full"
                 :style="{ background: entity.color, boxShadow: `0 0 6px ${entity.color}` }"/>
-              <span class="text-sm font-semibold text-gray-900">{{ entity.name }}</span>
+              <span class="text-sm font-semibold" style="color:white;">{{ entity.name }}</span>
             </div>
             <div class="space-y-1.5">
               <div v-for="word in entity.words" :key="word"
-                class="text-xs text-gray-500 pl-3 truncate">· {{ word }}</div>
+                class="text-xs pl-3 truncate" style="color:rgba(255,255,255,0.5);">· {{ word }}</div>
             </div>
           </div>
         </div>
@@ -50,29 +49,29 @@
         <!-- Tab 2: Engine styles -->
         <div v-if="activeTab === '引擎适配'" class="grid grid-cols-2 gap-4">
           <div v-for="engine in engineStyles" :key="engine.name"
-            class="p-5 rounded-xl border transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
-            style="background:#FAFAFA;border-color:#F0F0F0;">
+            class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
             <div class="text-sm font-bold mb-1.5" :style="{ color: engine.color }">{{ engine.name }}</div>
-            <div class="text-xs text-gray-500 leading-relaxed">{{ engine.style }}</div>
+            <div class="text-xs leading-relaxed" style="color:rgba(255,255,255,0.5);">{{ engine.style }}</div>
           </div>
         </div>
 
         <!-- Tab 3: Brand persona -->
-        <div v-if="activeTab === '品牌人设'" class="p-6 rounded-xl transition-all duration-300 hover:shadow-md cursor-pointer"
-          style="background:#FAFAFA;border:1px solid #F0F0F0;">
+        <div v-if="activeTab === '品牌人设'" class="p-6 rounded-xl transition-all duration-300 cursor-pointer"
+          style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
           <div class="flex items-center gap-2 mb-4">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#165DFF" stroke-width="2">
               <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
             </svg>
-            <span class="text-sm font-semibold text-gray-900">AI品牌人设定位</span>
+            <span class="text-sm font-semibold" style="color:white;">AI品牌人设定位</span>
           </div>
-          <p class="text-base text-gray-700 italic leading-relaxed">
+          <p class="text-base italic leading-relaxed" style="color:rgba(255,255,255,0.8);">
             "专注中小企业财税自动化的SaaS工具，3步实现账务合规"
           </p>
           <div class="mt-5 flex flex-wrap gap-2">
             <span v-for="tag in ['B2B专业定位','数据驱动','合规可信','降本增效']" :key="tag"
               class="text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 hover:scale-105"
-              style="background:rgba(16,185,129,0.10);color:#059669;">
+              style="background:rgba(16,185,129,0.15);color:#10B981;">
               {{ tag }}
             </span>
           </div>

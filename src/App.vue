@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen overflow-x-hidden" style="background: #0A0A0F;">
+  <div class="min-h-screen overflow-x-hidden" :data-theme="theme">
     <!-- NavBar -->
-    <NavBar />
+    <NavBar :theme="theme" @toggle-theme="toggleTheme" />
 
     <!-- 板块1: Hero -->
     <HeroSection />
@@ -33,6 +33,7 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import NavBar from './components/NavBar.vue'
 import HeroSection from './components/HeroSection.vue'
 import BentoGridSection from './components/BentoGridSection.vue'
@@ -43,4 +44,20 @@ import HubSection from './components/HubSection.vue'
 import GrowthSection from './components/GrowthSection.vue'
 import PricingSection from './components/PricingSection.vue'
 import FooterSection from './components/FooterSection.vue'
+
+const theme = ref('dark')
+
+const toggleTheme = () => {
+  theme.value = theme.value === 'dark' ? 'light' : 'dark'
+  // Save preference to localStorage
+  localStorage.setItem('theme', theme.value)
+}
+
+onMounted(() => {
+  // Load saved preference
+  const savedTheme = localStorage.getItem('theme')
+  if (savedTheme) {
+    theme.value = savedTheme
+  }
+})
 </script>

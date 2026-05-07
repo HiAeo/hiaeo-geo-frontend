@@ -8,10 +8,10 @@
           style="background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.2);">
           客户成长路径
         </span>
-        <h2 class="text-4xl sm:text-5xl font-bold mb-4" style="color: white;">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-4" style="color: var(--text-primary);">
           从新手到优秀，<br />每一步都有标准动作
         </h2>
-        <p class="text-lg max-w-2xl mx-auto" style="color: rgba(255,255,255,0.6);">
+        <p class="text-lg max-w-2xl mx-auto" style="color: var(--text-secondary);">
           行业范本、真实案例、AI智能引导，让你的GEO优化不再从零摸索
         </p>
       </div>
@@ -161,9 +161,9 @@ const cases = [
 
 <style scoped>
 .growth-card {
-  background: rgba(17, 24, 39, 0.6);
+  background: var(--bg-card);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
   border-radius: 24px;
   padding: 36px;
 }

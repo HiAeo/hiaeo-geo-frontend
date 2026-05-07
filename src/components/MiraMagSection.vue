@@ -4,17 +4,17 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-3" style="color:white;">
           <span style="font-weight:800">Mira</span><span style="font-weight:400">Mag</span>模法 · <span style="font-weight:400">GEO</span> Agent自动执行优化
         </h2>
-        <p class="text-gray-500 text-lg max-w-2xl mx-auto">
+        <p class="text-lg max-w-2xl mx-auto" style="color:rgba(255,255,255,0.6);">
           复制粘贴即落地，执行记录全程可见<br />
           不碰服务器，不自动机发，安全合规
         </p>
       </div>
 
       <!-- Tabbed card -->
-      <div class="glass-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
+      <div class="glass-card-dark rounded-2xl max-w-5xl mx-auto transition-all duration-300">
         <div style="padding:48px;">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">
@@ -23,8 +23,7 @@
             :key="tab"
             @click="activeTab = tab"
             class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
-            :class="activeTab === tab ? 'text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
-            :style="activeTab === tab ? 'background:#8B5CF6;' : ''"
+            :style="activeTab === tab ? 'background:#8B5CF6;color:white;' : 'background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);'"
           >
             {{ tab }}
           </button>
@@ -44,14 +43,14 @@
                   </svg>
                   <span v-else class="text-sm font-bold text-white">{{ i+1 }}</span>
                 </div>
-                <div class="text-sm font-medium text-gray-700">{{ step.label }}</div>
-                <div class="text-xs text-gray-400 leading-relaxed">{{ step.detail }}</div>
+                <div class="text-sm font-medium" style="color:rgba(255,255,255,0.8);">{{ step.label }}</div>
+                <div class="text-xs leading-relaxed" style="color:rgba(255,255,255,0.4);">{{ step.detail }}</div>
                 <div v-if="step.done" class="absolute top-5 w-10 h-10 rounded-full animate-ping"
                   :style="{ background: step.color, opacity: '0.3', animationDuration: '2s' }"/>
               </div>
             </div>
           </div>
-          <div class="text-center text-sm text-gray-400">
+          <div class="text-center text-sm" style="color:rgba(255,255,255,0.4);">
             审核确认后执行，安全合规全程可控
           </div>
         </div>
@@ -59,18 +58,18 @@
         <!-- Tab 2: Effect feedback -->
         <div v-if="activeTab === '效果反馈'" class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div v-for="feedback in feedbackCards" :key="feedback.engine"
-            class="p-5 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
-            style="background:#FAFAFA;border:1px solid #F0F0F0;">
+            class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
             <div class="flex items-center justify-between mb-3">
-              <span class="text-sm font-semibold text-gray-600">{{ feedback.engine }}</span>
+              <span class="text-sm font-semibold" style="color:rgba(255,255,255,0.7);">{{ feedback.engine }}</span>
               <span class="text-xs px-2.5 py-1 rounded-full transition-all duration-200 hover:scale-105"
-                :style="{ background: feedback.up > 0 ? 'rgba(52,211,153,0.12)' : 'rgba(239,68,68,0.12)', color: feedback.up > 0 ? '#059669' : '#EF4444' }">
+                :style="{ background: feedback.up > 0 ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)', color: feedback.up > 0 ? '#10B981' : '#EF4444' }">
                 {{ feedback.up > 0 ? '↑' : '↓' }}{{ Math.abs(feedback.up) }}%
               </span>
             </div>
             <div class="flex items-end gap-2 mb-3">
               <span class="text-2xl font-bold" :style="{ color: feedback.color }">{{ feedback.mention }}</span>
-              <span class="text-xs text-gray-400 mb-0.5">提及率</span>
+              <span class="text-xs mb-0.5" style="color:rgba(255,255,255,0.4);">提及率</span>
             </div>
             <!-- Wave bars -->
             <div class="flex items-end gap-1 h-10">

@@ -16,7 +16,7 @@
         
         <!-- Main headline -->
         <h1 class="hero-headline animate-fade-in-up" style="animation-delay: 0.1s;">
-          让 <span class="gradient-text">GEO</span> 生成式引擎优化<br />
+          <span class="gradient-text">魔鲸GEO</span>，让AI优化<br />
           像呼吸一样简单
         </h1>
         
@@ -158,7 +158,7 @@ const engines = [
   justify-content: center;
   padding: 120px 0 80px;
   overflow: hidden;
-  background: var(--bg-dark);
+  background: var(--bg-primary);
 }
 
 /* Background effects */

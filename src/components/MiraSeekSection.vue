@@ -4,17 +4,17 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-3" style="color:white;">
           <span style="font-weight:800">Mira</span><span style="font-weight:400">Seek</span>模镜 · AI可见度诊断
         </h2>
-        <p class="text-gray-500 text-lg max-w-2xl mx-auto">
+        <p class="text-lg max-w-2xl mx-auto" style="color:rgba(255,255,255,0.6);">
           实时抓取 DeepSeek、豆包、Kimi 等主流大模型的回答数据<br />
           精准量化实体独占率与替代风险指数
         </p>
       </div>
 
       <!-- Tabbed card -->
-      <div class="glass-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
+      <div class="glass-card-dark rounded-2xl max-w-5xl mx-auto transition-all duration-300">
         <div style="padding:48px;">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">
@@ -23,8 +23,7 @@
             :key="tab"
             @click="activeTab = tab"
             class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
-            :class="activeTab === tab ? 'text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
-            :style="activeTab === tab ? 'background:#165DFF;' : ''"
+            :style="activeTab === tab ? 'background:#165DFF;color:white;' : 'background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);'"
           >
             {{ tab }}
           </button>
@@ -61,12 +60,12 @@
               <circle cx="90" cy="40" r="4" fill="#165DFF"/>
               <!-- Labels -->
               <text x="120" y="12" text-anchor="middle" font-size="7" fill="#165DFF" font-weight="600">AI可见度 82</text>
-              <text x="158" y="36" text-anchor="start" font-size="7" fill="rgba(0,0,0,0.4)">语义一致 71</text>
-              <text x="182" y="100" text-anchor="start" font-size="7" fill="rgba(0,0,0,0.4)">权威信号 65</text>
+              <text x="158" y="36" text-anchor="start" font-size="7" fill="rgba(255,255,255,0.5)">语义一致 71</text>
+              <text x="182" y="100" text-anchor="start" font-size="7" fill="rgba(255,255,255,0.5)">权威信号 65</text>
               <text x="158" y="168" text-anchor="start" font-size="7" fill="#FB7185">竞品压制 58</text>
-              <text x="82" y="168" text-anchor="end" font-size="7" fill="rgba(0,0,0,0.4)">内容友好 80</text>
+              <text x="82" y="168" text-anchor="end" font-size="7" fill="rgba(255,255,255,0.5)">内容友好 80</text>
               <text x="57" y="100" text-anchor="end" font-size="7" fill="#22D3EE">实体独占 68</text>
-              <text x="82" y="36" text-anchor="end" font-size="7" fill="rgba(0,0,0,0.4)">转化引导 74</text>
+              <text x="82" y="36" text-anchor="end" font-size="7" fill="rgba(255,255,255,0.5)">转化引导 74</text>
             </svg>
           </div>
           
@@ -75,54 +74,57 @@
             <!-- Top row: Overall score + 3 metrics -->
             <div class="flex gap-3">
               <!-- Overall score card -->
-              <div class="flex-1 p-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer border-2 border-transparent hover:border-blue-100"
-                style="background:linear-gradient(135deg,#165DFF08,#165DFF04);">
-                <div class="text-xs text-gray-400 mb-1">综合健康分</div>
+              <div class="flex-1 p-4 rounded-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer border border-white/10"
+                style="background:rgba(22,93,255,0.1);">
+                <div class="text-xs mb-1" style="color:rgba(255,255,255,0.5);">综合健康分</div>
                 <div class="flex items-baseline gap-2">
-                  <span class="text-3xl font-bold text-gray-900">72</span>
-                  <span class="text-xs px-2 py-0.5 rounded-full" style="background:#10B98115;color:#10B981;">良好</span>
+                  <span class="text-3xl font-bold">72</span>
+                  <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(16,185,129,0.15);color:#10B981;">良好</span>
                 </div>
               </div>
               
               <!-- 3 metric cards -->
-              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer"
-                style="background:#FAFAFA;border:1px solid #F0F0F0;">
+              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:scale-105 cursor-pointer"
+                style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
                 <div class="text-lg font-bold" style="color:#22D3EE;">68</div>
-                <div class="text-xs text-gray-400">实体独占</div>
+                <div class="text-xs" style="color:rgba(255,255,255,0.5);">实体独占</div>
               </div>
-              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer"
-                style="background:#FAFAFA;border:1px solid #F0F0F0;">
+              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:scale-105 cursor-pointer"
+                style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
                 <div class="text-lg font-bold" style="color:#FB7185;">32</div>
-                <div class="text-xs text-gray-400">替代风险</div>
+                <div class="text-xs" style="color:rgba(255,255,255,0.5);">替代风险</div>
               </div>
-              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer"
-                style="background:#FAFAFA;border:1px solid #F0F0F0;">
+              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:scale-105 cursor-pointer"
+                style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
                 <div class="text-lg font-bold" style="color:#10B981;">80</div>
-                <div class="text-xs text-gray-400">内容友好</div>
+                <div class="text-xs" style="color:rgba(255,255,255,0.5);">内容友好</div>
               </div>
             </div>
             
             <!-- Optimization suggestions -->
-            <div class="p-4 rounded-xl" style="background:#FAFAFA;border:1px solid #F0F0F0;">
-              <div class="text-xs text-gray-400 mb-3">待优化维度</div>
+            <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
+              <div class="text-xs mb-3" style="color:rgba(255,255,255,0.5);">待优化维度</div>
               <div class="space-y-3">
-                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-sm cursor-pointer">
-                  <span class="text-sm text-gray-600 w-20">竞品压制</span>
-                  <div class="flex-1 h-2 rounded-full overflow-hidden" style="background:#F0F0F0;">
+                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-pointer"
+                  style="background:rgba(255,255,255,0.02);">
+                  <span class="text-sm w-20" style="color:rgba(255,255,255,0.7);">竞品压制</span>
+                  <div class="flex-1 h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
                     <div class="h-full rounded-full transition-all duration-700 hover:opacity-80" style="width:58%;background:#FB7185;"/>
                   </div>
                   <span class="text-sm font-bold w-8 text-right" style="color:#FB7185;">58</span>
                 </div>
-                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-sm cursor-pointer">
-                  <span class="text-sm text-gray-600 w-20">权威信号</span>
-                  <div class="flex-1 h-2 rounded-full overflow-hidden" style="background:#F0F0F0;">
+                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-pointer"
+                  style="background:rgba(255,255,255,0.02);">
+                  <span class="text-sm w-20" style="color:rgba(255,255,255,0.7);">权威信号</span>
+                  <div class="flex-1 h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
                     <div class="h-full rounded-full transition-all duration-700 hover:opacity-80" style="width:65%;background:#F59E0B;"/>
                   </div>
                   <span class="text-sm font-bold w-8 text-right" style="color:#F59E0B;">65</span>
                 </div>
-                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 hover:bg-white hover:shadow-sm cursor-pointer">
-                  <span class="text-sm text-gray-600 w-20">语义一致</span>
-                  <div class="flex-1 h-2 rounded-full overflow-hidden" style="background:#F0F0F0;">
+                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-pointer"
+                  style="background:rgba(255,255,255,0.02);">
+                  <span class="text-sm w-20" style="color:rgba(255,255,255,0.7);">语义一致</span>
+                  <div class="flex-1 h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
                     <div class="h-full rounded-full transition-all duration-700 hover:opacity-80" style="width:71%;background:#165DFF;"/>
                   </div>
                   <span class="text-sm font-bold w-8 text-right" style="color:#165DFF;">71</span>
@@ -131,7 +133,7 @@
             </div>
             
             <!-- Suggestion -->
-            <div class="text-xs text-gray-500 px-1">
+            <div class="text-xs px-1" style="color:rgba(255,255,255,0.4);">
               💡 建议优先优化「竞品压制」维度，可提升综合得分约8-12分
             </div>
           </div>
@@ -140,14 +142,14 @@
         <!-- Tab 2: Engine scores -->
         <div v-if="activeTab === '各引擎得分'" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div v-for="engine in engineCards" :key="engine.name"
-            class="p-5 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
-            style="background:#FAFAFA;border:1px solid #F0F0F0;">
+            class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
             <div class="flex items-center justify-between mb-3">
-              <span class="text-sm font-medium text-gray-600">{{ engine.name }}</span>
+              <span class="text-sm font-medium" style="color:rgba(255,255,255,0.7);">{{ engine.name }}</span>
               <div class="w-2 h-2 rounded-full" :style="{ background: engine.color }"/>
             </div>
-            <div class="text-2xl font-bold text-gray-900 mb-2">{{ engine.score }}</div>
-            <div class="h-1 rounded-full overflow-hidden" style="background:#F0F0F0;">
+            <div class="text-2xl font-bold mb-2" style="color:white;">{{ engine.score }}</div>
+            <div class="h-1 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
               <div class="h-full rounded-full transition-all duration-500" :style="{ width: engine.score+'%', background: engine.color }"/>
             </div>
             <div class="mt-2 text-xs" :style="{ color: engine.color }">
@@ -159,14 +161,14 @@
         <!-- Tab 3: Problem priority list -->
         <div v-if="activeTab === '问题优先级'" class="space-y-3">
           <div v-for="problem in problems" :key="problem.id"
-            class="flex items-center gap-3 p-4 rounded-xl transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 cursor-pointer"
-            style="background:#FAFAFA;border:1px solid #F0F0F0;">
+            class="flex items-center gap-3 p-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
+            style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
             <span class="text-xs font-bold px-2.5 py-1 rounded-md shrink-0"
               :style="{ background: problem.bgColor, color: problem.color }">
               {{ problem.priority }}
             </span>
-            <span class="text-sm text-gray-600 flex-1">{{ problem.text }}</span>
-            <span class="text-xs text-gray-400 shrink-0">{{ problem.engine }}</span>
+            <span class="text-sm flex-1" style="color:rgba(255,255,255,0.7);">{{ problem.text }}</span>
+            <span class="text-xs shrink-0" style="color:rgba(255,255,255,0.4);">{{ problem.engine }}</span>
           </div>
         </div>
         </div>
