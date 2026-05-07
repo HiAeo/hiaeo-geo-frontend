@@ -193,7 +193,9 @@ const path4 = [
 
 .path-header {
   display: flex;
-  items-center justify-between mb-4;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
 }
 
 .path-number {
