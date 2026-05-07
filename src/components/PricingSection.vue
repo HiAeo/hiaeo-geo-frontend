@@ -18,7 +18,7 @@
       </div>
 
       <!-- Pricing cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start stagger-children">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start stagger-children scroll-animate">
 
         <!-- Free -->
         <div class="pricing-card">

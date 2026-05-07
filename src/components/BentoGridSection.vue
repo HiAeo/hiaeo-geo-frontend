@@ -19,7 +19,7 @@
       </div>
 
       <!-- Bento Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto stagger-children">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto stagger-children scroll-animate">
 
         <!-- Step 1: 模镜 -->
         <div class="bento-card group scroll-animate" style="--accent: #165DFF;">

@@ -16,7 +16,7 @@
       </div>
 
       <!-- FAQ list -->
-      <div class="space-y-4 stagger-children">
+      <div class="space-y-4 stagger-children scroll-animate">
         <div 
           v-for="(item, index) in faqs" 
           :key="index"
