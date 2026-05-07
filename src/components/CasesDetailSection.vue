@@ -103,7 +103,7 @@ import { ref, computed } from 'vue'
 
 defineEmits(['openContact'])
 
-const industries = ['全部', '科技', '金融', '医疗', '电商', '教育']
+const industries = ['全部', '科技', '金融', '医疗', '教育']
 const activeIndustry = ref('全部')
 
 const cases = [
@@ -191,27 +191,6 @@ const cases = [
       '官网独立访客增长 189%'
     ]
   },
-  {
-    id: 5,
-    company: '某时尚服饰品牌',
-    product: '女装 · 配饰 · 跨境电商',
-    logoIcon: '<path d="M6 2l.001 5.999a2 2 0 0 0 2 1.999h7.998a2 2 0 0 0 2-1.999l.001-5.999"/><path d="M6 9a6 6 0 0 0 12 0"/><path d="M6 9h12"/><path d="M5 15h14v5a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z"/>',
-    logoColor: '#EC4899',
-    industry: '电商',
-    industryColor: 'rgba(236, 72, 153, 0.15)',
-    date: '2024.11',
-    desc: '时尚电商竞争激烈，需要在 AI 搜索中脱颖而出，建立独特的品牌形象。',
-    metrics: [
-      { label: '豆包种草', value: '+234%', color: '#EC4899' },
-      { label: '小红书提及', value: '+189%', color: '#F472B6' },
-      { label: 'GMV增长', value: '+67%', color: '#10B981' }
-    ],
-    results: [
-      '「换季穿搭」相关 AI 查询中品牌曝光提升 234%',
-      '小红书用户自发推荐增长 189%',
-      '大促期间 AI 引流带来的 GMV 增长 67%'
-    ]
-  }
 ]
 
 const filteredCases = computed(() => {
