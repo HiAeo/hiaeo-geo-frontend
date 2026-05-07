@@ -45,7 +45,7 @@
               </span>
             </div>
           </div>
-        </div>
+          </div>
         </div>
 
         <!-- Ops view -->
