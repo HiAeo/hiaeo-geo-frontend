@@ -4,8 +4,8 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-          <span style="font-weight:700">MiraMod</span><span style="font-weight:400">模豆</span> · GEO智能策略生成
+        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+          <span style="font-weight:800">Mira</span><span style="font-weight:400">Mod</span>模豆 · GEO智能策略生成
         </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
           内置6类语义实体库，AI替你写好文章、代码、关键词库<br />

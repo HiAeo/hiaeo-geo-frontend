@@ -4,8 +4,8 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-          <span style="font-weight:700">MiraSeek</span><span style="font-weight:400">模镜</span> · AI可见度诊断
+        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+          <span style="font-weight:800">Mira</span><span style="font-weight:400">Seek</span>模镜 · AI可见度诊断
         </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
           实时抓取 DeepSeek、豆包、Kimi 等主流大模型的回答数据<br />

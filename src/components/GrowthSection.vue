@@ -4,7 +4,7 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
           从新手到优秀，<br />每一步都有标准动作
         </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
