@@ -169,11 +169,18 @@ const path4 = [
   background: var(--bg-card);
   backdrop-filter: blur(16px);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 28px;
+  border-radius: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .growth-path-card {
+    border-radius: 20px;
+    padding: 28px;
+  }
 }
 
 .growth-path-card:hover {

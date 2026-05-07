@@ -49,11 +49,11 @@
 
       <!-- Bottom -->
       <div class="footer-bottom">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div class="text-sm footer-copyright">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center">
+          <div class="text-xs sm:text-sm footer-copyright">
             © 2026 HiAeo. 让AI生成式引擎优化像呼吸一样简单。
           </div>
-          <div class="flex items-center gap-5 text-sm footer-legal">
+          <div class="flex items-center gap-3 sm:gap-5 text-xs sm:text-sm footer-legal flex-wrap justify-center">
             <a href="#" class="footer-legal-link">隐私政策</a>
             <span>·</span>
             <a href="#" class="footer-legal-link">服务条款</a>
@@ -113,6 +113,12 @@ const footerCols = [
     grid-template-columns: 1fr;
     gap: 40px;
     padding: 40px 0 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-top {
+    padding: 32px 0 24px;
   }
 }
 

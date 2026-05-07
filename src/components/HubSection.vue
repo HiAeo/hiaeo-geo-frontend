@@ -14,14 +14,14 @@
 
       <!-- Hub dashboard -->
       <div class="hub-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 scroll-animate delay-200">
-        <div class="p-12">
+        <div class="p-6 md:p-12">
           <!-- Tab switcher -->
-          <div class="flex items-center gap-2 mb-8">
+          <div class="flex flex-wrap items-center gap-2 mb-6 md:mb-8">
             <button
               v-for="tab in ['老板视图','运营视图','技术视图']"
               :key="tab"
               @click="activeTab = tab"
-              class="hub-tab px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
+              class="hub-tab px-3 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap"
               :class="{ 'hub-tab-active': activeTab === tab, 'hub-tab-inactive': activeTab !== tab }"
             >
               {{ tab }}
@@ -29,7 +29,7 @@
           </div>
 
           <!-- Boss view -->
-          <div v-if="activeTab === '老板视图'" class="grid grid-cols-2 md:grid-cols-4 gap-5">
+          <div v-if="activeTab === '老板视图'" class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
             <div class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer hub-metric-card">
               <div class="text-xs mb-3 hub-label">GEO健康分</div>
               <div class="text-3xl font-bold mb-2" style="color: #165DFF">72</div>
@@ -124,8 +124,8 @@
           </div>
 
           <!-- Tech view -->
-          <div v-if="activeTab === '技术视图'" class="space-y-4">
-            <div class="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer hub-task-item">
+          <div v-if="activeTab === '技术视图'" class="space-y-3 md:space-y-4">
+            <div class="flex items-start md:items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer hub-task-item">
               <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300" style="background: rgba(16,185,129,0.15)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
                   <path d="M4 17l6-6-6-6"/><path d="M12 19h8"/>
