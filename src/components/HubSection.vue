@@ -133,7 +133,7 @@
               </div>
               <div class="flex-1">
                 <div class="text-sm font-medium hub-text-secondary">部署JSON-LD结构化数据</div>
-                <div class="text-xs mt-0.5 hub-text-tertiary">参考模法生成代码片段，部署至官网<head>标签内</div>
+                <div class="text-xs mt-0.5 hub-text-tertiary">参考模法生成代码片段，部署至官网&lt;head&gt;标签内</div>
               </div>
               <span class="text-xs px-2.5 py-1 rounded-full shrink-0 transition-all duration-200 hover:scale-105" style="background:rgba(16,185,129,0.15);color:#10B981;">已完成</span>
             </div>
