@@ -15,142 +15,134 @@
         </p>
       </div>
 
-      <!-- Card outer -->
-      <div class="max-w-5xl mx-auto">
-        <div class="growth-card scroll-animate delay-300">
+      <!-- Path cards grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto stagger-children scroll-animate">
 
-          <!-- Tab switcher: stages + cases -->
-          <div class="flex items-center gap-2 mb-8 flex-wrap">
-            <button
-              v-for="(stage,i) in stages"
-              :key="stage.name"
-              @click="activeTab = 'stage-'+i"
-              class="growth-tab px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-              :class="activeTab === 'stage-'+i ? 'growth-tab-active' : 'growth-tab-inactive'"
-              :style="activeTab === 'stage-'+i ? `background:${stage.color};` : ''"
-            >
-              {{ stage.num }} · {{ stage.name }}
-            </button>
-            <button
-              v-for="c in cases"
-              :key="'case-'+c.company"
-              @click="activeTab = 'case-'+c.company"
-              class="growth-tab px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-              :class="activeTab === 'case-'+c.company ? 'growth-tab-active' : 'growth-tab-inactive'"
-              :style="activeTab === 'case-'+c.company ? `background:${c.color};` : ''"
-            >
-              案例
-            </button>
+        <!-- Path 1: 新手起步 -->
+        <div class="growth-path-card">
+          <div class="path-header">
+            <div class="path-number">01</div>
+            <div class="path-badge" style="background: rgba(107, 114, 128, 0.15); color: #9CA3AF;">入门</div>
           </div>
-
-          <!-- Stage detail view -->
-          <div v-for="(stage,i) in stages" :key="stage.name"
-            v-show="activeTab === 'stage-'+i"
-            class="p-6 rounded-2xl transition-all duration-300 growth-stage-card"
-            :style="`border-color: ${stage.color}30;`">
-            <div class="flex items-center gap-3 mb-4 group cursor-pointer">
-              <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-transform duration-300 group-hover:scale-110"
-                :style="{ background: stage.color, color: 'white' }">
-                {{ stage.num }}
-              </div>
-              <div>
-                <div class="text-sm font-bold growth-stage-title">{{ stage.name }}</div>
-                <div class="text-xs" :style="{ color: stage.color }">GEO分 {{ stage.score }}</div>
-              </div>
-            </div>
-            <div class="space-y-2">
-              <div v-for="task in stage.tasks" :key="task"
-                class="flex items-center gap-2.5 p-3 rounded-xl transition-all duration-200 hover:-translate-y-0.5 cursor-pointer growth-task-item">
-                <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ background: stage.color }"/>
-                <span class="text-sm growth-task-text">{{ task }}</span>
-              </div>
-            </div>
+          <h3 class="path-title">新手起步</h3>
+          <p class="path-desc">完成首次诊断，了解自身现状</p>
+          <div class="path-divider"></div>
+          <ul class="path-tasks">
+            <li v-for="task in path1" :key="task">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              {{ task }}
+            </li>
+          </ul>
+          <div class="path-metric">
+            <span class="metric-label">GEO健康分</span>
+            <span class="metric-value" style="color: #9CA3AF;">&lt; 40</span>
           </div>
-
-          <!-- Case studies view -->
-          <div v-for="c in cases" :key="'detail-'+c.company"
-            v-show="activeTab === 'case-'+c.company"
-            class="p-6 rounded-2xl transition-all duration-300 growth-case-card"
-            :style="`border-color: ${c.color}30;`">
-            <div class="flex items-center gap-3 mb-4 group cursor-pointer">
-              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-transform duration-300 group-hover:scale-110"
-                :style="{ background: c.color, color: 'white' }">
-                {{ c.company[0] }}
-              </div>
-              <div>
-                <div class="text-sm font-bold growth-stage-title">{{ c.company }}</div>
-                <div class="text-xs growth-industry">{{ c.industry }}</div>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3 mb-4">
-              <div v-for="m in c.metrics" :key="m.label"
-                class="p-4 rounded-xl transition-all duration-200 hover:scale-105 cursor-pointer growth-metric-card">
-                <div class="text-xl font-bold" :style="{ color: c.color }">
-                  {{ m.before }} <span class="growth-arrow">→</span> {{ m.after }}
-                </div>
-                <div class="text-xs mt-1 growth-metric-label">{{ m.label }}</div>
-              </div>
-            </div>
-            <p class="text-sm italic leading-relaxed p-4 rounded-xl growth-quote">
-              "{{ c.quote }}"
-            </p>
-          </div>
-
-          <!-- All stages overview (shown when no tab selected) -->
-          <div v-if="activeTab === ''" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div v-for="(stage,i) in stages" :key="stage.name"
-              class="p-5 rounded-xl text-center cursor-pointer transition-all duration-300 hover:scale-105 growth-overview-card"
-              @click="activeTab = 'stage-'+i">
-              <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-3"
-                :style="{ background: stage.color, color: 'white' }">
-                {{ stage.num }}
-              </div>
-              <div class="text-sm font-semibold mb-1 growth-stage-title">{{ stage.name }}</div>
-              <div class="text-xs" :style="{ color: stage.color }">GEO分 {{ stage.score }}</div>
-            </div>
-          </div>
-
         </div>
+
+        <!-- Path 2: 快速见效 -->
+        <div class="growth-path-card">
+          <div class="path-header">
+            <div class="path-number">02</div>
+            <div class="path-badge" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B;">见效</div>
+          </div>
+          <h3 class="path-title">快速见效</h3>
+          <p class="path-desc">执行首轮优化，收获第一波数据</p>
+          <div class="path-divider"></div>
+          <ul class="path-tasks">
+            <li v-for="task in path2" :key="task">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              {{ task }}
+            </li>
+          </ul>
+          <div class="path-metric">
+            <span class="metric-label">GEO健康分</span>
+            <span class="metric-value" style="color: #F59E0B;">40-60</span>
+          </div>
+        </div>
+
+        <!-- Path 3: 体系优化 -->
+        <div class="growth-path-card">
+          <div class="path-header">
+            <div class="path-number">03</div>
+            <div class="path-badge" style="background: rgba(22, 93, 255, 0.15); color: #165DFF;">进阶</div>
+          </div>
+          <h3 class="path-title">体系优化</h3>
+          <p class="path-desc">建立内容节奏，数据稳步提升</p>
+          <div class="path-divider"></div>
+          <ul class="path-tasks">
+            <li v-for="task in path3" :key="task">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#165DFF" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              {{ task }}
+            </li>
+          </ul>
+          <div class="path-metric">
+            <span class="metric-label">GEO健康分</span>
+            <span class="metric-value" style="color: #165DFF;">60-80</span>
+          </div>
+        </div>
+
+        <!-- Path 4: 行业领先 -->
+        <div class="growth-path-card growth-path-featured">
+          <div class="path-header">
+            <div class="path-number">04</div>
+            <div class="path-badge" style="background: rgba(16, 185, 129, 0.15); color: #10B981;">领先</div>
+          </div>
+          <h3 class="path-title">行业领先</h3>
+          <p class="path-desc">全引擎压制竞品，建立品牌护城河</p>
+          <div class="path-divider"></div>
+          <ul class="path-tasks">
+            <li v-for="task in path4" :key="task">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              {{ task }}
+            </li>
+          </ul>
+          <div class="path-metric">
+            <span class="metric-label">GEO健康分</span>
+            <span class="metric-value" style="color: #10B981;">≥ 80</span>
+          </div>
+        </div>
+
       </div>
+
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
-const activeTab = ref('')
-
-const stages = [
-  { num: '01', name: '新手', score: '< 40', color: '#6B7280',
-    tasks: ['完成首次模镜诊断', '了解7维度评分体系', '熟悉Hub看板基础操作'] },
-  { num: '02', name: '入门', score: '40-60', color: '#F59E0B',
-    tasks: ['梳理核心问题清单', '审核首批模豆策略', '发布第一篇GEO内容'] },
-  { num: '03', name: '达标', score: '60-80', color: '#165DFF',
-    tasks: ['执行2周GEO优化', '对比优化前后数据', '建立内容发布节奏'] },
-  { num: '04', name: '优秀', score: '≥ 80', color: '#10B981',
-    tasks: ['全引擎提及率领先', '竞品压制效果显著', '建立内容实验体系'] },
+const path1 = [
+  '完成首次模镜诊断',
+  '了解7维度评分体系',
+  '熟悉Hub看板基础操作',
+  '获取首份问题清单'
 ]
 
-const cases = [
-  { company: '苏州某 SaaS 企业', industry: '企业服务 · B2B', color: '#165DFF',
-    metrics: [
-      { label: 'DeepSeek提及率', before: '18%', after: '72%' },
-      { label: 'GEO健康分', before: '42', after: '81' },
-    ],
-    quote: '3个月内，品牌在DeepSeek的回答质量从行业倒数跃升至前三，竞品替代风险指数下降60%。' },
-  { company: '深圳某智能硬件商', industry: '消费电子 · B2C', color: '#10B981',
-    metrics: [
-      { label: '豆包种草转化', before: '2.1%', after: '8.7%' },
-      { label: '官网引流增量', before: '+0', after: '+340%' },
-    ],
-    quote: '豆包用户推荐率从2%提升至8.7%，618大促期间官网UV增长340%。' },
-  { company: '杭州某医美机构', industry: '医疗健康 · 本地生活', color: '#8B5CF6',
-    metrics: [
-      { label: 'Kimi口碑评分', before: '51', after: '79' },
-      { label: '替代风险指数', before: '78', after: '31' },
-    ],
-    quote: 'Kimi口碑评分大幅提升，竞品替代风险从高危降至中低，成功守住本地市场认知。' },
+const path2 = [
+  '梳理核心问题清单',
+  '审核首批模豆策略',
+  '发布第一篇GEO内容',
+  '观察3大引擎反馈'
+]
+
+const path3 = [
+  '执行2周GEO优化',
+  '对比优化前后数据',
+  '建立内容发布节奏',
+  '开启A/B内容实验'
+]
+
+const path4 = [
+  '全引擎提及率领先',
+  '竞品压制效果显著',
+  '建立内容实验体系',
+  '形成品牌护城河'
 ]
 </script>
 
@@ -173,70 +165,111 @@ const cases = [
   color: var(--text-secondary);
 }
 
-.growth-card {
+.growth-path-card {
   background: var(--bg-card);
   backdrop-filter: blur(16px);
   border: 1px solid var(--border-color);
-  border-radius: 24px;
-  padding: 36px;
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
 }
 
-.growth-tab-active {
-  color: white;
+.growth-path-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-color-hover);
 }
 
-.growth-tab-inactive {
-  background: var(--bg-glass);
-  color: var(--text-secondary);
+.growth-path-featured {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(22, 93, 255, 0.05));
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
-.growth-stage-card {
-  background: var(--bg-glass);
+.growth-path-featured:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 40px rgba(16, 185, 129, 0.1);
 }
 
-.growth-case-card {
-  background: var(--bg-glass);
+.path-header {
+  display: flex;
+  items-center justify-between mb-4;
 }
 
-.growth-stage-title {
+.path-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-tertiary);
+  opacity: 0.3;
+  line-height: 1;
+}
+
+.path-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
+
+.path-title {
+  font-size: 1.25rem;
+  font-weight: 700;
   color: var(--text-primary);
+  margin-bottom: 8px;
 }
 
-.growth-task-item {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-color);
+.path-desc {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  line-height: 1.5;
 }
 
-.growth-task-text {
+.path-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 20px 0;
+}
+
+.path-tasks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.path-tasks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
   color: var(--text-secondary);
+  line-height: 1.4;
 }
 
-.growth-industry {
+.path-tasks li svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.path-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.metric-label {
+  font-size: 12px;
   color: var(--text-tertiary);
 }
 
-.growth-metric-card {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-color);
-}
-
-.growth-arrow {
-  color: var(--text-tertiary);
-  font-weight: 400;
-}
-
-.growth-metric-label {
-  color: var(--text-tertiary);
-}
-
-.growth-quote {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-}
-
-.growth-overview-card {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-color);
+.metric-value {
+  font-size: 14px;
+  font-weight: 700;
 }
 </style>

@@ -103,6 +103,8 @@
 </template>
 
 <script setup>
+defineEmits(['open-contact'])
+
 const free = [
   '模镜完整诊断1次',
   '查看7维度评分报告',

@@ -116,6 +116,8 @@
 <script setup>
 import { ref } from 'vue'
 
+defineEmits(['open-contact'])
+
 const activeTab = ref('老板视图')
 
 const bossMetrics = [
@@ -227,5 +229,16 @@ const techTasks = [
 .hub-task-item {
   background: var(--bg-glass);
   border: 1px solid var(--border-color);
+}
+
+.hub-cta-btn {
+  background: linear-gradient(135deg, #165DFF, #8B5CF6);
+  color: white;
+  box-shadow: 0 4px 20px rgba(22, 93, 255, 0.3);
+}
+
+.hub-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(22, 93, 255, 0.4);
 }
 </style>

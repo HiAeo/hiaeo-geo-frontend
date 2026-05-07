@@ -20,7 +20,7 @@
       <div class="flex items-center gap-3">
 
         <!-- Theme toggle -->
-        <button class="p-2 rounded-lg transition-all duration-200 cursor-pointer theme-toggle" @click="$emit('toggleTheme')" :title="theme === 'dark' ? '切换到浅色模式' : '切换到深色模式'">
+        <button class="p-2 rounded-lg transition-all duration-200 cursor-pointer theme-toggle" @click="$emit('toggle-theme')" :title="theme === 'dark' ? '切换到浅色模式' : '切换到深色模式'">
           <!-- Sun icon (show in dark mode) -->
           <svg v-if="theme === 'dark'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="transition-transform duration-200 hover:scale-110">
             <circle cx="12" cy="12" r="5"/>
@@ -40,7 +40,7 @@
         </button>
 
         <!-- Register / Login -->
-        <button class="hidden sm:flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer nav-btn-secondary" @click="$emit('openLogin')">
+        <button class="hidden sm:flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer nav-btn-secondary" @click="$emit('open-login')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
             <polyline points="10 17 15 12 10 7"/>
@@ -50,8 +50,8 @@
         </button>
 
         <!-- Start free -->
-        <button class="hidden sm:flex px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer nav-btn-primary">
-          免费诊断
+        <button @click="$emit('openContact')" class="hidden sm:flex px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer nav-btn-primary">
+          预约咨询
         </button>
 
         <!-- Mobile menu button -->
@@ -82,8 +82,8 @@
         <button class="w-full py-2.5 rounded-lg text-sm font-medium mobile-nav-btn-secondary" @click="$emit('openLogin'); mobileOpen = false">
           登录
         </button>
-        <button class="w-full py-2.5 rounded-lg text-sm font-semibold mobile-nav-btn-primary">
-          免费诊断
+        <button class="w-full py-2.5 rounded-lg text-sm font-semibold mobile-nav-btn-primary" @click="$emit('openContact'); mobileOpen = false">
+          预约咨询
         </button>
       </div>
     </div>
@@ -113,7 +113,6 @@ const navLinks = [
   { label: '模豆策略', href: '#miramod' },
   { label: '模法执行', href: '#miramag' },
   { label: '案例', href: '#cases-detail' },
-  { label: '关于我们', href: '#about' },
   { label: '定价', href: '#pricing' },
   { label: 'FAQ', href: '#faq' },
 ]

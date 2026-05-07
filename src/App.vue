@@ -1,10 +1,10 @@
 <template>
   <div class="min-h-screen overflow-x-hidden pb-16 md:pb-0" :data-theme="theme">
     <!-- NavBar -->
-    <NavBar :theme="theme" @toggle-theme="toggleTheme" @open-login="showLogin = true" />
+    <NavBar :theme="theme" @toggle-theme="toggleTheme" @open-login="showLogin = true" @open-contact="showContact = true" />
 
     <!-- 板块1: Hero -->
-    <HeroSection />
+    <HeroSection @open-contact="showContact = true" />
 
     <!-- 板块2: 产品价值概览 (Bento Grid) -->
     <BentoGridSection />
@@ -30,10 +30,7 @@
     <!-- 板块9: 定价 -->
     <PricingSection />
 
-    <!-- 板块10: 关于我们 -->
-    <AboutSection />
-
-    <!-- 板块11: FAQ -->
+    <!-- 板块10: FAQ -->
     <FAQSection />
 
     <!-- Footer -->
@@ -72,7 +69,6 @@ import HubSection from './components/HubSection.vue'
 import GrowthSection from './components/GrowthSection.vue'
 import CasesDetailSection from './components/CasesDetailSection.vue'
 import PricingSection from './components/PricingSection.vue'
-import AboutSection from './components/AboutSection.vue'
 import FAQSection from './components/FAQSection.vue'
 import FooterSection from './components/FooterSection.vue'
 import BottomNav from './components/BottomNav.vue'
