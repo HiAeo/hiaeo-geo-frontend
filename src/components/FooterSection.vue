@@ -5,7 +5,7 @@
       <!-- Top: Logo + Slogan -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pt-8 pb-8 border-b border-white/10">
         <a href="#" class="flex items-center gap-2 group cursor-pointer">
-          <img src="/logo-white.png" alt="HiAeo" class="h-6 w-auto transition-transform duration-300 group-hover:scale-105" />
+          <img src="/logo-footer.png" alt="HiAeo" class="h-6 w-auto transition-transform duration-300 group-hover:scale-105" />
           <span class="text-xs font-semibold px-1.5 py-0.5 rounded" style="background:rgba(255,255,255,0.15);color:white;letter-spacing:0.05em;font-size:10px;">Alpha</span>
         </a>
       </div>

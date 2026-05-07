@@ -4,7 +4,7 @@
 
       <!-- Logo -->
       <a href="#" class="flex items-center gap-2 cursor-pointer group" @mouseenter="onHover" @mouseleave="onLeave">
-        <img src="/logo-hollow.png" alt="HiAeo" class="h-6 w-auto transition-transform duration-300 group-hover:scale-110" />
+        <img src="/logo-header.png" alt="HiAeo" class="h-6 w-auto transition-transform duration-300 group-hover:scale-110" />
         <span class="text-xs font-semibold px-1.5 py-0.5 rounded" style="background:#111827;color:white;margin-left:-4px;letter-spacing:0.05em;font-size:10px;">Alpha</span>
       </a>
 
