@@ -29,7 +29,16 @@
         </div>
 
         <!-- Boss view -->
-        <div v-if="activeTab === '老板视图'" class="grid grid-cols-2 md:grid-cols-4 gap-5">
+        <div v-if="activeTab === '老板视图'">
+          <!-- Loading skeleton -->
+          <div v-if="loading" class="grid grid-cols-2 md:grid-cols-4 gap-5">
+            <div v-for="i in 4" :key="i" class="p-5 rounded-xl hub-metric-card animate-pulse">
+              <div class="h-3 w-16 bg-gray-200 rounded mb-3"></div>
+              <div class="h-8 w-20 bg-gray-200 rounded mb-2"></div>
+              <div class="h-1 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+          <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-5">
           <div v-for="metric in bossMetrics" :key="metric.label"
             class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer hub-metric-card">
             <div class="text-xs mb-3 hub-label">{{ metric.label }}</div>
@@ -115,7 +124,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useApi } from '../composables/useApi'
 
 defineEmits(['open-contact'])
@@ -138,8 +147,14 @@ const opTips = ref([])
 const techTasks = ref([])
 const pendingCount = ref(0)
 
-// 加载数据
+// 数据是否已加载过
+const isInitialized = ref(false)
+
+// 加载数据（仅在首次或数据为空时加载）
 const loadData = async () => {
+  // 已加载过的视图数据不再重复请求
+  if (isInitialized.value) return
+  
   loading.value = true
   try {
     // 并行加载所有数据
@@ -152,9 +167,11 @@ const loadData = async () => {
     
     bossMetrics.value = metricsRes.data || []
     pendingItems.value = itemsRes.data || []
-    pendingCount.value = itemsRes.total || 0
+    pendingCount.value = itemsRes.total || itemsRes.data?.length || 0
     opTips.value = tipsRes.data || []
     techTasks.value = tasksRes.data || []
+    
+    isInitialized.value = true
   } catch (error) {
     console.error('加载Hub数据失败:', error)
   } finally {
@@ -174,11 +191,7 @@ const handleReview = async (item, action) => {
   }
 }
 
-// 切换 Tab 时刷新数据
-watch(activeTab, () => {
-  loadData()
-})
-
+// 页面加载时获取数据
 onMounted(() => {
   loadData()
 })
