@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="py-16">
     <div class="max-w-7xl mx-auto px-6">
 
       <div class="text-center mb-16">
@@ -13,7 +13,7 @@
       </div>
 
       <!-- Hub dashboard mockup -->
-      <div class="glass-card rounded-2xl max-w-6xl mx-auto transition-all duration-300 hover:shadow-lg">
+      <div class="glass-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
         <div style="padding:48px;">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">

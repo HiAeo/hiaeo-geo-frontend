@@ -1,5 +1,5 @@
 <template>
-  <section id="cases" class="py-14">
+  <section id="cases" class="py-16">
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Section header -->

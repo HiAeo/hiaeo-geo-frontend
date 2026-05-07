@@ -246,7 +246,7 @@
   padding: 32px 40px;
   display: inline-block;
   width: 100%;
-  max-width: 800px;
+  max-width: 80rem; /* = max-w-5xl, 与产品板块卡片宽度一致 */
   box-sizing: border-box;
 }
 
