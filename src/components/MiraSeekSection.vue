@@ -31,50 +31,54 @@
         </div>
 
         <!-- Tab 1: 7-dimension radar -->
-        <div v-if="activeTab === '健康分雷达'" class="flex flex-col items-center">
-          <div class="max-w-sm transition-transform duration-300 hover:scale-105 cursor-pointer">
-            <svg viewBox="0 0 200 200" class="w-full">
+        <div v-if="activeTab === '健康分雷达'" class="flex items-center gap-8">
+          <!-- Radar chart -->
+          <div class="w-48 shrink-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
+            <svg viewBox="0 0 240 200" class="w-full">
+              <!-- Grid circles -->
               <circle v-for="r in [20,40,60,80]" :key="r"
-                cx="100" cy="100" r="r"
+                cx="120" cy="100" :r="r"
                 fill="none" stroke="rgba(22,93,255,0.12)" stroke-width="1"/>
+              <!-- Axis lines -->
               <line v-for="i in 7" :key="i"
-                x1="100" y1="100"
-                :x2="100 + 80*Math.cos((i*51.4-90)*Math.PI/180)"
+                x1="120" y1="100"
+                :x2="120 + 80*Math.cos((i*51.4-90)*Math.PI/180)"
                 :y2="100 + 80*Math.sin((i*51.4-90)*Math.PI/180)"
                 stroke="rgba(22,93,255,0.10)" stroke-width="1"/>
+              <!-- Radar polygon -->
               <polygon
-                points="100,22 130,40 155,100 130,160 70,160 45,100 70,40"
+                points="120,22 150,40 175,100 150,160 90,160 65,100 90,40"
                 fill="rgba(22,93,255,0.15)"
                 stroke="rgba(22,93,255,0.7)"
                 stroke-width="1.5"/>
-              <circle cx="100" cy="22" r="4" fill="#165DFF"/>
-              <circle cx="130" cy="40" r="4" fill="#165DFF"/>
-              <circle cx="155" cy="100" r="4" fill="#165DFF"/>
-              <circle cx="130" cy="160" r="4" fill="#FB7185"/>
-              <circle cx="70" cy="160" r="4" fill="#FB7185"/>
-              <circle cx="100" cy="188" r="4" fill="#165DFF"/>
-              <circle cx="45" cy="100" r="4" fill="#22D3EE"/>
-              <text x="100" y="14"  text-anchor="middle" font-size="7" fill="#165DFF" font-weight="600">AI可见度 82</text>
-              <text x="140" y="36"  text-anchor="start"  font-size="7" fill="rgba(0,0,0,0.4)">语义一致 71</text>
-              <text x="165" y="100" text-anchor="start"  font-size="7" fill="rgba(0,0,0,0.4)">权威信号 65</text>
-              <text x="140" y="164" text-anchor="start"  font-size="7" fill="#FB7185">竞品压制 58</text>
-              <text x="100" y="196" text-anchor="middle" font-size="7" fill="rgba(0,0,0,0.4)">转化引导 74</text>
-              <text x="60" y="164" text-anchor="end"     font-size="7" fill="rgba(0,0,0,0.4)">内容友好 80</text>
-              <text x="35" y="100" text-anchor="end"     font-size="7" fill="#22D3EE">实体独占 68</text>
+              <!-- Data points -->
+              <circle cx="120" cy="22" r="4" fill="#165DFF"/>
+              <circle cx="150" cy="40" r="4" fill="#165DFF"/>
+              <circle cx="175" cy="100" r="4" fill="#165DFF"/>
+              <circle cx="150" cy="160" r="4" fill="#FB7185"/>
+              <circle cx="90" cy="160" r="4" fill="#165DFF"/>
+              <circle cx="65" cy="100" r="4" fill="#22D3EE"/>
+              <circle cx="90" cy="40" r="4" fill="#165DFF"/>
+              <!-- Labels aligned to points -->
+              <text x="120" y="12" text-anchor="middle" font-size="7" fill="#165DFF" font-weight="600">AI可见度 82</text>
+              <text x="158" y="36" text-anchor="start" font-size="7" fill="rgba(0,0,0,0.4)">语义一致 71</text>
+              <text x="182" y="100" text-anchor="start" font-size="7" fill="rgba(0,0,0,0.4)">权威信号 65</text>
+              <text x="158" y="168" text-anchor="start" font-size="7" fill="#FB7185">竞品压制 58</text>
+              <text x="82" y="168" text-anchor="end" font-size="7" fill="rgba(0,0,0,0.4)">内容友好 80</text>
+              <text x="57" y="100" text-anchor="end" font-size="7" fill="#22D3EE">实体独占 68</text>
+              <text x="82" y="36" text-anchor="end" font-size="7" fill="rgba(0,0,0,0.4)">转化引导 74</text>
             </svg>
           </div>
-          <!-- Score summary -->
-          <div class="mt-6 flex items-center gap-8">
+          <!-- Score summary: vertical layout on right -->
+          <div class="flex flex-col gap-6">
             <div class="text-center transition-transform duration-200 hover:scale-110 cursor-pointer">
               <div class="text-2xl font-bold" style="color:#22D3EE;">68</div>
               <div class="text-xs text-gray-400 mt-0.5">实体独占率</div>
             </div>
-            <div class="w-px h-8 bg-gray-200"/>
             <div class="text-center transition-transform duration-200 hover:scale-110 cursor-pointer">
               <div class="text-2xl font-bold" style="color:#FB7185;">32</div>
               <div class="text-xs text-gray-400">替代风险</div>
             </div>
-            <div class="w-px h-8 bg-gray-200"/>
             <div class="text-center transition-transform duration-200 hover:scale-110 cursor-pointer">
               <div class="text-2xl font-bold text-gray-900">72</div>
               <div class="text-xs text-gray-400">综合得分</div>
