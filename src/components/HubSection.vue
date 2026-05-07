@@ -51,7 +51,7 @@
           <div class="p-5 rounded-xl transition-all duration-300 hub-panel">
             <div class="flex items-center justify-between mb-4">
               <span class="text-sm font-semibold hub-text-primary">待审核内容</span>
-              <span class="text-xs px-2.5 py-1 rounded-full transition-all duration-200 hover:scale-105 hub-badge">3 篇待审</span>
+              <span class="text-xs px-2.5 py-1 rounded-full transition-all duration-200 hover:scale-105 hub-badge">{{ pendingCount }} 篇待审</span>
             </div>
             <div class="space-y-3">
               <div v-for="item in pendingItems" :key="item.title"
@@ -62,7 +62,8 @@
                   <div class="text-xs mt-0.5 hub-text-tertiary">{{ item.meta }}</div>
                 </div>
                 <button class="text-xs px-3 py-1.5 rounded-lg font-medium text-white transition-all duration-200 hover:scale-105 active:scale-95"
-                  :style="{ background: item.color }">
+                  :style="{ background: item.color }"
+                  @click="handleReview(item, 'approve')">
                   审核
                 </button>
               </div>
@@ -114,37 +115,73 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useApi } from '../composables/useApi'
 
 defineEmits(['open-contact'])
 
+const {
+  getBossMetrics,
+  getPendingItems,
+  getOpTips,
+  getTechTasks,
+  reviewItem
+} = useApi()
+
 const activeTab = ref('老板视图')
+const loading = ref(false)
 
-const bossMetrics = [
-  { label: 'GEO健康分',      value: '72',    pct: 72, color: '#165DFF', trend: 8 },
-  { label: 'DeepSeek提及率', value: '+34%', pct: 60, color: '#00A3FF', trend: 34 },
-  { label: '竞品压制率',    value: '+12%', pct: 55, color: '#8B5CF6', trend: 12 },
-  { label: 'ROI预估',        value: '+23%', pct: 65, color: '#10B981', trend: 23 },
-]
+// 数据状态
+const bossMetrics = ref([])
+const pendingItems = ref([])
+const opTips = ref([])
+const techTasks = ref([])
+const pendingCount = ref(0)
 
-const pendingItems = [
-  { title: '《中小企业如何选客服系统》', meta: 'DeepSeek风格 · 小红书 · 预计提升12%', color: '#00A3FF' },
-  { title: 'JSON-LD结构化数据配置',       meta: '官网部署 · 技术视图参考',           color: '#A78BFA' },
-  { title: '竞品对比页FAQ扩展',           meta: 'Kimi风格 · 预计提升6%',            color: '#8B6CFF' },
-]
+// 加载数据
+const loadData = async () => {
+  loading.value = true
+  try {
+    // 并行加载所有数据
+    const [metricsRes, itemsRes, tipsRes, tasksRes] = await Promise.all([
+      getBossMetrics(),
+      getPendingItems(),
+      getOpTips(),
+      getTechTasks()
+    ])
+    
+    bossMetrics.value = metricsRes.data || []
+    pendingItems.value = itemsRes.data || []
+    pendingCount.value = itemsRes.total || 0
+    opTips.value = tipsRes.data || []
+    techTasks.value = tasksRes.data || []
+  } catch (error) {
+    console.error('加载Hub数据失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
 
-const opTips = [
-  '豆包提及率仍低于行业平均，建议补充2篇豆包风格的短视频脚本，适配生活化种草场景',
-  '本周已发布3篇DeepSeek风格内容，建议下周切换豆包/Kimi风格内容进行A/B测试',
-  '官网「关于我们」页缺少核心优势关键词，建议更新为AI人设定位版本',
-]
+// 处理审核
+const handleReview = async (item, action) => {
+  try {
+    await reviewItem(item.title, action)
+    // 从列表中移除已审核项
+    pendingItems.value = pendingItems.value.filter(i => i.title !== item.title)
+    pendingCount.value = pendingItems.value.length
+  } catch (error) {
+    console.error('审核失败:', error)
+  }
+}
 
-const techTasks = [
-  { label: '部署JSON-LD结构化数据',   detail: '参考模法生成代码片段，部署至官网<head>标签内', done: true },
-  { label: '完善sitemap.xml',          detail: '建议新增「解决方案」「行业案例」等栏目 sitemap', done: true },
-  { label: '添加客服核心页面Meta标签',  detail: 'title/description 需包含品牌核心关键词', done: false },
-  { label: '提交Bing Webmaster Tools', detail: '全站提交索引，提升 Bing/ChatGPT 爬虫友好度', done: false },
-]
+// 切换 Tab 时刷新数据
+watch(activeTab, () => {
+  loadData()
+})
+
+onMounted(() => {
+  loadData()
+})
 </script>
 
 <style scoped>

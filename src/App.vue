@@ -61,11 +61,33 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useApi } from './composables/useApi'
 
+// 组件导入
+import NavBar from './components/NavBar.vue'
+import HeroSection from './components/HeroSection.vue'
+import BentoGridSection from './components/BentoGridSection.vue'
+import MiraSeekSection from './components/MiraSeekSection.vue'
+import MiraModSection from './components/MiraModSection.vue'
+import MiraMagSection from './components/MiraMagSection.vue'
+import HubSection from './components/HubSection.vue'
+import GrowthSection from './components/GrowthSection.vue'
+import CasesDetailSection from './components/CasesDetailSection.vue'
+import PricingSection from './components/PricingSection.vue'
+import FAQSection from './components/FAQSection.vue'
+import FooterSection from './components/FooterSection.vue'
+import BottomNav from './components/BottomNav.vue'
+import LoginModal from './components/LoginModal.vue'
+import ContactModal from './components/ContactModal.vue'
+
 const { loginWithPassword, loginWithSms, register, submitContactForm, logout, isAuthenticated } = useApi()
 
 const theme = ref('dark')
 const showLogin = ref(false)
 const showContact = ref(false)
+
+const toggleTheme = () => {
+  theme.value = theme.value === 'dark' ? 'light' : 'dark'
+  localStorage.setItem('theme', theme.value)
+}
 
 // 处理登录
 const handleLogin = async (data) => {
