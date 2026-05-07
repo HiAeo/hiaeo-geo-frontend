@@ -32,21 +32,7 @@
         <!-- Tab 1: 7-dimension radar -->
         <div v-if="activeTab === '健康分雷达'" class="flex gap-8 flex-col lg:flex-row items-center">
           
-          <!-- Left: AI Models Grid -->
-          <div class="shrink-0">
-            <div class="text-xs text-center mb-4 mira-label">支持的AI模型</div>
-            <div class="grid grid-cols-5 gap-3 mira-ai-grid">
-              <a v-for="logo in aiLogos" :key="logo.name"
-                :href="logo.url" target="_blank"
-                class="mira-ai-item"
-                :title="logo.name">
-                <span class="text-2xl">{{ logo.emoji }}</span>
-                <span class="text-[10px] mt-1 mira-ai-name">{{ logo.shortName }}</span>
-              </a>
-            </div>
-          </div>
-          
-          <!-- Right: Score details -->
+          <!-- Score details -->
           <div class="flex-1 flex flex-col gap-4">
             <!-- Top row: Overall score + 3 metrics -->
             <div class="flex gap-3 flex-wrap">
@@ -149,19 +135,6 @@
 import { ref } from 'vue'
 
 const activeTab = ref('健康分雷达')
-
-const aiLogos = [
-  { name: 'DeepSeek', shortName: 'DeepSeek', emoji: '🔵', url: 'https://chat.deepseek.com' },
-  { name: '豆包', shortName: '豆包', emoji: '🫘', url: 'https://doubao.com' },
-  { name: '通义千问', shortName: '通义', emoji: '🐴', url: 'https://tongyi.aliyun.com' },
-  { name: 'Kimi', shortName: 'Kimi', emoji: '🌙', url: 'https://kimi.moonshot.cn' },
-  { name: '元宝', shortName: '元宝', emoji: '💎', url: 'https://yuanbao.tencent.com' },
-  { name: 'ChatGPT', shortName: 'GPT', emoji: '🤖', url: 'https://chat.openai.com' },
-  { name: 'Gemini', shortName: 'Gemini', emoji: '✨', url: 'https://gemini.google.com' },
-  { name: 'Claude', shortName: 'Claude', emoji: '🧠', url: 'https://claude.ai' },
-  { name: 'Grok', shortName: 'Grok', emoji: '🔥', url: 'https://grok.com' },
-  { name: 'Llama', shortName: 'Llama', emoji: '🦙', url: 'https://llama.meta.com' },
-]
 
 const engineCards = [
   { name: 'DeepSeek',  score: 82, trend: 34, color: '#165DFF' },
@@ -282,39 +255,6 @@ const problems = [
 
 .svg-label {
   fill: var(--text-tertiary);
-}
-
-/* AI Logo Grid */
-.mira-ai-grid {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 16px;
-}
-
-.mira-ai-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  transition: all 0.25s ease;
-  text-decoration: none;
-}
-
-.mira-ai-item:hover {
-  transform: scale(1.15);
-  border-color: #165DFF;
-  box-shadow: 0 4px 20px rgba(22, 93, 255, 0.25);
-}
-
-.mira-ai-name {
-  color: var(--text-tertiary);
-  white-space: nowrap;
 }
 
 /* Light theme overrides */
