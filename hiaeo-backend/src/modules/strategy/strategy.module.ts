@@ -1,0 +1,13 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Strategy } from './entities/strategy.entity';
+import { StrategyService } from './strategy.service';
+import { StrategyController } from './strategy.controller';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([Strategy])],
+  controllers: [StrategyController],
+  providers: [StrategyService],
+  exports: [StrategyService],
+})
+export class StrategyModule {}
