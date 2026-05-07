@@ -410,3 +410,74 @@ body[data-theme="light"] {
 #pricing .pricing-card {
   height: 100%;
 }
+
+/* ========================================
+   Scroll Animation Styles
+   ======================================== */
+
+/* Base scroll animation class */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.scroll-animate.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Delay variants */
+.scroll-animate.delay-100 { transition-delay: 100ms; }
+.scroll-animate.delay-200 { transition-delay: 200ms; }
+.scroll-animate.delay-300 { transition-delay: 300ms; }
+.scroll-animate.delay-400 { transition-delay: 400ms; }
+.scroll-animate.delay-500 { transition-delay: 500ms; }
+
+/* Scale animation variant */
+.scroll-animate.scale {
+  transform: scale(0.95) translateY(30px);
+}
+
+.scroll-animate.scale.animate-in {
+  transform: scale(1) translateY(0);
+}
+
+/* Fade animation variant */
+.scroll-animate.fade {
+  transform: none;
+}
+
+.scroll-animate.fade-left {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.scroll-animate.fade-left.animate-in {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.scroll-animate.fade-right {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.scroll-animate.fade-right.animate-in {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Stagger children animation */
+.stagger-children > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.stagger-children.animate-in > *:nth-child(1) { transition-delay: 0ms; opacity: 1; transform: translateY(0); }
+.stagger-children.animate-in > *:nth-child(2) { transition-delay: 100ms; opacity: 1; transform: translateY(0); }
+.stagger-children.animate-in > *:nth-child(3) { transition-delay: 200ms; opacity: 1; transform: translateY(0); }
+.stagger-children.animate-in > *:nth-child(4) { transition-delay: 300ms; opacity: 1; transform: translateY(0); }
+.stagger-children.animate-in > *:nth-child(5) { transition-delay: 400ms; opacity: 1; transform: translateY(0); }
+.stagger-children.animate-in > *:nth-child(6) { transition-delay: 500ms; opacity: 1; transform: translateY(0); }

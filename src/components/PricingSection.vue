@@ -4,21 +4,21 @@
 
       <!-- Header -->
       <div class="text-center mb-16">
-        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-medium mb-6"
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-medium mb-6 scroll-animate"
           style="background: rgba(22, 93, 255, 0.1); color: #165DFF; border: 1px solid rgba(22, 93, 255, 0.2);">
           定价方案
         </span>
-        <h2 class="text-4xl sm:text-5xl font-bold mb-4 pricing-title">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-4 pricing-title scroll-animate delay-100">
           从免费诊断到企业级全闭环<br />
           按需选择，即开即用
         </h2>
-        <p class="text-lg max-w-2xl mx-auto" style="color: var(--text-secondary);">
+        <p class="text-lg max-w-2xl mx-auto scroll-animate delay-200" style="color: var(--text-secondary);">
           基础版轻量起步，专业版解锁完整策略，企业版专属数据隔离与API对接
         </p>
       </div>
 
       <!-- Pricing cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start stagger-children">
 
         <!-- Free -->
         <div class="pricing-card">

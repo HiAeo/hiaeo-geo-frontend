@@ -40,7 +40,7 @@
         </button>
 
         <!-- Register / Login -->
-        <button class="hidden sm:flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer nav-btn-secondary">
+        <button class="hidden sm:flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer nav-btn-secondary" @click="$emit('openLogin')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
             <polyline points="10 17 15 12 10 7"/>
@@ -79,7 +79,7 @@
         </a>
       </div>
       <div class="px-6 py-4 border-t mobile-menu-divider space-y-2">
-        <button class="w-full py-2.5 rounded-lg text-sm font-medium mobile-nav-btn-secondary">
+        <button class="w-full py-2.5 rounded-lg text-sm font-medium mobile-nav-btn-secondary" @click="$emit('openLogin'); mobileOpen = false">
           登录
         </button>
         <button class="w-full py-2.5 rounded-lg text-sm font-semibold mobile-nav-btn-primary">
@@ -100,7 +100,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['toggleTheme'])
+defineEmits(['toggleTheme', 'openLogin'])
 
 const mobileOpen = ref(false)
 const isScrolled = ref(false)
@@ -113,6 +113,7 @@ const navLinks = [
   { label: '模豆策略', href: '#miramod' },
   { label: '模法执行', href: '#miramag' },
   { label: '定价', href: '#pricing' },
+  { label: 'FAQ', href: '#faq' },
 ]
 
 const handleScroll = () => {

@@ -7,19 +7,19 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-medium mb-6 bento-badge">
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-medium mb-6 bento-badge scroll-animate">
           诊断 · 策略 · 执行 · 监控
         </span>
-        <h2 class="text-4xl sm:text-5xl font-bold mb-4 bento-main-title">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-4 bento-main-title scroll-animate delay-100">
           全闭环 GEO 优化，一站式搞定
         </h2>
-        <p class="text-lg max-w-2xl mx-auto bento-main-desc">
+        <p class="text-lg max-w-2xl mx-auto bento-main-desc scroll-animate delay-200">
           你只需要输入公司名、产品及官网，剩下的事交给魔鲸GEO Claw
         </p>
       </div>
 
       <!-- Bento Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto stagger-children">
 
         <!-- Step 1: 模镜 -->
         <div class="bento-card group" style="--accent: #165DFF;">
