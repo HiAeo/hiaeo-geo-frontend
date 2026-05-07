@@ -1,5 +1,5 @@
 <template>
-  <section class="py-16 mira-section">
+  <section id="miraseek" class="py-16 mira-section">
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Section header -->
