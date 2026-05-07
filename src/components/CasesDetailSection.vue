@@ -43,8 +43,8 @@
           </div>
           
           <div class="case-content">
-            <div class="case-logo" :style="{ background: caseItem.logoBg }">
-              {{ caseItem.logo }}
+            <div class="case-logo" :style="{ borderColor: caseItem.logoColor }">
+              <svg :style="{ color: caseItem.logoColor }" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" v-html="caseItem.logoIcon"></svg>
             </div>
             <div class="case-info">
               <h3 class="case-company">{{ caseItem.company }}</h3>
@@ -111,8 +111,8 @@ const cases = [
     id: 1,
     company: '某智能汽车品牌',
     product: '新能源汽车 · 智能座舱',
-    logo: '🚗',
-    logoBg: 'linear-gradient(135deg, #10B981, #06B6D4)',
+    logoIcon: '<path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M5 17h-2v-6l2-5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6"/><path d="M7 8l4 -2h5l3 2v6h-4"/>',
+    logoColor: '#10B981',
     industry: '科技',
     industryColor: 'rgba(16, 185, 129, 0.15)',
     date: '2024.12',
@@ -132,8 +132,8 @@ const cases = [
     id: 2,
     company: '某在线教育平台',
     product: 'K12 在线辅导 · 职业教育',
-    logo: '📚',
-    logoBg: 'linear-gradient(135deg, #F59E0B, #EF4444)',
+    logoIcon: '<path d="M4 19.5v-15a2.5 2.5 0 0 1 2.5 -2.5h11a2.5 2.5 0 0 1 2.5 2.5v15a2.5 2.5 0 0 1 -2.5 2.5h-11a2.5 2.5 0 0 1 -2.5 -2.5z"/><path d="M8.5 6h7"/><path d="M8.5 10h7"/><path d="M8.5 14h4"/>',
+    logoColor: '#F59E0B',
     industry: '教育',
     industryColor: 'rgba(245, 158, 11, 0.15)',
     date: '2024.11',
@@ -153,8 +153,8 @@ const cases = [
     id: 3,
     company: '某金融科技公司',
     product: '智能投顾 · 财富管理',
-    logo: '💰',
-    logoBg: 'linear-gradient(135deg, #165DFF, #8B5CF6)',
+    logoIcon: '<path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M3 21h18"/><path d="M9 9h.01"/><path d="M15 9h.01"/><path d="M8 14s1.5 2 4 2s4-2 4-2"/><path d="M5 21v-4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/>',
+    logoColor: '#8B5CF6',
     industry: '金融',
     industryColor: 'rgba(22, 93, 255, 0.15)',
     date: '2024.10',
@@ -174,8 +174,8 @@ const cases = [
     id: 4,
     company: '某医疗器械企业',
     product: '高端医疗设备 · 家用健康',
-    logo: '🏥',
-    logoBg: 'linear-gradient(135deg, #EF4444, #F59E0B)',
+    logoIcon: '<path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M12 7a4 4 0 0 1 4 4v3"/><path d="M12 7a4 4 0 0 0 -4 4v3"/><path d="M6 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M6 7l-2 5"/><path d="M18 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M18 7l2 5"/><path d="M9 21v-6"/><path d="M15 21v-6"/><path d="M6 12h12"/>',
+    logoColor: '#EF4444',
     industry: '医疗',
     industryColor: 'rgba(239, 68, 68, 0.15)',
     date: '2024.09',
@@ -189,6 +189,27 @@ const cases = [
       '在 AI 医疗相关问题回答中出现率提升 145%',
       '医疗器械采购咨询量增长 112%',
       '官网独立访客增长 189%'
+    ]
+  },
+  {
+    id: 5,
+    company: '某时尚服饰品牌',
+    product: '女装 · 配饰 · 跨境电商',
+    logoIcon: '<path d="M6 2l.001 5.999a2 2 0 0 0 2 1.999h7.998a2 2 0 0 0 2-1.999l.001-5.999"/><path d="M6 9a6 6 0 0 0 12 0"/><path d="M6 9h12"/><path d="M5 15h14v5a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z"/>',
+    logoColor: '#EC4899',
+    industry: '电商',
+    industryColor: 'rgba(236, 72, 153, 0.15)',
+    date: '2024.11',
+    desc: '时尚电商竞争激烈，需要在 AI 搜索中脱颖而出，建立独特的品牌形象。',
+    metrics: [
+      { label: '豆包种草', value: '+234%', color: '#EC4899' },
+      { label: '小红书提及', value: '+189%', color: '#F472B6' },
+      { label: 'GMV增长', value: '+67%', color: '#10B981' }
+    ],
+    results: [
+      '「换季穿搭」相关 AI 查询中品牌曝光提升 234%',
+      '小红书用户自发推荐增长 189%',
+      '大促期间 AI 引流带来的 GMV 增长 67%'
     ]
   }
 ]
@@ -293,8 +314,9 @@ const filteredCases = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
   flex-shrink: 0;
+  background: var(--bg-elevated);
+  border: 1.5px solid;
 }
 
 .case-company {
