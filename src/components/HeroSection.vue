@@ -93,47 +93,58 @@
             </div>
           </div>
           
-          <!-- Mini radar -->
-          <div class="dashboard-radar">
-            <svg viewBox="0 0 200 180" class="radar-svg">
-              <circle cx="100" cy="90" r="60" fill="none" stroke="rgba(22,93,255,0.1)" stroke-width="1"/>
-              <circle cx="100" cy="90" r="45" fill="none" stroke="rgba(22,93,255,0.1)" stroke-width="1"/>
-              <circle cx="100" cy="90" r="30" fill="none" stroke="rgba(22,93,255,0.1)" stroke-width="1"/>
-              <polygon
-                points="100,35 125,55 145,90 125,125 75,125 55,90 75,55"
-                fill="rgba(22,93,255,0.15)"
-                stroke="#165DFF"
-                stroke-width="2"
-              />
-              <circle cx="100" cy="35" r="4" fill="#165DFF"/>
-              <circle cx="125" cy="55" r="4" fill="#165DFF"/>
-              <circle cx="145" cy="90" r="4" fill="#10B981"/>
-              <circle cx="125" cy="125" r="4" fill="#EF4444"/>
-              <circle cx="75" cy="125" r="4" fill="#165DFF"/>
-              <circle cx="55" cy="90" r="4" fill="#8B5CF6"/>
-              <circle cx="75" cy="55" r="4" fill="#165DFF"/>
-            </svg>
+          <!-- AI Model Logos Grid -->
+          <div class="ai-logos-section">
+            <!-- 国产大模型 -->
+            <div class="ai-logos-row">
+              <a href="https://www.doubao.com" target="_blank" class="ai-logo-card wide">
+                <img src="/ai-logos/doubao-color.svg" alt="豆包" />
+                <span>豆包</span>
+              </a>
+              <a href="https://tongyi.aliyun.com" target="_blank" class="ai-logo-card">
+                <img src="/ai-logos/qwen-color.svg" alt="千问" />
+                <span>千问</span>
+              </a>
+              <a href="https://yuanbao.tencent.com" target="_blank" class="ai-logo-card">
+                <img src="/ai-logos/yuanbao-color.svg" alt="元宝" />
+                <span>元宝</span>
+              </a>
+              <a href="https://chatglm.cn" target="_blank" class="ai-logo-card">
+                <img src="/ai-logos/zhipu-color.svg" alt="智谱" />
+                <span>智谱</span>
+              </a>
+              <a href="https://www.deepseek.com" target="_blank" class="ai-logo-card">
+                <img src="/ai-logos/deepseek-color.svg" alt="DeepSeek" />
+                <span>DeepSeek</span>
+              </a>
+            </div>
+            <!-- 国外大模型 -->
+            <div class="ai-logos-row">
+              <a href="https://claude.ai" target="_blank" class="ai-logo-card">
+                <img src="/ai-logos/claude-color.svg" alt="Claude" />
+                <span>Claude</span>
+              </a>
+              <a href="https://gemini.google.com" target="_blank" class="ai-logo-card">
+                <img src="/ai-logos/gemini-color.svg" alt="Gemini" />
+                <span>Gemini</span>
+              </a>
+              <a href="https://grok.x.ai" target="_blank" class="ai-logo-card">
+                <img src="/ai-logos/grok.svg" alt="Grok" />
+                <span>Grok</span>
+              </a>
+              <a href="https://www.meta.ai" target="_blank" class="ai-logo-card">
+                <img src="/ai-logos/meta-color.svg" alt="Meta" />
+                <span>Meta</span>
+              </a>
+              <a href="https://chat.openai.com" target="_blank" class="ai-logo-card wide">
+                <img src="/ai-logos/openai.svg" alt="OpenAI" />
+                <span>OpenAI</span>
+              </a>
+            </div>
           </div>
           
-          <!-- Engine tags -->
-          <div class="dashboard-engines">
-            <span v-for="engine in engines" :key="engine.name" 
-              class="engine-tag"
-              :style="{ '--engine-color': engine.color }">
-              {{ engine.name }}
-            </span>
-          </div>
         </div>
         
-        <!-- Floating cards -->
-        <div class="floating-card floating-card-1">
-          <span class="fc-icon">🚀</span>
-          <span class="fc-text">3个月内提及率提升 340%</span>
-        </div>
-        <div class="floating-card floating-card-2">
-          <span class="fc-icon">📊</span>
-          <span class="fc-text">ROI 预估提升 23%</span>
-        </div>
       </div>
     </div>
   </section>
@@ -404,7 +415,7 @@ const engines = [
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .dash-metric {
@@ -435,92 +446,63 @@ const engines = [
   color: #10B981;
 }
 
-.dashboard-radar {
+/* AI Logos Grid */
+.ai-logos-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-logos-row {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  gap: 16px;
 }
 
-.radar-svg {
-  width: 200px;
-  height: 180px;
-}
-
-.dashboard-engines {
+.ai-logo-card {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.engine-tag {
-  padding: 6px 12px;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
   background: var(--bg-glass);
   border: 1px solid var(--border-color);
-  border-radius: 9999px;
-  font-size: 12px;
-  color: var(--text-secondary);
+  border-radius: 10px;
   transition: all 0.2s ease;
 }
 
-.engine-tag:hover {
-  background: rgba(22, 93, 255, 0.2);
-  border-color: rgba(22, 93, 255, 0.4);
-  color: var(--text-primary);
+.ai-logo-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(22, 93, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Floating cards */
-.floating-card {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  box-shadow: var(--shadow-card);
-  backdrop-filter: blur(10px);
-  animation: float 3s ease-in-out infinite;
+.ai-logo-card img {
+  width: 32px;
+  height: 32px;
 }
 
-.floating-card-1 {
-  top: 10%;
-  right: -20px;
-  animation-delay: 0s;
-}
-
-.floating-card-2 {
-  bottom: 20%;
-  left: -30px;
-  animation-delay: 1.5s;
-}
-
-@media (max-width: 1024px) {
-  .floating-card {
-    display: none;
-  }
-}
-
-.fc-icon {
-  font-size: 16px;
-}
-
-.fc-text {
-  font-size: 12px;
-  color: var(--text-primary);
+.ai-logo-card span {
+  font-size: 11px;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
+@media (max-width: 640px) {
+  .ai-logos-row {
+    flex-wrap: wrap;
+    gap: 8px;
   }
-  50% {
-    transform: translateY(-10px);
+  
+  .ai-logo-card {
+    padding: 8px;
   }
-}
-
-@keyframes fadeInUp {
+  
+  .ai-logo-card img {
+    width: 28px;
+    height: 28px;
+  }
+}@keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(20px);

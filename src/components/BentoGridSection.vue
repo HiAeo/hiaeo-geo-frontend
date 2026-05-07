@@ -38,27 +38,54 @@
           </h3>
           <p class="bento-desc">实时抓取 DeepSeek、豆包、Kimi 等主流大模型的回答数据，精准量化品牌实体独占率与替代风险指数。</p>
 
-          <!-- Mini Radar -->
-          <div class="flex justify-center my-6">
-            <svg viewBox="0 0 120 120" class="radar-mini">
-              <circle cx="60" cy="60" r="10" fill="none" class="radar-circle" stroke-width="1"/>
-              <circle cx="60" cy="60" r="25" fill="none" class="radar-circle" stroke-width="1"/>
-              <circle cx="60" cy="60" r="40" fill="none" class="radar-circle" stroke-width="1"/>
-              <circle cx="60" cy="60" r="55" fill="none" class="radar-circle" stroke-width="1"/>
-              <polygon
-                points="60,12 82,38 95,60 78,88 42,88 25,60 38,38"
-                fill="rgba(22,93,255,0.2)"
-                stroke="#165DFF"
-                stroke-width="2"
-              />
-              <circle cx="60" cy="35" r="3" fill="#165DFF"/>
-              <circle cx="78" cy="52" r="3" fill="#165DFF"/>
-              <circle cx="88" cy="78" r="3" fill="#10B981"/>
-              <circle cx="72" cy="92" r="3" fill="#EF4444"/>
-              <circle cx="48" cy="92" r="3" fill="#165DFF"/>
-              <circle cx="32" cy="78" r="3" fill="#8B5CF6"/>
-              <circle cx="42" cy="52" r="3" fill="#165DFF"/>
-            </svg>
+          <!-- AI Model Logos Grid -->
+          <div class="flex flex-col gap-3 my-6">
+            <!-- 国产大模型 -->
+            <div class="flex justify-between gap-2">
+              <a href="https://www.doubao.com" target="_blank" class="flex-1 flex flex-col items-center gap-1 p-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-color)] transition-all duration-200 hover:scale-105 hover:border-[rgba(22,93,255,0.3)]">
+                <img src="/ai-logos/doubao-color.svg" alt="豆包" class="w-6 h-6" />
+                <span class="text-[10px] bento-logo-label">豆包</span>
+              </a>
+              <a href="https://tongyi.aliyun.com" target="_blank" class="flex-1 flex flex-col items-center gap-1 p-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-color)] transition-all duration-200 hover:scale-105 hover:border-[rgba(22,93,255,0.3)]">
+                <img src="/ai-logos/qwen-color.svg" alt="千问" class="w-6 h-6" />
+                <span class="text-[10px] bento-logo-label">千问</span>
+              </a>
+              <a href="https://yuanbao.tencent.com" target="_blank" class="flex-1 flex flex-col items-center gap-1 p-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-color)] transition-all duration-200 hover:scale-105 hover:border-[rgba(22,93,255,0.3)]">
+                <img src="/ai-logos/yuanbao-color.svg" alt="元宝" class="w-6 h-6" />
+                <span class="text-[10px] bento-logo-label">元宝</span>
+              </a>
+              <a href="https://chatglm.cn" target="_blank" class="flex-1 flex flex-col items-center gap-1 p-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-color)] transition-all duration-200 hover:scale-105 hover:border-[rgba(22,93,255,0.3)]">
+                <img src="/ai-logos/zhipu-color.svg" alt="智谱" class="w-6 h-6" />
+                <span class="text-[10px] bento-logo-label">智谱</span>
+              </a>
+              <a href="https://www.deepseek.com" target="_blank" class="flex-1 flex flex-col items-center gap-1 p-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-color)] transition-all duration-200 hover:scale-105 hover:border-[rgba(22,93,255,0.3)]">
+                <img src="/ai-logos/deepseek-color.svg" alt="DeepSeek" class="w-6 h-6" />
+                <span class="text-[10px] bento-logo-label">DeepSeek</span>
+              </a>
+            </div>
+            <!-- 国外大模型 -->
+            <div class="flex justify-between gap-2">
+              <a href="https://claude.ai" target="_blank" class="flex-1 flex flex-col items-center gap-1 p-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-color)] transition-all duration-200 hover:scale-105 hover:border-[rgba(22,93,255,0.3)]">
+                <img src="/ai-logos/claude-color.svg" alt="Claude" class="w-6 h-6" />
+                <span class="text-[10px] bento-logo-label">Claude</span>
+              </a>
+              <a href="https://gemini.google.com" target="_blank" class="flex-1 flex flex-col items-center gap-1 p-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-color)] transition-all duration-200 hover:scale-105 hover:border-[rgba(22,93,255,0.3)]">
+                <img src="/ai-logos/gemini-color.svg" alt="Gemini" class="w-6 h-6" />
+                <span class="text-[10px] bento-logo-label">Gemini</span>
+              </a>
+              <a href="https://grok.x.ai" target="_blank" class="flex-1 flex flex-col items-center gap-1 p-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-color)] transition-all duration-200 hover:scale-105 hover:border-[rgba(22,93,255,0.3)]">
+                <img src="/ai-logos/grok.svg" alt="Grok" class="w-6 h-6" />
+                <span class="text-[10px] bento-logo-label">Grok</span>
+              </a>
+              <a href="https://www.meta.ai" target="_blank" class="flex-1 flex flex-col items-center gap-1 p-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-color)] transition-all duration-200 hover:scale-105 hover:border-[rgba(22,93,255,0.3)]">
+                <img src="/ai-logos/meta-color.svg" alt="Meta" class="w-6 h-6" />
+                <span class="text-[10px] bento-logo-label">Meta</span>
+              </a>
+              <a href="https://chat.openai.com" target="_blank" class="flex-1 flex flex-col items-center gap-1 p-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-color)] transition-all duration-200 hover:scale-105 hover:border-[rgba(22,93,255,0.3)]">
+                <img src="/ai-logos/openai.svg" alt="OpenAI" class="w-6 h-6" />
+                <span class="text-[10px] bento-logo-label">OpenAI</span>
+              </a>
+            </div>
           </div>
 
           <div class="bento-tags">
@@ -280,20 +307,6 @@ const executionSteps = [
   color: var(--text-secondary);
 }
 
-.radar-mini {
-  width: 120px;
-  height: 120px;
-  transition: transform 0.3s ease;
-}
-
-.bento-card:hover .radar-mini {
-  transform: scale(1.05);
-}
-
-.radar-circle {
-  stroke: var(--border-color);
-}
-
 .bento-entity-name {
   color: var(--text-secondary);
 }
@@ -350,5 +363,9 @@ const executionSteps = [
 
 .loop-badge-text {
   color: var(--text-tertiary);
+}
+
+.bento-logo-label {
+  color: var(--text-secondary);
 }
 </style>
