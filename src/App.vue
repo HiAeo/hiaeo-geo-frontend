@@ -55,6 +55,7 @@ import MiraMagSection from './components/MiraMagSection.vue'
 import HubSection from './components/HubSection.vue'
 import GrowthSection from './components/GrowthSection.vue'
 import PricingSection from './components/PricingSection.vue'
+import FAQSection from './components/FAQSection.vue'
 import FooterSection from './components/FooterSection.vue'
 import LoginModal from './components/LoginModal.vue'
 
