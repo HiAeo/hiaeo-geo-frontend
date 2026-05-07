@@ -6,10 +6,10 @@
       <div class="footer-top">
         <div class="footer-brand">
           <a href="#" class="flex items-center gap-2 group cursor-pointer mb-4">
-            <img src="/logo-footer.png" alt="HiAeo" class="h-7 w-auto transition-transform duration-300 group-hover:scale-105" />
-            <span class="alpha-badge" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);">Alpha</span>
+            <img :src="theme === 'dark' ? '/logo-footer.png' : '/logo-header.png'" alt="HiAeo" class="h-7 w-auto transition-transform duration-300 group-hover:scale-105" />
+            <span class="alpha-badge footer-alpha">Alpha</span>
           </a>
-          <p class="text-sm text-white/50 mb-6 max-w-xs">
+          <p class="text-sm footer-slogan mb-6 max-w-xs">
             让AI生成式引擎优化像呼吸一样简单。<br />
             国内首个 GEO 全闭环 SaaS 平台。
           </p>
@@ -50,10 +50,10 @@
       <!-- Bottom -->
       <div class="footer-bottom">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div class="text-sm text-white/40">
+          <div class="text-sm footer-copyright">
             © 2026 HiAeo. 让AI生成式引擎优化像呼吸一样简单。
           </div>
-          <div class="flex items-center gap-5 text-sm text-white/40">
+          <div class="flex items-center gap-5 text-sm footer-legal">
             <a href="#" class="footer-legal-link">隐私政策</a>
             <span>·</span>
             <a href="#" class="footer-legal-link">服务条款</a>
@@ -68,6 +68,13 @@
 </template>
 
 <script setup>
+const props = defineProps({
+  theme: {
+    type: String,
+    default: 'dark'
+  }
+})
+
 const footerCols = [
   {
     title: '产品',
@@ -114,6 +121,15 @@ const footerCols = [
   flex-direction: column;
 }
 
+.footer-alpha {
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+}
+
+.footer-slogan {
+  color: var(--text-tertiary);
+}
+
 .footer-social {
   display: flex;
   gap: 12px;
@@ -126,9 +142,9 @@ const footerCols = [
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.6);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   transition: all 0.2s ease;
 }
 
@@ -182,6 +198,14 @@ const footerCols = [
 .footer-bottom {
   padding: 24px 0;
   border-top: 1px solid var(--border-color);
+}
+
+.footer-copyright {
+  color: var(--text-tertiary);
+}
+
+.footer-legal {
+  color: var(--text-tertiary);
 }
 
 .footer-legal-link {

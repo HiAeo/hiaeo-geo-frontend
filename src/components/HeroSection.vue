@@ -237,7 +237,7 @@ const engines = [
   border: 1px solid rgba(22, 93, 255, 0.2);
   border-radius: 9999px;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
 }
 
 .badge-dot {
@@ -253,7 +253,7 @@ const engines = [
   font-size: 3.5rem;
   font-weight: 800;
   line-height: 1.15;
-  color: white;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
 }
 
@@ -274,7 +274,7 @@ const engines = [
 .hero-subheadline {
   font-size: 1.125rem;
   line-height: 1.8;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
 }
 
 /* Metrics */
@@ -283,8 +283,8 @@ const engines = [
   align-items: center;
   gap: 32px;
   padding: 20px 28px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   backdrop-filter: blur(10px);
 }
@@ -307,19 +307,19 @@ const engines = [
 .metric-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: white;
+  color: var(--text-primary);
 }
 
 .metric-label {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-tertiary);
   white-space: nowrap;
 }
 
 .metric-divider {
   width: 1px;
   height: 40px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-color);
 }
 
 /* Actions */
@@ -347,14 +347,12 @@ const engines = [
 }
 
 .dashboard-card {
-  background: rgba(17, 24, 39, 0.8);
+  background: var(--bg-card);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 
-    0 4px 24px rgba(0, 0, 0, 0.4),
-    0 0 60px rgba(22, 93, 255, 0.1);
+  box-shadow: var(--shadow-card);
   transform: rotateY(-5deg) rotateX(5deg);
   transition: transform 0.5s ease;
 }
@@ -387,7 +385,7 @@ const engines = [
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--border-color);
 }
 
 .dashboard-dots span:nth-child(1) { background: #EF4444; }
@@ -396,7 +394,7 @@ const engines = [
 
 .dashboard-title {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
   margin-left: auto;
 }
 
@@ -412,14 +410,14 @@ const engines = [
   flex-direction: column;
   gap: 4px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-glass);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
 }
 
 .dash-metric-label {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-tertiary);
 }
 
 .dash-metric-value {
@@ -454,18 +452,18 @@ const engines = [
 
 .engine-tag {
   padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
   border-radius: 9999px;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   transition: all 0.2s ease;
 }
 
 .engine-tag:hover {
   background: rgba(22, 93, 255, 0.2);
   border-color: rgba(22, 93, 255, 0.4);
-  color: white;
+  color: var(--text-primary);
 }
 
 /* Floating cards */
@@ -475,10 +473,10 @@ const engines = [
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  background: rgba(17, 24, 39, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-card);
   backdrop-filter: blur(10px);
   animation: float 3s ease-in-out infinite;
 }
@@ -507,7 +505,7 @@ const engines = [
 
 .fc-text {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
   white-space: nowrap;
 }
 

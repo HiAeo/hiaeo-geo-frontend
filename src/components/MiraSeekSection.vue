@@ -1,38 +1,38 @@
 <template>
-  <section class="py-16">
+  <section class="py-16 mira-section">
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold mb-3" style="color:white;">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-3 mira-title">
           <span style="font-weight:800">Mira</span><span style="font-weight:400">Seek</span>模镜 · AI可见度诊断
         </h2>
-        <p class="text-lg max-w-2xl mx-auto" style="color:rgba(255,255,255,0.6);">
+        <p class="text-lg max-w-2xl mx-auto mira-desc">
           实时抓取 DeepSeek、豆包、Kimi 等主流大模型的回答数据<br />
           精准量化实体独占率与替代风险指数
         </p>
       </div>
 
       <!-- Tabbed card -->
-      <div class="glass-card-dark rounded-2xl max-w-5xl mx-auto transition-all duration-300">
-        <div style="padding:48px;">
+      <div class="mira-card rounded-2xl max-w-5xl mx-auto transition-all duration-300">
+        <div class="p-12">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">
           <button
             v-for="tab in ['健康分雷达','各引擎得分','问题优先级']"
             :key="tab"
             @click="activeTab = tab"
-            class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
-            :style="activeTab === tab ? 'background:#165DFF;color:white;' : 'background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);'"
+            class="mira-tab px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
+            :class="{ 'mira-tab-active': activeTab === tab, 'mira-tab-inactive': activeTab !== tab }"
           >
             {{ tab }}
           </button>
         </div>
 
         <!-- Tab 1: 7-dimension radar -->
-        <div v-if="activeTab === '健康分雷达'" class="flex gap-6">
+        <div v-if="activeTab === '健康分雷达'" class="flex gap-6 flex-col lg:flex-row">
           <!-- Left: Radar chart -->
-          <div class="shrink-0 transition-transform duration-300 hover:scale-[1.02] cursor-pointer">
+          <div class="shrink-0 transition-transform duration-300 hover:scale-[1.02] cursor-pointer mx-auto lg:mx-0">
             <svg viewBox="0 0 240 200" class="w-52">
               <!-- Grid circles -->
               <circle v-for="r in [20,40,60,80]" :key="r"
@@ -60,80 +60,73 @@
               <circle cx="90" cy="40" r="4" fill="#165DFF"/>
               <!-- Labels -->
               <text x="120" y="12" text-anchor="middle" font-size="7" fill="#165DFF" font-weight="600">AI可见度 82</text>
-              <text x="158" y="36" text-anchor="start" font-size="7" fill="rgba(255,255,255,0.5)">语义一致 71</text>
-              <text x="182" y="100" text-anchor="start" font-size="7" fill="rgba(255,255,255,0.5)">权威信号 65</text>
+              <text x="158" y="36" text-anchor="start" font-size="7" class="svg-label">语义一致 71</text>
+              <text x="182" y="100" text-anchor="start" font-size="7" class="svg-label">权威信号 65</text>
               <text x="158" y="168" text-anchor="start" font-size="7" fill="#FB7185">竞品压制 58</text>
-              <text x="82" y="168" text-anchor="end" font-size="7" fill="rgba(255,255,255,0.5)">内容友好 80</text>
+              <text x="82" y="168" text-anchor="end" font-size="7" class="svg-label">内容友好 80</text>
               <text x="57" y="100" text-anchor="end" font-size="7" fill="#22D3EE">实体独占 68</text>
-              <text x="82" y="36" text-anchor="end" font-size="7" fill="rgba(255,255,255,0.5)">转化引导 74</text>
+              <text x="82" y="36" text-anchor="end" font-size="7" class="svg-label">转化引导 74</text>
             </svg>
           </div>
           
           <!-- Right: Score details -->
           <div class="flex-1 flex flex-col gap-4">
             <!-- Top row: Overall score + 3 metrics -->
-            <div class="flex gap-3">
+            <div class="flex gap-3 flex-wrap">
               <!-- Overall score card -->
-              <div class="flex-1 p-4 rounded-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer border border-white/10"
-                style="background:rgba(22,93,255,0.1);">
-                <div class="text-xs mb-1" style="color:rgba(255,255,255,0.5);">综合健康分</div>
+              <div class="flex-1 min-w-[140px] p-4 rounded-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer mira-metric-card">
+                <div class="text-xs mb-1 mira-label">综合健康分</div>
                 <div class="flex items-baseline gap-2">
-                  <span class="text-3xl font-bold">72</span>
-                  <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(16,185,129,0.15);color:#10B981;">良好</span>
+                  <span class="text-3xl font-bold mira-value">72</span>
+                  <span class="text-xs px-2 py-0.5 rounded-full mira-badge-good">良好</span>
                 </div>
               </div>
               
               <!-- 3 metric cards -->
-              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:scale-105 cursor-pointer"
-                style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
-                <div class="text-lg font-bold" style="color:#22D3EE;">68</div>
-                <div class="text-xs" style="color:rgba(255,255,255,0.5);">实体独占</div>
+              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:scale-105 cursor-pointer mira-mini-card">
+                <div class="text-lg font-bold mira-value-cyan">68</div>
+                <div class="text-xs mira-label">实体独占</div>
               </div>
-              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:scale-105 cursor-pointer"
-                style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
-                <div class="text-lg font-bold" style="color:#FB7185;">32</div>
-                <div class="text-xs" style="color:rgba(255,255,255,0.5);">替代风险</div>
+              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:scale-105 cursor-pointer mira-mini-card">
+                <div class="text-lg font-bold mira-value-red">32</div>
+                <div class="text-xs mira-label">替代风险</div>
               </div>
-              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:scale-105 cursor-pointer"
-                style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
-                <div class="text-lg font-bold" style="color:#10B981;">80</div>
-                <div class="text-xs" style="color:rgba(255,255,255,0.5);">内容友好</div>
+              <div class="p-3 rounded-xl text-center transition-all duration-300 hover:scale-105 cursor-pointer mira-mini-card">
+                <div class="text-lg font-bold mira-value-green">80</div>
+                <div class="text-xs mira-label">内容友好</div>
               </div>
             </div>
             
             <!-- Optimization suggestions -->
-            <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
-              <div class="text-xs mb-3" style="color:rgba(255,255,255,0.5);">待优化维度</div>
+            <div class="p-4 rounded-xl mira-suggestion">
+              <div class="text-xs mb-3 mira-label">待优化维度</div>
               <div class="space-y-3">
-                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-pointer"
-                  style="background:rgba(255,255,255,0.02);">
-                  <span class="text-sm w-20" style="color:rgba(255,255,255,0.7);">竞品压制</span>
-                  <div class="flex-1 h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
-                    <div class="h-full rounded-full transition-all duration-700 hover:opacity-80" style="width:58%;background:#FB7185;"/>
+                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-pointer mira-progress-item">
+                  <span class="text-sm w-20 mira-progress-label">竞品压制</span>
+                  <div class="flex-1 h-2 rounded-full overflow-hidden mira-progress-bg">
+                    <div class="h-full rounded-full transition-all duration-700 hover:opacity-80 mira-progress-bar" style="width:58%;background:#FB7185;"/>
                   </div>
-                  <span class="text-sm font-bold w-8 text-right" style="color:#FB7185;">58</span>
+                  <span class="text-sm font-bold w-8 text-right mira-value-red">58</span>
                 </div>
-                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-pointer"
-                  style="background:rgba(255,255,255,0.02);">
-                  <span class="text-sm w-20" style="color:rgba(255,255,255,0.7);">权威信号</span>
-                  <div class="flex-1 h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
-                    <div class="h-full rounded-full transition-all duration-700 hover:opacity-80" style="width:65%;background:#F59E0B;"/>
+                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-pointer mira-progress-item">
+                  <span class="text-sm w-20 mira-progress-label">权威信号</span>
+                  <div class="flex-1 h-2 rounded-full overflow-hidden mira-progress-bg">
+                    <div class="h-full rounded-full transition-all duration-700 hover:opacity-80 mira-progress-bar" style="width:65%;background:#F59E0B;"/>
                   </div>
-                  <span class="text-sm font-bold w-8 text-right" style="color:#F59E0B;">65</span>
+                  <span class="text-sm font-bold w-8 text-right mira-value-orange">65</span>
                 </div>
-                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-pointer"
-                  style="background:rgba(255,255,255,0.02);">
-                  <span class="text-sm w-20" style="color:rgba(255,255,255,0.7);">语义一致</span>
-                  <div class="flex-1 h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
-                    <div class="h-full rounded-full transition-all duration-700 hover:opacity-80" style="width:71%;background:#165DFF;"/>
+                <div class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 cursor-pointer mira-progress-item">
+                  <span class="text-sm w-20 mira-progress-label">语义一致</span>
+                  <div class="flex-1 h-2 rounded-full overflow-hidden mira-progress-bg">
+                    <div class="h-full rounded-full transition-all duration-700 hover:opacity-80 mira-progress-bar" style="width:71%;background:#165DFF;"/>
                   </div>
-                  <span class="text-sm font-bold w-8 text-right" style="color:#165DFF;">71</span>
+                  <span class="text-sm font-bold w-8 text-right mira-value-blue">71</span>
                 </div>
               </div>
             </div>
             
             <!-- Suggestion -->
-            <div class="text-xs px-1" style="color:rgba(255,255,255,0.4);">
+            <div class="text-xs px-1 mira-hint">
               💡 建议优先优化「竞品压制」维度，可提升综合得分约8-12分
             </div>
           </div>
@@ -142,14 +135,13 @@
         <!-- Tab 2: Engine scores -->
         <div v-if="activeTab === '各引擎得分'" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div v-for="engine in engineCards" :key="engine.name"
-            class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-            style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+            class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer mira-engine-card">
             <div class="flex items-center justify-between mb-3">
-              <span class="text-sm font-medium" style="color:rgba(255,255,255,0.7);">{{ engine.name }}</span>
+              <span class="text-sm font-medium mira-text-secondary">{{ engine.name }}</span>
               <div class="w-2 h-2 rounded-full" :style="{ background: engine.color }"/>
             </div>
-            <div class="text-2xl font-bold mb-2" style="color:white;">{{ engine.score }}</div>
-            <div class="h-1 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
+            <div class="text-2xl font-bold mb-2 mira-value">{{ engine.score }}</div>
+            <div class="h-1 rounded-full overflow-hidden mira-progress-bg">
               <div class="h-full rounded-full transition-all duration-500" :style="{ width: engine.score+'%', background: engine.color }"/>
             </div>
             <div class="mt-2 text-xs" :style="{ color: engine.color }">
@@ -161,14 +153,13 @@
         <!-- Tab 3: Problem priority list -->
         <div v-if="activeTab === '问题优先级'" class="space-y-3">
           <div v-for="problem in problems" :key="problem.id"
-            class="flex items-center gap-3 p-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
-            style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">
+            class="flex items-center gap-3 p-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5 cursor-pointer mira-problem-item">
             <span class="text-xs font-bold px-2.5 py-1 rounded-md shrink-0"
               :style="{ background: problem.bgColor, color: problem.color }">
               {{ problem.priority }}
             </span>
-            <span class="text-sm flex-1" style="color:rgba(255,255,255,0.7);">{{ problem.text }}</span>
-            <span class="text-xs shrink-0" style="color:rgba(255,255,255,0.4);">{{ problem.engine }}</span>
+            <span class="text-sm flex-1 mira-text-secondary">{{ problem.text }}</span>
+            <span class="text-xs shrink-0 mira-text-tertiary">{{ problem.engine }}</span>
           </div>
         </div>
         </div>
@@ -199,3 +190,113 @@ const problems = [
   { id: 5, priority: 'P2', text: 'FAQ板块缺失，导致长尾问题AI回答质量偏低',       engine: 'Kimi',   color: '#6B7280', bgColor: 'rgba(107,114,128,0.10)' },
 ]
 </script>
+
+<style scoped>
+/* Section backgrounds */
+.mira-section {
+  background: var(--bg-primary);
+}
+
+.mira-title {
+  color: var(--text-primary);
+}
+
+.mira-desc {
+  color: var(--text-secondary);
+}
+
+.mira-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+}
+
+.mira-tab-active {
+  background: #165DFF;
+  color: white;
+}
+
+.mira-tab-inactive {
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.mira-metric-card {
+  background: rgba(22,93,255,0.1);
+  border: 1px solid var(--border-color);
+}
+
+.mira-mini-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+}
+
+.mira-suggestion {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+}
+
+.mira-label {
+  color: var(--text-tertiary);
+}
+
+.mira-value {
+  color: var(--text-primary);
+}
+
+.mira-badge-good {
+  background: rgba(16,185,129,0.15);
+  color: #10B981;
+}
+
+.mira-value-cyan { color: #22D3EE; }
+.mira-value-red { color: #FB7185; }
+.mira-value-green { color: #10B981; }
+.mira-value-orange { color: #F59E0B; }
+.mira-value-blue { color: #165DFF; }
+
+.mira-progress-item {
+  background: var(--bg-glass);
+}
+
+.mira-progress-label {
+  color: var(--text-secondary);
+}
+
+.mira-progress-bg {
+  background: var(--border-color);
+}
+
+.mira-hint {
+  color: var(--text-tertiary);
+}
+
+.mira-engine-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+}
+
+.mira-text-secondary {
+  color: var(--text-secondary);
+}
+
+.mira-text-tertiary {
+  color: var(--text-tertiary);
+}
+
+.mira-problem-item {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+}
+
+.svg-label {
+  fill: var(--text-tertiary);
+}
+
+/* Light theme overrides */
+:global([data-theme="light"]) .mira-suggestion,
+:global([data-theme="light"]) .mira-progress-item {
+  background: rgba(0, 0, 0, 0.02);
+}
+</style>

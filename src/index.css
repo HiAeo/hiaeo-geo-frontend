@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   /* Theme: Dark (default) */
@@ -55,11 +55,11 @@
 [data-theme="light"] {
   --bg-primary: #F7F8FA;
   --bg-secondary: #FFFFFF;
-  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card: rgba(255, 255, 255, 0.95);
   --bg-card-hover: rgba(255, 255, 255, 1);
   --bg-section: #F3F4F6;
-  --bg-glass: rgba(255, 255, 255, 0.8);
-  --bg-glass-hover: rgba(255, 255, 255, 1);
+  --bg-glass: rgba(0, 0, 0, 0.03);
+  --bg-glass-hover: rgba(0, 0, 0, 0.06);
   
   --text-primary: #111827;
   --text-secondary: #4B5563;
@@ -71,6 +71,13 @@
   --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
   --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
   --shadow-glow: 0 0 40px rgba(22, 93, 255, 0.15);
+}
+
+/* Apply background color to body for light theme */
+[data-theme="light"] body,
+body[data-theme="light"] {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 @layer base {
@@ -97,16 +104,18 @@
     font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
   }
 }
 
 @layer components {
   /* Glass card effect */
   .glass-card {
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--bg-card);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-card);
     transition: all var(--transition-slow);
@@ -119,12 +128,60 @@
   
   /* Glass card dark variant */
   .glass-card-dark {
-    background: rgba(17, 24, 39, 0.8);
+    background: var(--bg-card);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-card);
+  }
+  
+  /* Section backgrounds */
+  .section-bg {
+    background: var(--bg-primary);
+  }
+  
+  .section-bg-alt {
+    background: var(--bg-section);
+  }
+  
+  /* Text colors */
+  .text-theme-primary {
+    color: var(--text-primary);
+  }
+  
+  .text-theme-secondary {
+    color: var(--text-secondary);
+  }
+  
+  .text-theme-tertiary {
+    color: var(--text-tertiary);
+  }
+  
+  /* Card backgrounds */
+  .bg-card {
+    background: var(--bg-card);
+  }
+  
+  .bg-card-hover {
+    background: var(--bg-card-hover);
+  }
+  
+  .bg-glass {
+    background: var(--bg-glass);
+  }
+  
+  .bg-glass-hover {
+    background: var(--bg-glass-hover);
+  }
+  
+  /* Border colors */
+  .border-theme {
+    border-color: var(--border-color);
+  }
+  
+  .border-theme-hover {
+    border-color: var(--border-color-hover);
   }
   
   /* Brand button primary */
@@ -206,10 +263,22 @@
     font-size: 14px;
     transition: all var(--transition-normal);
   }
-  
+
   .btn-outline-inverse:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Light theme: Hero buttons */
+  [data-theme="light"] .btn-outline-inverse {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  [data-theme="light"] .btn-outline-inverse:hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
   }
   
   /* Gradient text */
@@ -318,4 +387,26 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #9CA3AF;
+}
+
+/* Pricing Section - ensure text visibility */
+#pricing {
+  background-color: var(--bg-primary) !important;
+}
+
+#pricing h2 {
+  color: var(--text-primary) !important;
+}
+
+#pricing .text-lg {
+  color: var(--text-secondary);
+}
+
+/* Ensure pricing cards have equal height */
+#pricing .grid {
+  align-items: stretch;
+}
+
+#pricing .pricing-card {
+  height: 100%;
 }

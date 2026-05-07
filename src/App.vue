@@ -28,7 +28,7 @@
     <PricingSection />
 
     <!-- Footer -->
-    <FooterSection />
+    <FooterSection :theme="theme" />
   </div>
 </template>
 

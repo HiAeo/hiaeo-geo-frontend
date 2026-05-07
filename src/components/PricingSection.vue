@@ -8,7 +8,7 @@
           style="background: rgba(22, 93, 255, 0.1); color: #165DFF; border: 1px solid rgba(22, 93, 255, 0.2);">
           定价方案
         </span>
-        <h2 class="text-4xl sm:text-5xl font-bold mb-4" style="color: var(--text-primary);">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-4 pricing-title">
           从免费诊断到企业级全闭环<br />
           按需选择，即开即用
         </h2>
@@ -143,6 +143,14 @@ const trustBadges = [
 </script>
 
 <style scoped>
+.pricing-title {
+  color: var(--text-primary);
+}
+
+.pricing-subtitle {
+  color: var(--text-secondary);
+}
+
 .pricing-card {
   background: var(--bg-card);
   backdrop-filter: blur(16px);

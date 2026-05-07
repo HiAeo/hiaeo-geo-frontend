@@ -7,14 +7,13 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-medium mb-6"
-          style="background: rgba(22, 93, 255, 0.15); color: #165DFF; border: 1px solid rgba(22, 93, 255, 0.2);">
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-medium mb-6 bento-badge">
           诊断 · 策略 · 执行 · 监控
         </span>
-        <h2 class="text-4xl sm:text-5xl font-bold mb-4" style="color: white;">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-4 bento-main-title">
           全闭环 GEO 优化，一站式搞定
         </h2>
-        <p class="text-lg max-w-2xl mx-auto" style="color: rgba(255,255,255,0.6);">
+        <p class="text-lg max-w-2xl mx-auto bento-main-desc">
           你只需要输入公司名、产品及官网，剩下的事交给魔鲸GEO Claw
         </p>
       </div>
@@ -42,10 +41,10 @@
           <!-- Mini Radar -->
           <div class="flex justify-center my-6">
             <svg viewBox="0 0 120 120" class="radar-mini">
-              <circle cx="60" cy="60" r="10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-              <circle cx="60" cy="60" r="25" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-              <circle cx="60" cy="60" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-              <circle cx="60" cy="60" r="55" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <circle cx="60" cy="60" r="10" fill="none" class="radar-circle" stroke-width="1"/>
+              <circle cx="60" cy="60" r="25" fill="none" class="radar-circle" stroke-width="1"/>
+              <circle cx="60" cy="60" r="40" fill="none" class="radar-circle" stroke-width="1"/>
+              <circle cx="60" cy="60" r="55" fill="none" class="radar-circle" stroke-width="1"/>
               <polygon
                 points="60,12 82,38 95,60 78,88 42,88 25,60 38,38"
                 fill="rgba(22,93,255,0.2)"
@@ -76,7 +75,7 @@
                 <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
               </svg>
             </div>
-            <span class="step-badge" style="background: rgba(16, 185, 129, 0.15); color: #10B981; border-color: rgba(16, 185, 129, 0.2);">STEP 02</span>
+            <span class="step-badge step-badge-green">STEP 02</span>
           </div>
 
           <h3 class="bento-title">
@@ -88,8 +87,8 @@
           <div class="space-y-3 my-6">
             <div v-for="entity in entityTypes" :key="entity.name" class="flex items-center gap-3">
               <div class="w-2.5 h-2.5 rounded-full" :style="{ background: entity.color, boxShadow: `0 0 8px ${entity.color}` }" />
-              <span class="text-sm" style="color: rgba(255,255,255,0.7);">{{ entity.name }}</span>
-              <div class="flex-1 h-px" style="background: rgba(255,255,255,0.1);" />
+              <span class="text-sm bento-entity-name">{{ entity.name }}</span>
+              <div class="flex-1 h-px bento-divider" />
             </div>
           </div>
 
@@ -107,7 +106,7 @@
                 <polyline points="22 4 12 14.01 9 11.01"/>
               </svg>
             </div>
-            <span class="step-badge" style="background: rgba(139, 92, 246, 0.15); color: #8B5CF6; border-color: rgba(139, 92, 246, 0.2);">STEP 03</span>
+            <span class="step-badge step-badge-purple">STEP 03</span>
           </div>
 
           <h3 class="bento-title">
@@ -120,8 +119,8 @@
             <div v-for="(step, i) in executionSteps" :key="step.label" class="relative">
               <div class="absolute -left-6 top-1.5 w-3.5 h-3.5 rounded-full z-10 transition-all duration-300 group-hover:scale-125" 
                 :style="{ background: step.color, boxShadow: `0 0 10px ${step.color}` }" />
-              <div v-if="i < executionSteps.length-1" class="absolute -left-6 top-5 bottom-0 w-px" style="background: rgba(255,255,255,0.1);" />
-              <span class="text-sm font-medium" style="color: rgba(255,255,255,0.8);">{{ step.label }}</span>
+              <div v-if="i < executionSteps.length-1" class="absolute -left-6 top-5 bottom-0 w-px bento-timeline-line" />
+              <span class="text-sm font-medium bento-step-label">{{ step.label }}</span>
             </div>
           </div>
 
@@ -140,7 +139,7 @@
             <polyline points="1 20 1 14 7 14"/>
             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
           </svg>
-          <span>模镜实时监控 → 模豆策略再优化 → 模法持续迭代</span>
+          <span class="loop-badge-text">模镜实时监控 → 模豆策略再优化 → 模法持续迭代</span>
         </div>
       </div>
 
@@ -171,10 +170,24 @@ const executionSteps = [
   background: var(--bg-primary);
 }
 
+.bento-badge {
+  background: rgba(22, 93, 255, 0.15);
+  color: #165DFF;
+  border: 1px solid rgba(22, 93, 255, 0.2);
+}
+
+.bento-main-title {
+  color: var(--text-primary);
+}
+
+.bento-main-desc {
+  color: var(--text-secondary);
+}
+
 .bento-card {
-  background: rgba(17, 24, 39, 0.6);
+  background: var(--bg-card);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 28px;
   display: flex;
@@ -198,10 +211,10 @@ const executionSteps = [
 }
 
 .bento-card:hover {
-  background: rgba(17, 24, 39, 0.8);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--bg-card-hover);
+  border-color: var(--border-color-hover);
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 60px rgba(22, 93, 255, 0.1);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .bento-card:hover::before {
@@ -221,8 +234,8 @@ const executionSteps = [
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
   color: var(--accent);
   transition: all 0.3s ease;
 }
@@ -243,16 +256,28 @@ const executionSteps = [
   letter-spacing: 0.05em;
 }
 
+.step-badge-green {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.step-badge-purple {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8B5CF6;
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
 .bento-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: white;
+  color: var(--text-primary);
 }
 
 .bento-desc {
   font-size: 0.875rem;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--text-secondary);
 }
 
 .radar-mini {
@@ -263,6 +288,26 @@ const executionSteps = [
 
 .bento-card:hover .radar-mini {
   transform: scale(1.05);
+}
+
+.radar-circle {
+  stroke: var(--border-color);
+}
+
+.bento-entity-name {
+  color: var(--text-secondary);
+}
+
+.bento-divider {
+  background: var(--border-color);
+}
+
+.bento-step-label {
+  color: var(--text-secondary);
+}
+
+.bento-timeline-line {
+  background: var(--border-color);
 }
 
 .bento-tags {
@@ -276,15 +321,15 @@ const executionSteps = [
   font-size: 11px;
   padding: 4px 10px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
   transition: all 0.2s ease;
 }
 
 .bento-tags span:hover {
   background: rgba(22, 93, 255, 0.15);
-  color: white;
+  color: var(--text-primary);
 }
 
 .loop-badge {
@@ -292,14 +337,18 @@ const executionSteps = [
   align-items: center;
   gap: 10px;
   padding: 12px 24px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
   border-radius: 9999px;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-tertiary);
 }
 
 .loop-badge svg {
   color: #165DFF;
+}
+
+.loop-badge-text {
+  color: var(--text-tertiary);
 }
 </style>
