@@ -4,12 +4,9 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <div class="flex items-center justify-center gap-2 mb-3">
-          <h2 class="text-4xl sm:text-5xl font-bold text-gray-900">
-            MiraSeek模镜 · AI可见度诊断
-          </h2>
-          <span class="alpha-badge" style="background:#111827;color:white;">Alpha</span>
-        </div>
+        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
+          MiraSeek模镜 · AI可见度诊断
+        </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
           实时抓取 DeepSeek、豆包、Kimi 等主流大模型的回答数据<br />
           精准量化实体独占率与替代风险指数
@@ -17,8 +14,8 @@
       </div>
 
       <!-- Tabbed card -->
-      <div class="glass-card p-8 rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
-
+      <div class="glass-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
+        <div style="padding:48px;">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">
           <button
@@ -117,7 +114,7 @@
             <span class="text-xs text-gray-400 shrink-0">{{ problem.engine }}</span>
           </div>
         </div>
-
+        </div>
       </div>
     </div>
   </section>

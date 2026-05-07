@@ -1,5 +1,5 @@
 <template>
-  <section id="cases" class="py-10">
+  <section id="cases" class="py-14">
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Section header -->
@@ -12,11 +12,12 @@
         </p>
       </div>
 
-      <!-- Tabbed card -->
-      <div class="glass-card p-8 rounded-2xl max-w-5xl mx-auto">
+      <!-- Glass card outer -->
+      <div class="glass-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
+        <div style="padding:48px;">
 
         <!-- Tab switcher: stages + cases -->
-        <div class="flex items-center gap-2 mb-4 flex-wrap">
+        <div class="flex items-center gap-2 mb-8 flex-wrap">
           <button
             v-for="(stage,i) in stages"
             :key="stage.name"
@@ -42,9 +43,9 @@
         <!-- Stage detail view -->
         <div v-for="(stage,i) in stages" :key="stage.name"
           v-show="activeTab === 'stage-'+i"
-          class="p-4 rounded-2xl transition-all duration-300"
+          class="p-6 rounded-2xl transition-all duration-300"
           :style="`border:2px solid ${stage.color}20;background:${stage.color}08;`">
-          <div class="flex items-center gap-3 mb-3 group cursor-pointer">
+          <div class="flex items-center gap-3 mb-4 group cursor-pointer">
             <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white transition-transform duration-300 group-hover:scale-110"
               :style="{ background: stage.color }">
               {{ stage.num }}
@@ -56,7 +57,7 @@
           </div>
           <div class="space-y-2">
             <div v-for="task in stage.tasks" :key="task"
-              class="flex items-center gap-2.5 p-2 rounded-xl transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 cursor-pointer"
+              class="flex items-center gap-2.5 p-3 rounded-xl transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 cursor-pointer"
               style="background:white;border:1px solid #F0F0F0;">
               <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ background: stage.color }"/>
               <span class="text-sm text-gray-600">{{ task }}</span>
@@ -67,9 +68,9 @@
         <!-- Case studies view -->
         <div v-for="c in cases" :key="'detail-'+c.company"
           v-show="activeTab === 'case-'+c.company"
-          class="p-4 rounded-2xl transition-all duration-300"
+          class="p-6 rounded-2xl transition-all duration-300"
           :style="`border:2px solid ${c.color}20;background:${c.color}08;`">
-          <div class="flex items-center gap-3 mb-3 group cursor-pointer">
+          <div class="flex items-center gap-3 mb-4 group cursor-pointer">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white transition-transform duration-300 group-hover:scale-110"
               :style="{ background: c.color }">
               {{ c.company[0] }}
@@ -88,11 +89,12 @@
               <div class="text-xs text-gray-400 mt-0.5">{{ m.label }}</div>
             </div>
           </div>
-          <p class="text-xs text-gray-500 italic leading-relaxed p-3 rounded-xl bg-white border border-gray-100">
+          <p class="text-sm text-gray-500 italic leading-relaxed p-4 rounded-xl bg-white border border-gray-100">
             "{{ c.quote }}"
           </p>
         </div>
 
+        <!-- All stages overview (shown when no tab selected) -->
         <div v-if="activeTab === ''" class="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div v-for="(stage,i) in stages" :key="stage.name"
             class="p-4 rounded-xl text-center cursor-pointer transition-all duration-300 hover:shadow-md hover:-translate-y-1"
@@ -107,6 +109,7 @@
           </div>
         </div>
 
+        </div>
       </div>
     </div>
   </section>

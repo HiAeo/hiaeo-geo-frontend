@@ -19,17 +19,10 @@
       <!-- CTA buttons -->
       <div class="flex items-center gap-3">
 
-        <!-- Language toggle -->
-        <button class="hidden sm:block px-5 py-2 rounded-lg text-sm font-medium border text-white transition-all duration-200 cursor-pointer hover:bg-gray-800 active:scale-95"
-          style="background:#111827;border-color:#111827;"
-          @click="lang = lang === 'zh' ? 'en' : 'zh'">
-          {{ lang === 'zh' ? 'EN' : '中文' }}
-        </button>
-
         <!-- Register / Login -->
-        <button class="hidden sm:block px-5 py-2 rounded-lg text-sm font-medium text-white transition-all duration-200 cursor-pointer hover:bg-gray-800 active:scale-95"
-          style="background:#111827;">
-          注册 / 登陆
+        <button class="hidden sm:block px-5 py-2 rounded-lg text-sm font-medium border transition-all duration-200 cursor-pointer hover:bg-gray-50 active:scale-95"
+          style="background:#FFFFFF;border-color:#D1D5DB;color:#111827;">
+          注册 | 登陆
         </button>
 
         <!-- Mobile menu button -->
@@ -59,7 +52,6 @@ import { ref } from 'vue'
 defineEmits(['scrollTo'])
 
 const mobileOpen = ref(false)
-const lang = ref('zh')
 
 const navLinks = [
   { label: '产品功能', href: '#features' },

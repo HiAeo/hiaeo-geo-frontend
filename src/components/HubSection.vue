@@ -3,12 +3,9 @@
     <div class="max-w-7xl mx-auto px-6">
 
       <div class="text-center mb-16">
-        <div class="flex items-center justify-center gap-2 mb-3">
-          <h2 class="text-4xl sm:text-5xl font-bold text-gray-900">
-            魔鲸Hub · AI协同驾驶舱
-          </h2>
-          <span class="alpha-badge" style="background:#111827;color:white;">Alpha</span>
-        </div>
+        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
+          魔鲸Hub · AI协同驾驶舱
+        </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto text-center">
           老板看结果，运营管执行，技术看指引 — 三方同舱不打架<br />
           三层指标（可见度→提及率→品牌搜索与官网引流）全量化关联
@@ -16,8 +13,8 @@
       </div>
 
       <!-- Hub dashboard mockup -->
-      <div class="glass-card p-8 rounded-2xl max-w-6xl mx-auto transition-all duration-300 hover:shadow-lg">
-
+      <div class="glass-card rounded-2xl max-w-6xl mx-auto transition-all duration-300 hover:shadow-lg">
+        <div style="padding:48px;">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">
           <button
@@ -115,7 +112,7 @@
             </span>
           </div>
         </div>
-
+        </div>
       </div>
     </div>
   </section>

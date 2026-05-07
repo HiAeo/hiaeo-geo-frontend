@@ -4,12 +4,9 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <div class="flex items-center justify-center gap-2 mb-3">
-          <h2 class="text-4xl sm:text-5xl font-bold text-gray-900">
-            MiraMod模豆 · GEO智能策略生成
-          </h2>
-          <span class="alpha-badge" style="background:#111827;color:white;">Alpha</span>
-        </div>
+        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
+          MiraMod模豆 · GEO智能策略生成
+        </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
           内置6类语义实体库，AI替你写好文章、代码、关键词库<br />
           各引擎风格一键适配，拿到就能发
@@ -17,8 +14,8 @@
       </div>
 
       <!-- Tabbed card -->
-      <div class="glass-card p-8 rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
-
+      <div class="glass-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
+        <div style="padding:48px;">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">
           <button
@@ -80,7 +77,7 @@
             </span>
           </div>
         </div>
-
+        </div>
       </div>
     </div>
   </section>

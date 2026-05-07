@@ -4,12 +4,9 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <div class="flex items-center justify-center gap-2 mb-3">
-          <h2 class="text-4xl sm:text-5xl font-bold text-gray-900">
-            MiraMag模法 · GEO Agent自动执行优化
-          </h2>
-          <span class="alpha-badge" style="background:#111827;color:white;">Alpha</span>
-        </div>
+        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
+          MiraMag模法 · GEO Agent自动执行优化
+        </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
           复制粘贴即落地，执行记录全程可见<br />
           不碰服务器，不自动机发，安全合规
@@ -17,8 +14,8 @@
       </div>
 
       <!-- Tabbed card -->
-      <div class="glass-card p-8 rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
-
+      <div class="glass-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
+        <div style="padding:48px;">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">
           <button
@@ -83,7 +80,7 @@
             </div>
           </div>
         </div>
-
+        </div>
       </div>
     </div>
   </section>
