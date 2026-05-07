@@ -42,10 +42,10 @@
         <!-- Stage detail view -->
         <div v-for="(stage,i) in stages" :key="stage.name"
           v-show="activeTab === 'stage-'+i"
-          class="p-4 rounded-2xl"
+          class="p-4 rounded-2xl transition-all duration-300"
           :style="`border:2px solid ${stage.color}20;background:${stage.color}08;`">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
+          <div class="flex items-center gap-3 mb-3 group cursor-pointer">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white transition-transform duration-300 group-hover:scale-110"
               :style="{ background: stage.color }">
               {{ stage.num }}
             </div>
@@ -56,7 +56,7 @@
           </div>
           <div class="space-y-2">
             <div v-for="task in stage.tasks" :key="task"
-              class="flex items-center gap-2.5 p-2 rounded-xl"
+              class="flex items-center gap-2.5 p-2 rounded-xl transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 cursor-pointer"
               style="background:white;border:1px solid #F0F0F0;">
               <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ background: stage.color }"/>
               <span class="text-sm text-gray-600">{{ task }}</span>
@@ -67,10 +67,10 @@
         <!-- Case studies view -->
         <div v-for="c in cases" :key="'detail-'+c.company"
           v-show="activeTab === 'case-'+c.company"
-          class="p-4 rounded-2xl"
+          class="p-4 rounded-2xl transition-all duration-300"
           :style="`border:2px solid ${c.color}20;background:${c.color}08;`">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white"
+          <div class="flex items-center gap-3 mb-3 group cursor-pointer">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white transition-transform duration-300 group-hover:scale-110"
               :style="{ background: c.color }">
               {{ c.company[0] }}
             </div>
@@ -81,7 +81,7 @@
           </div>
           <div class="grid grid-cols-2 gap-3 mb-3">
             <div v-for="m in c.metrics" :key="m.label"
-              class="p-3 rounded-xl bg-white border border-gray-100">
+              class="p-3 rounded-xl bg-white border border-gray-100 transition-all duration-200 hover:shadow-sm cursor-pointer">
               <div class="text-base font-bold" :style="{ color: c.color }">
                 {{ m.before }} <span class="text-gray-300 font-normal">→</span> {{ m.after }}
               </div>
@@ -95,7 +95,7 @@
 
         <div v-if="activeTab === ''" class="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div v-for="(stage,i) in stages" :key="stage.name"
-            class="p-4 rounded-xl text-center cursor-pointer transition-all duration-200"
+            class="p-4 rounded-xl text-center cursor-pointer transition-all duration-300 hover:shadow-md hover:-translate-y-1"
             style="background:#FAFAFA;border:1px solid #F0F0F0;"
             @click="activeTab = 'stage-'+i">
             <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white mx-auto mb-3"

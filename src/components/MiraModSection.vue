@@ -1,12 +1,15 @@
 <template>
-  <section id="miramod" class="py-14">
+  <section>
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
-          MiraMod模豆 · GEO智能策略生成
-        </h2>
+        <div class="flex items-center justify-center gap-2 mb-3">
+          <h2 class="text-4xl sm:text-5xl font-bold text-gray-900">
+            MiraMod模豆 · GEO智能策略生成
+          </h2>
+          <span class="alpha-badge" style="background:#111827;color:white;">Alpha</span>
+        </div>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
           内置6类语义实体库，AI替你写好文章、代码、关键词库<br />
           各引擎风格一键适配，拿到就能发
@@ -14,7 +17,7 @@
       </div>
 
       <!-- Tabbed card -->
-      <div class="glass-card p-8 rounded-2xl max-w-5xl mx-auto">
+      <div class="glass-card p-8 rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
 
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">
@@ -22,8 +25,8 @@
             v-for="tab in ['语义实体库','引擎适配','品牌人设']"
             :key="tab"
             @click="activeTab = tab"
-            class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-            :class="activeTab === tab ? 'text-white' : 'bg-gray-100 text-gray-500'"
+            class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
+            :class="activeTab === tab ? 'text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
             :style="activeTab === tab ? 'background:#10B981;' : ''"
           >
             {{ tab }}
@@ -33,7 +36,8 @@
         <!-- Tab 1: 6 entity types -->
         <div v-if="activeTab === '语义实体库'" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div v-for="entity in entityCards" :key="entity.name"
-            class="p-5 rounded-xl" style="background:#FAFAFA;border:1px solid #F0F0F0;">
+            class="p-5 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
+            style="background:#FAFAFA;border:1px solid #F0F0F0;">
             <div class="flex items-center gap-2 mb-3">
               <div class="w-2.5 h-2.5 rounded-full"
                 :style="{ background: entity.color, boxShadow: `0 0 6px ${entity.color}` }"/>
@@ -49,14 +53,16 @@
         <!-- Tab 2: Engine styles -->
         <div v-if="activeTab === '引擎适配'" class="grid grid-cols-2 gap-4">
           <div v-for="engine in engineStyles" :key="engine.name"
-            class="p-5 rounded-xl border" style="background:#FAFAFA;border-color:#F0F0F0;">
+            class="p-5 rounded-xl border transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
+            style="background:#FAFAFA;border-color:#F0F0F0;">
             <div class="text-sm font-bold mb-1.5" :style="{ color: engine.color }">{{ engine.name }}</div>
             <div class="text-xs text-gray-500 leading-relaxed">{{ engine.style }}</div>
           </div>
         </div>
 
         <!-- Tab 3: Brand persona -->
-        <div v-if="activeTab === '品牌人设'" class="p-6 rounded-xl" style="background:#FAFAFA;border:1px solid #F0F0F0;">
+        <div v-if="activeTab === '品牌人设'" class="p-6 rounded-xl transition-all duration-300 hover:shadow-md cursor-pointer"
+          style="background:#FAFAFA;border:1px solid #F0F0F0;">
           <div class="flex items-center gap-2 mb-4">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#165DFF" stroke-width="2">
               <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
@@ -68,7 +74,7 @@
           </p>
           <div class="mt-5 flex flex-wrap gap-2">
             <span v-for="tag in ['B2B专业定位','数据驱动','合规可信','降本增效']" :key="tag"
-              class="text-xs px-3 py-1.5 rounded-full font-medium"
+              class="text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 hover:scale-105"
               style="background:rgba(16,185,129,0.10);color:#059669;">
               {{ tag }}
             </span>

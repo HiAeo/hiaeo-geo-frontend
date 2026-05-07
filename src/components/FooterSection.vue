@@ -4,9 +4,10 @@
 
       <!-- Top: Logo + Slogan -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pt-8 pb-8 border-b border-white/10">
-        <div class="flex items-center gap-3">
-          <img src="/logo-white.png" alt="HiAeo" class="h-6 w-auto" />
-        </div>
+        <a href="#" class="flex items-center gap-2 group cursor-pointer">
+          <img src="/logo-white.png" alt="HiAeo" class="h-6 w-auto transition-transform duration-300 group-hover:scale-105" />
+          <span class="text-xs font-semibold px-1.5 py-0.5 rounded" style="background:rgba(255,255,255,0.15);color:white;letter-spacing:0.05em;font-size:10px;">Alpha</span>
+        </a>
       </div>
 
       <!-- Link columns -->
@@ -16,7 +17,7 @@
           <div class="space-y-3">
             <a v-for="link in col.links" :key="link"
               href="#"
-              class="block text-sm text-white/60 hover:text-white transition-colors">
+              class="block text-sm text-white/60 hover:text-white transition-all duration-200 hover:translate-x-1">
               {{ link }}
             </a>
           </div>
@@ -29,11 +30,11 @@
           © 2026 HiAeo. 让AI生成式引擎优化像呼吸一样简单。
         </div>
         <div class="flex items-center gap-5 text-xs text-white/40 pt-4">
-          <a href="#" class="hover:text-white/60 transition-colors">隐私政策</a>
+          <a href="#" class="hover:text-white/60 transition-colors hover:underline">隐私政策</a>
           <span>·</span>
-          <a href="#" class="hover:text-white/60 transition-colors">服务条款</a>
+          <a href="#" class="hover:text-white/60 transition-colors hover:underline">服务条款</a>
           <span>·</span>
-          <a href="#" class="hover:text-white/60 transition-colors">ICP备案</a>
+          <a href="#" class="hover:text-white/60 transition-colors hover:underline">ICP备案</a>
         </div>
       </div>
 

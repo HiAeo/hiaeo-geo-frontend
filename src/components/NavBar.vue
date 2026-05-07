@@ -3,14 +3,15 @@
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
       <!-- Logo -->
-      <div class="flex items-center gap-3 cursor-pointer" @click="$emit('scrollTo', 'hero')">
-        <img src="/logo-hollow.png" alt="HiAeo" class="h-6 w-auto" />
-      </div>
+      <a href="#" class="flex items-center gap-2 cursor-pointer group" @mouseenter="onHover" @mouseleave="onLeave">
+        <img src="/logo-hollow.png" alt="HiAeo" class="h-6 w-auto transition-transform duration-300 group-hover:scale-110" />
+        <span class="text-xs font-semibold px-1.5 py-0.5 rounded" style="background:#111827;color:white;margin-left:-4px;letter-spacing:0.05em;font-size:10px;">Alpha</span>
+      </a>
 
       <!-- Desktop nav links -->
       <div class="hidden md:flex items-center gap-8">
         <a v-for="link in navLinks" :key="link.label" :href="link.href"
-          class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+          class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-gray-900 hover:after:w-full after:transition-all after:duration-200">
           {{ link.label }}
         </a>
       </div>
@@ -19,13 +20,15 @@
       <div class="flex items-center gap-3">
 
         <!-- Language toggle -->
-        <button class="hidden sm:block px-5 py-2 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors bg-white cursor-pointer"
+        <button class="hidden sm:block px-5 py-2 rounded-lg text-sm font-medium border text-white transition-all duration-200 cursor-pointer hover:bg-gray-800 active:scale-95"
+          style="background:#111827;border-color:#111827;"
           @click="lang = lang === 'zh' ? 'en' : 'zh'">
           {{ lang === 'zh' ? 'EN' : '中文' }}
         </button>
 
         <!-- Register / Login -->
-        <button class="hidden sm:block px-5 py-2 rounded-lg text-sm font-medium bg-[#111827] text-white hover:bg-gray-800 transition-colors cursor-pointer">
+        <button class="hidden sm:block px-5 py-2 rounded-lg text-sm font-medium text-white transition-all duration-200 cursor-pointer hover:bg-gray-800 active:scale-95"
+          style="background:#111827;">
           注册 / 登陆
         </button>
 

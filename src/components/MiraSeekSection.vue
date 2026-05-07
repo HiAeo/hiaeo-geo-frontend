@@ -1,20 +1,23 @@
 <template>
-  <section id="miraseek" class="py-14">
+  <section>
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
-          MiraSeek模镜· AI可见度诊断
-        </h2>
+        <div class="flex items-center justify-center gap-2 mb-3">
+          <h2 class="text-4xl sm:text-5xl font-bold text-gray-900">
+            MiraSeek模镜 · AI可见度诊断
+          </h2>
+          <span class="alpha-badge" style="background:#111827;color:white;">Alpha</span>
+        </div>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">
           实时抓取 DeepSeek、豆包、Kimi 等主流大模型的回答数据<br />
           精准量化实体独占率与替代风险指数
         </p>
       </div>
 
-      <!-- Tabbed card — matching HubSection style -->
-      <div class="glass-card p-8 rounded-2xl max-w-5xl mx-auto">
+      <!-- Tabbed card -->
+      <div class="glass-card p-8 rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
 
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">
@@ -22,8 +25,8 @@
             v-for="tab in ['健康分雷达','各引擎得分','问题优先级']"
             :key="tab"
             @click="activeTab = tab"
-            class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-            :class="activeTab === tab ? 'text-white' : 'bg-gray-100 text-gray-500'"
+            class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
+            :class="activeTab === tab ? 'text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
             :style="activeTab === tab ? 'background:#165DFF;' : ''"
           >
             {{ tab }}
@@ -32,7 +35,7 @@
 
         <!-- Tab 1: 7-dimension radar -->
         <div v-if="activeTab === '健康分雷达'" class="flex flex-col items-center">
-          <div class="max-w-sm">
+          <div class="max-w-sm transition-transform duration-300 hover:scale-105 cursor-pointer">
             <svg viewBox="0 0 200 200" class="w-full">
               <circle v-for="r in [20,40,60,80]" :key="r"
                 cx="100" cy="100" r="r"
@@ -65,17 +68,17 @@
           </div>
           <!-- Score summary -->
           <div class="mt-6 flex items-center gap-8">
-            <div class="text-center">
+            <div class="text-center transition-transform duration-200 hover:scale-110 cursor-pointer">
               <div class="text-2xl font-bold" style="color:#22D3EE;">68</div>
               <div class="text-xs text-gray-400 mt-0.5">实体独占率</div>
             </div>
             <div class="w-px h-8 bg-gray-200"/>
-            <div class="text-center">
+            <div class="text-center transition-transform duration-200 hover:scale-110 cursor-pointer">
               <div class="text-2xl font-bold" style="color:#FB7185;">32</div>
               <div class="text-xs text-gray-400">替代风险</div>
             </div>
             <div class="w-px h-8 bg-gray-200"/>
-            <div class="text-center">
+            <div class="text-center transition-transform duration-200 hover:scale-110 cursor-pointer">
               <div class="text-2xl font-bold text-gray-900">72</div>
               <div class="text-xs text-gray-400">综合得分</div>
             </div>
@@ -85,14 +88,15 @@
         <!-- Tab 2: Engine scores -->
         <div v-if="activeTab === '各引擎得分'" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div v-for="engine in engineCards" :key="engine.name"
-            class="p-5 rounded-xl" style="background:#FAFAFA;border:1px solid #F0F0F0;">
+            class="p-5 rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
+            style="background:#FAFAFA;border:1px solid #F0F0F0;">
             <div class="flex items-center justify-between mb-3">
               <span class="text-sm font-medium text-gray-600">{{ engine.name }}</span>
               <div class="w-2 h-2 rounded-full" :style="{ background: engine.color }"/>
             </div>
             <div class="text-2xl font-bold text-gray-900 mb-2">{{ engine.score }}</div>
             <div class="h-1 rounded-full overflow-hidden" style="background:#F0F0F0;">
-              <div class="h-full rounded-full" :style="{ width: engine.score+'%', background: engine.color }"/>
+              <div class="h-full rounded-full transition-all duration-500" :style="{ width: engine.score+'%', background: engine.color }"/>
             </div>
             <div class="mt-2 text-xs" :style="{ color: engine.color }">
               {{ engine.trend > 0 ? '↑' : '↓' }}{{ Math.abs(engine.trend) }}% vs 上周
@@ -103,7 +107,7 @@
         <!-- Tab 3: Problem priority list -->
         <div v-if="activeTab === '问题优先级'" class="space-y-3">
           <div v-for="problem in problems" :key="problem.id"
-            class="flex items-center gap-3 p-4 rounded-xl"
+            class="flex items-center gap-3 p-4 rounded-xl transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 cursor-pointer"
             style="background:#FAFAFA;border:1px solid #F0F0F0;">
             <span class="text-xs font-bold px-2.5 py-1 rounded-md shrink-0"
               :style="{ background: problem.bgColor, color: problem.color }">

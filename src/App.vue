@@ -29,7 +29,6 @@
 <script setup>
 import NavBar from './components/NavBar.vue'
 import HeroSection from './components/HeroSection.vue'
-import BentoGridSection from './components/BentoGridSection.vue'
 import MiraSeekSection from './components/MiraSeekSection.vue'
 import MiraModSection from './components/MiraModSection.vue'
 import MiraMagSection from './components/MiraMagSection.vue'
