@@ -4,17 +4,17 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold mb-3 mira-title">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-3 mira-title scroll-animate">
           <span style="font-weight:800">Mira</span><span style="font-weight:400">Seek</span>模镜 · AI可见度诊断
         </h2>
-        <p class="text-lg max-w-2xl mx-auto mira-desc">
+        <p class="text-lg max-w-2xl mx-auto mira-desc scroll-animate delay-100">
           实时抓取 DeepSeek、豆包、Kimi 等主流大模型的回答数据<br />
           精准量化实体独占率与替代风险指数
         </p>
       </div>
 
       <!-- Tabbed card -->
-      <div class="mira-card rounded-2xl max-w-5xl mx-auto transition-all duration-300">
+      <div class="mira-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 scroll-animate delay-200">
         <div class="p-12">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">

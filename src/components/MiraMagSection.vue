@@ -4,17 +4,17 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold mb-3 mag-title">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-3 mag-title scroll-animate">
           <span style="font-weight:800">Mira</span><span style="font-weight:400">Mag</span>模法 · <span style="font-weight:400">GEO</span> Agent自动执行优化
         </h2>
-        <p class="text-lg max-w-2xl mx-auto mag-desc">
+        <p class="text-lg max-w-2xl mx-auto mag-desc scroll-animate delay-100">
           复制粘贴即落地，执行记录全程可见<br />
           不碰服务器，不自动机发，安全合规
         </p>
       </div>
 
       <!-- Tabbed card -->
-      <div class="mag-card rounded-2xl max-w-5xl mx-auto transition-all duration-300">
+      <div class="mag-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 scroll-animate delay-200">
         <div class="p-12">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">

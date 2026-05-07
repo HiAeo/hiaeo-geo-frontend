@@ -4,20 +4,20 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-medium mb-6 growth-badge">
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-medium mb-6 growth-badge scroll-animate">
           客户成长路径
         </span>
-        <h2 class="text-4xl sm:text-5xl font-bold mb-4 growth-title">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-4 growth-title scroll-animate delay-100">
           从新手到优秀，<br />每一步都有标准动作
         </h2>
-        <p class="text-lg max-w-2xl mx-auto growth-desc">
+        <p class="text-lg max-w-2xl mx-auto growth-desc scroll-animate delay-200">
           行业范本、真实案例、AI智能引导，让你的GEO优化不再从零摸索
         </p>
       </div>
 
       <!-- Card outer -->
       <div class="max-w-5xl mx-auto">
-        <div class="growth-card">
+        <div class="growth-card scroll-animate delay-300">
 
           <!-- Tab switcher: stages + cases -->
           <div class="flex items-center gap-2 mb-8 flex-wrap">

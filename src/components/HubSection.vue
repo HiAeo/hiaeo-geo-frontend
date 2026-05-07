@@ -3,17 +3,17 @@
     <div class="max-w-7xl mx-auto px-6">
 
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold mb-3 hub-title">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-3 hub-title scroll-animate">
           魔鲸Hub · AI协同驾驶舱
         </h2>
-        <p class="text-lg max-w-2xl mx-auto text-center hub-desc">
+        <p class="text-lg max-w-2xl mx-auto text-center hub-desc scroll-animate delay-100">
           老板看结果，运营管执行，技术看指引 — 三方同舱不打架<br />
           三层指标（可见度→提及率→品牌搜索与官网引流）全量化关联
         </p>
       </div>
 
       <!-- Hub dashboard mockup -->
-      <div class="hub-card rounded-2xl max-w-5xl mx-auto transition-all duration-300">
+      <div class="hub-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 scroll-animate delay-200">
         <div class="p-12">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8">

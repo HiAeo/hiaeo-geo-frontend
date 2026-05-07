@@ -4,17 +4,17 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold mb-3 mod-title">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-3 mod-title scroll-animate">
           <span style="font-weight:800">Mira</span><span style="font-weight:400">Mod</span>模豆 · GEO智能策略生成
         </h2>
-        <p class="text-lg max-w-2xl mx-auto mod-desc">
+        <p class="text-lg max-w-2xl mx-auto mod-desc scroll-animate delay-100">
           内置6类语义实体库，AI替你写好文章、代码、关键词库<br />
           各引擎风格一键适配，拿到就能发
         </p>
       </div>
 
       <!-- Tabbed card -->
-      <div class="mod-card rounded-2xl max-w-5xl mx-auto transition-all duration-300">
+      <div class="mod-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 scroll-animate delay-200">
         <div class="p-12">
         <!-- Tab switcher -->
         <div class="flex items-center gap-2 mb-8 flex-wrap">
