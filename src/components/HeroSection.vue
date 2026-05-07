@@ -17,7 +17,6 @@
       <div class="hero-visual-wrapper">
         <div class="hero-visual glass-card">
           <div class="visual-content">
-            <h3>全球领先AI模型支持</h3>
             <div class="model-scroll-container">
               <div class="model-scroll-track">
                 <!-- 豆包 -->

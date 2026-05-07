@@ -13,7 +13,6 @@
       <!-- Link columns -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
         <div v-for="col in footerCols" :key="col.title">
-          <div class="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">{{ col.title }}</div>
           <div class="space-y-3">
             <a v-for="link in col.links" :key="link"
               href="#"
