@@ -59,44 +59,59 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import NavBar from './components/NavBar.vue'
-import HeroSection from './components/HeroSection.vue'
-import BentoGridSection from './components/BentoGridSection.vue'
-import MiraSeekSection from './components/MiraSeekSection.vue'
-import MiraModSection from './components/MiraModSection.vue'
-import MiraMagSection from './components/MiraMagSection.vue'
-import HubSection from './components/HubSection.vue'
-import GrowthSection from './components/GrowthSection.vue'
-import CasesDetailSection from './components/CasesDetailSection.vue'
-import PricingSection from './components/PricingSection.vue'
-import FAQSection from './components/FAQSection.vue'
-import FooterSection from './components/FooterSection.vue'
-import BottomNav from './components/BottomNav.vue'
-import LoginModal from './components/LoginModal.vue'
-import ContactModal from './components/ContactModal.vue'
+import { useApi } from './composables/useApi'
+
+const { loginWithPassword, loginWithSms, register, submitContactForm, logout, isAuthenticated } = useApi()
 
 const theme = ref('dark')
 const showLogin = ref(false)
 const showContact = ref(false)
 
-const toggleTheme = () => {
-  theme.value = theme.value === 'dark' ? 'light' : 'dark'
-  localStorage.setItem('theme', theme.value)
+// 处理登录
+const handleLogin = async (data) => {
+  try {
+    // 根据数据类型判断登录方式
+    const result = data.code 
+      ? await loginWithSms({ phone: data.phone, code: data.code })
+      : await loginWithPassword(data)
+    
+    console.log('登录成功:', result.user)
+    // TODO: 保存用户信息到全局状态
+    // TODO: 跳转到的仪表盘或首页
+  } catch (error) {
+    console.error('登录失败:', error.message)
+    alert('登录失败: ' + error.message)
+  }
 }
 
-const handleLogin = (data) => {
-  console.log('Login:', data)
-  // TODO: 调用登录 API
+// 处理注册
+const handleSignup = async (data) => {
+  try {
+    const result = await register({
+      phone: data.phone,
+      code: data.code,
+      password: data.password
+    })
+    
+    console.log('注册成功:', result.user)
+    // TODO: 保存用户信息到全局状态
+    // TODO: 自动登录并跳转
+  } catch (error) {
+    console.error('注册失败:', error.message)
+    alert('注册失败: ' + error.message)
+  }
 }
 
-const handleSignup = (data) => {
-  console.log('Signup:', data)
-  // TODO: 调用注册 API
-}
-
-const handleContact = (data) => {
-  console.log('Contact:', data)
-  // TODO: 调用联系表单 API
+// 处理联系表单提交
+const handleContact = async (data) => {
+  try {
+    const result = await submitContactForm(data)
+    console.log('表单提交成功:', result)
+    alert('提交成功！我们将在24小时内与您联系')
+  } catch (error) {
+    console.error('表单提交失败:', error.message)
+    alert('提交失败: ' + error.message)
+  }
 }
 
 // Scroll animation observer

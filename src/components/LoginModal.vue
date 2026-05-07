@@ -236,6 +236,7 @@
 
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { useApi } from '../composables/useApi'
 
 const props = defineProps({
   show: {
@@ -254,10 +255,13 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'login', 'signup'])
 
+const { sendLoginSmsCode, sendRegisterSmsCode } = useApi()
+
 const mode = ref(props.initialMode)
 const smsMode = ref(false)
 const loading = ref(false)
 const smsCooldown = ref(0)
+const smsLoading = ref(false)
 
 const loginForm = ref({
   account: '',
@@ -315,11 +319,15 @@ const handleLogin = async () => {
     return
   }
   loading.value = true
-  setTimeout(() => {
-    loading.value = false
+  try {
+    // 实际调用由 App.vue handleLogin 处理
     emit('login', { ...loginForm.value })
     emit('close')
-  }, 1500)
+  } catch (error) {
+    console.error('登录失败:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
 const handleSmsLogin = async () => {
@@ -327,11 +335,14 @@ const handleSmsLogin = async () => {
     return
   }
   loading.value = true
-  setTimeout(() => {
-    loading.value = false
-    emit('login', { phone: smsForm.value.phone, code: smsForm.value.code })
+  try {
+    emit('login', { phone: smsForm.value.phone, code: smsForm.value.code, isSms: true })
     emit('close')
-  }, 1500)
+  } catch (error) {
+    console.error('登录失败:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
 const handleSignup = async () => {
@@ -339,27 +350,49 @@ const handleSignup = async () => {
     return
   }
   loading.value = true
-  setTimeout(() => {
-    loading.value = false
+  try {
     emit('signup', { ...signupForm.value })
     emit('close')
-  }, 1500)
+  } catch (error) {
+    console.error('注册失败:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
-const sendSmsCode = () => {
-  if (smsCooldown.value > 0) return
-  smsCooldown.value = 60
-  const timer = setInterval(() => {
-    smsCooldown.value--
-    if (smsCooldown.value <= 0) {
-      clearInterval(timer)
-    }
-  }, 1000)
+const sendSmsCode = async () => {
+  if (smsCooldown.value > 0 || !smsForm.value.phone) return
+  
+  smsLoading.value = true
+  try {
+    await sendLoginSmsCode(smsForm.value.phone)
+    smsCooldown.value = 60
+    startCooldown()
+    alert('验证码已发送')
+  } catch (error) {
+    alert('发送失败: ' + error.message)
+  } finally {
+    smsLoading.value = false
+  }
 }
 
-const sendSignupCode = () => {
-  if (smsCooldown.value > 0) return
-  smsCooldown.value = 60
+const sendSignupCode = async () => {
+  if (smsCooldown.value > 0 || !signupForm.value.phone) return
+  
+  smsLoading.value = true
+  try {
+    await sendRegisterSmsCode(signupForm.value.phone)
+    smsCooldown.value = 60
+    startCooldown()
+    alert('验证码已发送')
+  } catch (error) {
+    alert('发送失败: ' + error.message)
+  } finally {
+    smsLoading.value = false
+  }
+}
+
+const startCooldown = () => {
   const timer = setInterval(() => {
     smsCooldown.value--
     if (smsCooldown.value <= 0) {

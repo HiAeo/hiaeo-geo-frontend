@@ -121,6 +121,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useApi } from '../composables/useApi'
 
 const props = defineProps({
   show: {
@@ -131,6 +132,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'submit'])
 
+const { submitContactForm } = useApi()
 const loading = ref(false)
 
 const intents = [
@@ -157,9 +159,10 @@ const handleSubmit = async () => {
   if (!isFormValid.value || loading.value) return
   
   loading.value = true
-  // Simulate API call
-  setTimeout(() => {
-    loading.value = false
+  try {
+    // 调用真实的 API
+    await submitContactForm({ ...form.value })
+    // 通知父组件（用于统计或其他处理）
     emit('submit', { ...form.value })
     emit('close')
     // Reset form
@@ -171,7 +174,12 @@ const handleSubmit = async () => {
       intent: '',
       message: ''
     }
-  }, 1500)
+  } catch (error) {
+    console.error('提交失败:', error)
+    alert('提交失败: ' + error.message)
+  } finally {
+    loading.value = false
+  }
 }
 
 // Prevent body scroll
