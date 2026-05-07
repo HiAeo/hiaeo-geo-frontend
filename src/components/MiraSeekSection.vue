@@ -4,7 +4,7 @@
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
           <span style="font-weight:800">Mira</span><span style="font-weight:400">Seek</span>模镜 · AI可见度诊断
         </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto">

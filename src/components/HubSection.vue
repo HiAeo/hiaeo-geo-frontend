@@ -3,7 +3,7 @@
     <div class="max-w-7xl mx-auto px-6">
 
       <div class="text-center mb-16">
-        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
           魔鲸Hub · AI协同驾驶舱
         </h2>
         <p class="text-gray-500 text-lg max-w-2xl mx-auto text-center">
