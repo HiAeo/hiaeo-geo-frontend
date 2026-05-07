@@ -19,9 +19,14 @@
       <div class="flex items-center gap-3">
 
         <!-- Language toggle -->
-        <button class="hidden sm:block px-5 py-2.5 rounded-xl text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors bg-white cursor-pointer"
+        <button class="hidden sm:block px-5 py-2 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors bg-white cursor-pointer"
           @click="lang = lang === 'zh' ? 'en' : 'zh'">
           {{ lang === 'zh' ? 'EN' : '中文' }}
+        </button>
+
+        <!-- Register / Login -->
+        <button class="hidden sm:block px-5 py-2 rounded-lg text-sm font-medium bg-[#111827] text-white hover:bg-gray-800 transition-colors cursor-pointer">
+          注册 / 登陆
         </button>
 
         <!-- Mobile menu button -->

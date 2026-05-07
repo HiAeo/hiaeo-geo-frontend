@@ -1,7 +1,7 @@
 <template>
   <section class="hero-section">
     <div class="container">
-      <div class="hero-content" style="text-align: center;">
+      <div class="hero-content">
         <h1 class="hero-title">
           MirusAI魔鲸智能，让GEO生成式引擎优化像呼吸一样简单
         </h1>
@@ -14,13 +14,15 @@
         </div>
       </div>
 
-      <div class="hero-visual glass-card" style="display: inline-block; margin: 0 auto 24px;">
-        <div class="visual-content">
-          <h3>全球领先AI模型支持</h3>
-          <div class="icon-group">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <div class="hero-visual-wrapper">
+        <div class="hero-visual glass-card">
+          <div class="visual-content">
+            <h3>全球领先AI模型支持</h3>
+            <div class="icon-group">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
           </div>
         </div>
       </div>
@@ -40,10 +42,15 @@
 .container {
   max-width: 1200px;
   width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 40px;
+}
+
+.hero-content {
+  text-align: center;
+  max-width: 800px;
 }
 
 .hero-title {
@@ -88,8 +95,15 @@
   text-decoration: none;
 }
 
+.hero-visual-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 .hero-visual {
   padding: 40px;
+  display: inline-block;
 }
 
 .visual-content h3 {
