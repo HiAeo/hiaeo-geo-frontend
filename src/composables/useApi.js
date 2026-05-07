@@ -217,109 +217,6 @@ export async function submitContactForm(data) {
   }
 }
 
-// ==================== 魔鲸Hub API ====================
-
-/**
- * 获取老板视图指标数据
- */
-export async function getBossMetrics() {
-  // TODO: 替换为真实 API
-  // return request('/hub/boss-metrics', { method: 'GET' })
-  
-  // 模拟实现
-  await delay(800)
-  console.log('[API] 获取老板视图指标')
-  return {
-    success: true,
-    data: [
-      { label: 'GEO健康分', value: '72', pct: 72, color: '#165DFF', trend: 8 },
-      { label: 'DeepSeek提及率', value: '+34%', pct: 60, color: '#00A3FF', trend: 34 },
-      { label: '竞品压制率', value: '+12%', pct: 55, color: '#8B5CF6', trend: 12 },
-      { label: 'ROI预估', value: '+23%', pct: 65, color: '#10B981', trend: 23 },
-    ]
-  }
-}
-
-/**
- * 获取运营视图待审核内容
- */
-export async function getPendingItems() {
-  // TODO: 替换为真实 API
-  // return request('/hub/pending-items', { method: 'GET' })
-  
-  // 模拟实现
-  await delay(600)
-  console.log('[API] 获取待审核内容')
-  return {
-    success: true,
-    data: [
-      { title: '《中小企业如何选客服系统》', meta: 'DeepSeek风格 · 小红书 · 预计提升12%', color: '#00A3FF' },
-      { title: 'JSON-LD结构化数据配置', meta: '官网部署 · 技术视图参考', color: '#A78BFA' },
-      { title: '竞品对比页FAQ扩展', meta: 'Kimi风格 · 预计提升6%', color: '#8B6CFF' },
-    ],
-    total: 3
-  }
-}
-
-/**
- * 获取运营视图下一步建议
- */
-export async function getOpTips() {
-  // TODO: 替换为真实 API
-  // return request('/hub/op-tips', { method: 'GET' })
-  
-  // 模拟实现
-  await delay(500)
-  console.log('[API] 获取运营建议')
-  return {
-    success: true,
-    data: [
-      '豆包提及率仍低于行业平均，建议补充2篇豆包风格的短视频脚本，适配生活化种草场景',
-      '本周已发布3篇DeepSeek风格内容，建议下周切换豆包/Kimi风格内容进行A/B测试',
-      '官网「关于我们」页缺少核心优势关键词，建议更新为AI人设定位版本',
-    ]
-  }
-}
-
-/**
- * 获取技术视图任务列表
- */
-export async function getTechTasks() {
-  // TODO: 替换为真实 API
-  // return request('/hub/tech-tasks', { method: 'GET' })
-  
-  // 模拟实现
-  await delay(700)
-  console.log('[API] 获取技术任务列表')
-  return {
-    success: true,
-    data: [
-      { label: '部署JSON-LD结构化数据', detail: '参考模法生成代码片段，部署至官网<head>标签内', done: true },
-      { label: '完善sitemap.xml', detail: '建议新增「解决方案」「行业案例」等栏目 sitemap', done: true },
-      { label: '添加客服核心页面Meta标签', detail: 'title/description 需包含品牌核心关键词', done: false },
-      { label: '提交Bing Webmaster Tools', detail: '全站提交索引，提升 Bing/ChatGPT 爬虫友好度', done: false },
-    ]
-  }
-}
-
-/**
- * 审核内容
- * @param {string} itemId - 内容ID
- * @param {string} action - 操作 (approve/reject)
- */
-export async function reviewItem(itemId, action) {
-  // TODO: 替换为真实 API
-  // return request('/hub/review', { method: 'POST', body: JSON.stringify({ itemId, action }) })
-  
-  // 模拟实现
-  await delay(1000)
-  console.log('[API] 审核内容:', itemId, action)
-  return {
-    success: true,
-    message: action === 'approve' ? '已通过审核' : '已驳回'
-  }
-}
-
 // ==================== 认证状态管理 ====================
 
 /**
@@ -383,13 +280,7 @@ export function useApi() {
     isAuthenticated,
     getToken,
     // 联系表单
-    submitContactForm: (data) => apiCall(submitContactForm, data),
-    // 魔鲸Hub
-    getBossMetrics: () => apiCall(getBossMetrics),
-    getPendingItems: () => apiCall(getPendingItems),
-    getOpTips: () => apiCall(getOpTips),
-    getTechTasks: () => apiCall(getTechTasks),
-    reviewItem: (itemId, action) => apiCall(reviewItem, itemId, action)
+    submitContactForm: (data) => apiCall(submitContactForm, data)
   }
 }
 
