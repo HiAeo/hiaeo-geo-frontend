@@ -30,14 +30,12 @@
         </div>
 
         <!-- Tab 1: 7-dimension radar -->
-        <div v-if="activeTab === '健康分雷达'" class="flex gap-6 flex-col lg:flex-row items-center mira-radar-row">
-          <!-- AI Models floating logos -->
-          <div class="relative mira-ai-wrapper">
+        <div v-if="activeTab === '健康分雷达'" class="flex gap-6 flex-col lg:flex-row items-center">
+          <!-- Left: Radar chart + AI logos overlay -->
+          <div class="relative shrink-0 mx-auto lg:mx-0 mira-radar-wrapper">
             <AILogoField :width="280" :height="220" class="mira-ai-logos" />
-          </div>
-          <!-- Left: Radar chart -->
-          <div class="shrink-0 transition-transform duration-300 hover:scale-[1.02] cursor-pointer mx-auto lg:mx-0">
-            <svg viewBox="0 0 240 200" class="w-52">
+            <div class="transition-transform duration-300 hover:scale-[1.02] cursor-pointer">
+              <svg viewBox="0 0 240 200" class="w-52">
               <!-- Grid circles -->
               <circle v-for="r in [20,40,60,80]" :key="r"
                 cx="120" cy="100" :r="r"
@@ -71,6 +69,7 @@
               <text x="57" y="100" text-anchor="end" font-size="7" fill="#22D3EE">实体独占 68</text>
               <text x="82" y="36" text-anchor="end" font-size="7" class="svg-label">转化引导 74</text>
             </svg>
+          </div>
           </div>
           
           <!-- Right: Score details -->
@@ -299,9 +298,8 @@ const problems = [
   fill: var(--text-tertiary);
 }
 
-
-/* AI Logo field positioning */
-.mira-radar-relative {
+/* AI Logo + Radar layout */
+.mira-radar-wrapper {
   position: relative;
 }
 
