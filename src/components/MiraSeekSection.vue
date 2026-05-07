@@ -31,10 +31,10 @@
         </div>
 
         <!-- Tab 1: 7-dimension radar -->
-        <div v-if="activeTab === '健康分雷达'" class="flex items-center gap-8">
-          <!-- Radar chart -->
-          <div class="w-48 shrink-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
-            <svg viewBox="0 0 240 200" class="w-full">
+        <div v-if="activeTab === '健康分雷达'" class="flex gap-10">
+          <!-- Left: Radar chart -->
+          <div class="shrink-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
+            <svg viewBox="0 0 240 200" class="w-56">
               <!-- Grid circles -->
               <circle v-for="r in [20,40,60,80]" :key="r"
                 cx="120" cy="100" :r="r"
@@ -69,19 +69,67 @@
               <text x="82" y="36" text-anchor="end" font-size="7" fill="rgba(0,0,0,0.4)">转化引导 74</text>
             </svg>
           </div>
-          <!-- Score summary: vertical layout on right -->
-          <div class="flex flex-col gap-6">
-            <div class="text-center transition-transform duration-200 hover:scale-110 cursor-pointer">
-              <div class="text-2xl font-bold" style="color:#22D3EE;">68</div>
-              <div class="text-xs text-gray-400 mt-0.5">实体独占率</div>
+          
+          <!-- Right: Score details -->
+          <div class="flex-1 flex flex-col gap-6">
+            <!-- Overall score -->
+            <div class="p-5 rounded-xl" style="background:linear-gradient(135deg,#165DFF0D,#165DFF05);">
+              <div class="text-xs text-gray-400 mb-2">综合健康分</div>
+              <div class="flex items-baseline gap-3">
+                <span class="text-4xl font-bold text-gray-900">72</span>
+                <span class="text-sm px-2 py-0.5 rounded-full" style="background:#10B98120;color:#10B981;">良好</span>
+              </div>
+              <div class="text-xs text-gray-500 mt-2">建议优化「竞品压制」维度以提升整体得分</div>
             </div>
-            <div class="text-center transition-transform duration-200 hover:scale-110 cursor-pointer">
-              <div class="text-2xl font-bold" style="color:#FB7185;">32</div>
-              <div class="text-xs text-gray-400">替代风险</div>
+            
+            <!-- Key metrics -->
+            <div class="grid grid-cols-3 gap-3">
+              <div class="p-3 rounded-lg text-center" style="background:#FAFAFA;">
+                <div class="text-xl font-bold" style="color:#22D3EE;">68</div>
+                <div class="text-xs text-gray-400 mt-1">实体独占率</div>
+              </div>
+              <div class="p-3 rounded-lg text-center" style="background:#FAFAFA;">
+                <div class="text-xl font-bold" style="color:#FB7185;">32</div>
+                <div class="text-xs text-gray-400 mt-1">替代风险</div>
+              </div>
+              <div class="p-3 rounded-lg text-center" style="background:#FAFAFA;">
+                <div class="text-xl font-bold" style="color:#10B981;">80</div>
+                <div class="text-xs text-gray-400 mt-1">内容友好</div>
+              </div>
             </div>
-            <div class="text-center transition-transform duration-200 hover:scale-110 cursor-pointer">
-              <div class="text-2xl font-bold text-gray-900">72</div>
-              <div class="text-xs text-gray-400">综合得分</div>
+            
+            <!-- Optimization suggestions -->
+            <div>
+              <div class="text-xs text-gray-400 mb-3">待优化维度</div>
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-600">竞品压制</span>
+                  <div class="flex items-center gap-2">
+                    <div class="w-20 h-1.5 rounded-full" style="background:#F0F0F0;">
+                      <div class="h-full rounded-full" style="width:58%;background:#FB7185;"/>
+                    </div>
+                    <span class="text-xs font-medium" style="color:#FB7185;">58</span>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-600">权威信号</span>
+                  <div class="flex items-center gap-2">
+                    <div class="w-20 h-1.5 rounded-full" style="background:#F0F0F0;">
+                      <div class="h-full rounded-full" style="width:65%;background:#F59E0B;"/>
+                    </div>
+                    <span class="text-xs font-medium" style="color:#F59E0B;">65</span>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-600">语义一致</span>
+                  <div class="flex items-center gap-2">
+                    <div class="w-20 h-1.5 rounded-full" style="background:#F0F0F0;">
+                      <div class="h-full rounded-full" style="width:71%;background:#165DFF;"/>
+                    </div>
+                    <span class="text-xs font-medium" style="color:#165DFF;">71</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
