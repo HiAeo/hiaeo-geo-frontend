@@ -1,5 +1,5 @@
 <template>
-  <section class="py-16 hub-section">
+  <section id="hub" class="py-16 hub-section">
     <div class="max-w-7xl mx-auto px-6">
 
       <div class="text-center mb-16">

@@ -22,7 +22,7 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto stagger-children">
 
         <!-- Step 1: 模镜 -->
-        <div class="bento-card group" style="--accent: #165DFF;">
+        <div class="bento-card group scroll-animate" style="--accent: #165DFF;">
           <div class="bento-header">
             <div class="bento-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -98,7 +98,7 @@
         </div>
 
         <!-- Step 3: 模法 -->
-        <div class="bento-card group" style="--accent: #8B5CF6;">
+        <div class="bento-card group scroll-animate" style="--accent: #8B5CF6;">
           <div class="bento-header">
             <div class="bento-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
