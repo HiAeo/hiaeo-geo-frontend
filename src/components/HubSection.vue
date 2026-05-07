@@ -29,8 +29,21 @@
         </div>
 
         <!-- Boss view -->
-        <div v-if="activeTab === '老板视图'" class="hub-metrics-wrapper">
-          <AILogoField :width="380" :height="200" class="hub-ai-logos" />
+        <div v-if="activeTab === '老板视图'" class="space-y-6">
+          <!-- AI Models Banner -->
+          <div class="mira-ai-banner">
+            <div class="text-xs text-center mb-3 hub-label">支持的AI模型</div>
+            <div class="flex flex-wrap justify-center gap-3">
+              <a v-for="logo in aiLogos" :key="logo.name"
+                :href="logo.url" target="_blank"
+                class="hub-ai-item"
+                :title="logo.name">
+                <span class="text-xl">{{ logo.emoji }}</span>
+                <span class="text-[10px] ml-1.5 hub-ai-name">{{ logo.shortName }}</span>
+              </a>
+            </div>
+          </div>
+          
           <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
           <div v-for="metric in bossMetrics" :key="metric.label"
             class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer hub-metric-card">
@@ -118,9 +131,21 @@
 
 <script setup>
 import { ref } from 'vue'
-import AILogoField from './AILogoField.vue'
 
 defineEmits(['open-contact'])
+
+const aiLogos = [
+  { name: 'DeepSeek', shortName: 'DeepSeek', emoji: '🔵', url: 'https://chat.deepseek.com' },
+  { name: '豆包', shortName: '豆包', emoji: '🫘', url: 'https://doubao.com' },
+  { name: '通义千问', shortName: '通义', emoji: '🐴', url: 'https://tongyi.aliyun.com' },
+  { name: 'Kimi', shortName: 'Kimi', emoji: '🌙', url: 'https://kimi.moonshot.cn' },
+  { name: '元宝', shortName: '元宝', emoji: '💎', url: 'https://yuanbao.tencent.com' },
+  { name: 'ChatGPT', shortName: 'GPT', emoji: '🤖', url: 'https://chat.openai.com' },
+  { name: 'Gemini', shortName: 'Gemini', emoji: '✨', url: 'https://gemini.google.com' },
+  { name: 'Claude', shortName: 'Claude', emoji: '🧠', url: 'https://claude.ai' },
+  { name: 'Grok', shortName: 'Grok', emoji: '🔥', url: 'https://grok.com' },
+  { name: 'Llama', shortName: 'Llama', emoji: '🦙', url: 'https://llama.meta.com' },
+]
 
 const activeTab = ref('老板视图')
 
@@ -242,21 +267,32 @@ const techTasks = [
 }
 
 
-.hub-metrics-wrapper {
-  position: relative;
+.hub-ai-banner {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px 20px;
 }
 
-.hub-ai-logos {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 0;
-  pointer-events: none;
+.hub-ai-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  transition: all 0.25s ease;
+  text-decoration: none;
 }
 
-.hub-ai-logos :deep(.ai-logo-bubble) {
-  pointer-events: all;
+.hub-ai-item:hover {
+  transform: scale(1.08);
+  border-color: #165DFF;
+  box-shadow: 0 4px 20px rgba(22, 93, 255, 0.25);
+}
+
+.hub-ai-name {
+  color: var(--text-secondary);
 }
 
 .hub-cta-btn:hover {

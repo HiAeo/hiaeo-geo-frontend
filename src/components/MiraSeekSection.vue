@@ -30,46 +30,20 @@
         </div>
 
         <!-- Tab 1: 7-dimension radar -->
-        <div v-if="activeTab === '健康分雷达'" class="flex gap-6 flex-col lg:flex-row items-center">
-          <!-- Left: Radar chart + AI logos overlay -->
-          <div class="relative shrink-0 mx-auto lg:mx-0 mira-radar-wrapper">
-            <AILogoField :width="280" :height="220" class="mira-ai-logos" />
-            <div class="transition-transform duration-300 hover:scale-[1.02] cursor-pointer">
-              <svg viewBox="0 0 240 200" class="w-52">
-              <!-- Grid circles -->
-              <circle v-for="r in [20,40,60,80]" :key="r"
-                cx="120" cy="100" :r="r"
-                fill="none" stroke="rgba(22,93,255,0.12)" stroke-width="1"/>
-              <!-- Axis lines -->
-              <line v-for="i in 7" :key="i"
-                x1="120" y1="100"
-                :x2="120 + 80*Math.cos((i*51.4-90)*Math.PI/180)"
-                :y2="100 + 80*Math.sin((i*51.4-90)*Math.PI/180)"
-                stroke="rgba(22,93,255,0.10)" stroke-width="1"/>
-              <!-- Radar polygon -->
-              <polygon
-                points="120,22 150,40 175,100 150,160 90,160 65,100 90,40"
-                fill="rgba(22,93,255,0.15)"
-                stroke="rgba(22,93,255,0.7)"
-                stroke-width="1.5"/>
-              <!-- Data points -->
-              <circle cx="120" cy="22" r="4" fill="#165DFF"/>
-              <circle cx="150" cy="40" r="4" fill="#165DFF"/>
-              <circle cx="175" cy="100" r="4" fill="#165DFF"/>
-              <circle cx="150" cy="160" r="4" fill="#FB7185"/>
-              <circle cx="90" cy="160" r="4" fill="#165DFF"/>
-              <circle cx="65" cy="100" r="4" fill="#22D3EE"/>
-              <circle cx="90" cy="40" r="4" fill="#165DFF"/>
-              <!-- Labels -->
-              <text x="120" y="12" text-anchor="middle" font-size="7" fill="#165DFF" font-weight="600">AI可见度 82</text>
-              <text x="158" y="36" text-anchor="start" font-size="7" class="svg-label">语义一致 71</text>
-              <text x="182" y="100" text-anchor="start" font-size="7" class="svg-label">权威信号 65</text>
-              <text x="158" y="168" text-anchor="start" font-size="7" fill="#FB7185">竞品压制 58</text>
-              <text x="82" y="168" text-anchor="end" font-size="7" class="svg-label">内容友好 80</text>
-              <text x="57" y="100" text-anchor="end" font-size="7" fill="#22D3EE">实体独占 68</text>
-              <text x="82" y="36" text-anchor="end" font-size="7" class="svg-label">转化引导 74</text>
-            </svg>
-          </div>
+        <div v-if="activeTab === '健康分雷达'" class="flex gap-8 flex-col lg:flex-row items-center">
+          
+          <!-- Left: AI Models Grid -->
+          <div class="shrink-0">
+            <div class="text-xs text-center mb-4 mira-label">支持的AI模型</div>
+            <div class="grid grid-cols-5 gap-3 mira-ai-grid">
+              <a v-for="logo in aiLogos" :key="logo.name"
+                :href="logo.url" target="_blank"
+                class="mira-ai-item"
+                :title="logo.name">
+                <span class="text-2xl">{{ logo.emoji }}</span>
+                <span class="text-[10px] mt-1 mira-ai-name">{{ logo.shortName }}</span>
+              </a>
+            </div>
           </div>
           
           <!-- Right: Score details -->
@@ -173,9 +147,21 @@
 
 <script setup>
 import { ref } from 'vue'
-import AILogoField from './AILogoField.vue'
 
 const activeTab = ref('健康分雷达')
+
+const aiLogos = [
+  { name: 'DeepSeek', shortName: 'DeepSeek', emoji: '🔵', url: 'https://chat.deepseek.com' },
+  { name: '豆包', shortName: '豆包', emoji: '🫘', url: 'https://doubao.com' },
+  { name: '通义千问', shortName: '通义', emoji: '🐴', url: 'https://tongyi.aliyun.com' },
+  { name: 'Kimi', shortName: 'Kimi', emoji: '🌙', url: 'https://kimi.moonshot.cn' },
+  { name: '元宝', shortName: '元宝', emoji: '💎', url: 'https://yuanbao.tencent.com' },
+  { name: 'ChatGPT', shortName: 'GPT', emoji: '🤖', url: 'https://chat.openai.com' },
+  { name: 'Gemini', shortName: 'Gemini', emoji: '✨', url: 'https://gemini.google.com' },
+  { name: 'Claude', shortName: 'Claude', emoji: '🧠', url: 'https://claude.ai' },
+  { name: 'Grok', shortName: 'Grok', emoji: '🔥', url: 'https://grok.com' },
+  { name: 'Llama', shortName: 'Llama', emoji: '🦙', url: 'https://llama.meta.com' },
+]
 
 const engineCards = [
   { name: 'DeepSeek',  score: 82, trend: 34, color: '#165DFF' },
@@ -298,22 +284,37 @@ const problems = [
   fill: var(--text-tertiary);
 }
 
-/* AI Logo + Radar layout */
-.mira-radar-wrapper {
-  position: relative;
+/* AI Logo Grid */
+.mira-ai-grid {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
 }
 
-.mira-ai-logos {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-  pointer-events: none;
+.mira-ai-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  transition: all 0.25s ease;
+  text-decoration: none;
 }
 
-.mira-ai-logos :deep(.ai-logo-bubble) {
-  pointer-events: all;
+.mira-ai-item:hover {
+  transform: scale(1.15);
+  border-color: #165DFF;
+  box-shadow: 0 4px 20px rgba(22, 93, 255, 0.25);
+}
+
+.mira-ai-name {
+  color: var(--text-tertiary);
+  white-space: nowrap;
 }
 
 /* Light theme overrides */
