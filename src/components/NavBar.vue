@@ -112,6 +112,8 @@ const navLinks = [
   { label: '模镜诊断', href: '#miraseek' },
   { label: '模豆策略', href: '#miramod' },
   { label: '模法执行', href: '#miramag' },
+  { label: '案例', href: '#cases-detail' },
+  { label: '关于我们', href: '#about' },
   { label: '定价', href: '#pricing' },
   { label: 'FAQ', href: '#faq' },
 ]

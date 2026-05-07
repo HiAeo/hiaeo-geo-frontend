@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen overflow-x-hidden" :data-theme="theme">
+  <div class="min-h-screen overflow-x-hidden pb-16 md:pb-0" :data-theme="theme">
     <!-- NavBar -->
     <NavBar :theme="theme" @toggle-theme="toggleTheme" @open-login="showLogin = true" />
 
@@ -24,14 +24,23 @@
     <!-- 板块7: 客户成长路径与案例 -->
     <GrowthSection />
 
-    <!-- 板块8: 定价 -->
+    <!-- 板块8: 详细案例展示 -->
+    <CasesDetailSection @open-contact="showContact = true" />
+
+    <!-- 板块9: 定价 -->
     <PricingSection />
 
-    <!-- 板块9: FAQ -->
+    <!-- 板块10: 关于我们 -->
+    <AboutSection />
+
+    <!-- 板块11: FAQ -->
     <FAQSection />
 
     <!-- Footer -->
     <FooterSection :theme="theme" />
+
+    <!-- Mobile Bottom Nav -->
+    <BottomNav />
 
     <!-- Login Modal -->
     <LoginModal 
@@ -40,6 +49,13 @@
       @close="showLogin = false"
       @login="handleLogin"
       @signup="handleSignup"
+    />
+
+    <!-- Contact Modal -->
+    <ContactModal 
+      :show="showContact"
+      @close="showContact = false"
+      @submit="handleContact"
     />
   </div>
 </template>
@@ -54,13 +70,18 @@ import MiraModSection from './components/MiraModSection.vue'
 import MiraMagSection from './components/MiraMagSection.vue'
 import HubSection from './components/HubSection.vue'
 import GrowthSection from './components/GrowthSection.vue'
+import CasesDetailSection from './components/CasesDetailSection.vue'
 import PricingSection from './components/PricingSection.vue'
+import AboutSection from './components/AboutSection.vue'
 import FAQSection from './components/FAQSection.vue'
 import FooterSection from './components/FooterSection.vue'
+import BottomNav from './components/BottomNav.vue'
 import LoginModal from './components/LoginModal.vue'
+import ContactModal from './components/ContactModal.vue'
 
 const theme = ref('dark')
 const showLogin = ref(false)
+const showContact = ref(false)
 
 const toggleTheme = () => {
   theme.value = theme.value === 'dark' ? 'light' : 'dark'
@@ -75,6 +96,11 @@ const handleLogin = (data) => {
 const handleSignup = (data) => {
   console.log('Signup:', data)
   // TODO: 调用注册 API
+}
+
+const handleContact = (data) => {
+  console.log('Contact:', data)
+  // TODO: 调用联系表单 API
 }
 
 // Scroll animation observer
