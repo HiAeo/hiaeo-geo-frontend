@@ -29,7 +29,9 @@
         </div>
 
         <!-- Boss view -->
-        <div v-if="activeTab === '老板视图'" class="grid grid-cols-2 md:grid-cols-4 gap-5">
+        <div v-if="activeTab === '老板视图'" class="hub-metrics-wrapper">
+          <AILogoField :width="380" :height="200" class="hub-ai-logos" />
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
           <div v-for="metric in bossMetrics" :key="metric.label"
             class="p-5 rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer hub-metric-card">
             <div class="text-xs mb-3 hub-label">{{ metric.label }}</div>
@@ -43,6 +45,7 @@
               </span>
             </div>
           </div>
+        </div>
         </div>
 
         <!-- Ops view -->
@@ -115,6 +118,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import AILogoField from './AILogoField.vue'
 
 defineEmits(['open-contact'])
 
@@ -235,6 +239,24 @@ const techTasks = [
   background: linear-gradient(135deg, #165DFF, #8B5CF6);
   color: white;
   box-shadow: 0 4px 20px rgba(22, 93, 255, 0.3);
+}
+
+
+.hub-metrics-wrapper {
+  position: relative;
+}
+
+.hub-ai-logos {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hub-ai-logos :deep(.ai-logo-bubble) {
+  pointer-events: all;
 }
 
 .hub-cta-btn:hover {

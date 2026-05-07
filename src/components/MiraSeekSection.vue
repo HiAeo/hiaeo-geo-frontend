@@ -30,7 +30,11 @@
         </div>
 
         <!-- Tab 1: 7-dimension radar -->
-        <div v-if="activeTab === '健康分雷达'" class="flex gap-6 flex-col lg:flex-row">
+        <div v-if="activeTab === '健康分雷达'" class="flex gap-6 flex-col lg:flex-row items-center mira-radar-row">
+          <!-- AI Models floating logos -->
+          <div class="relative mira-ai-wrapper">
+            <AILogoField :width="280" :height="220" class="mira-ai-logos" />
+          </div>
           <!-- Left: Radar chart -->
           <div class="shrink-0 transition-transform duration-300 hover:scale-[1.02] cursor-pointer mx-auto lg:mx-0">
             <svg viewBox="0 0 240 200" class="w-52">
@@ -170,6 +174,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import AILogoField from './AILogoField.vue'
 
 const activeTab = ref('健康分雷达')
 
@@ -292,6 +297,25 @@ const problems = [
 
 .svg-label {
   fill: var(--text-tertiary);
+}
+
+
+/* AI Logo field positioning */
+.mira-radar-relative {
+  position: relative;
+}
+
+.mira-ai-logos {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.mira-ai-logos :deep(.ai-logo-bubble) {
+  pointer-events: all;
 }
 
 /* Light theme overrides */

@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lobehub/icons": "^5.8.0",
+    "@lobehub/icons-static-svg": "^1.90.0",
     "framer-motion": "^11.0.8",
     "lucide-vue-next": "^0.344.0",
     "playwright": "^1.59.1",
