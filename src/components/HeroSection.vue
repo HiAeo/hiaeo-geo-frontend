@@ -2,8 +2,8 @@
   <section class="hero-section">
     <div class="container">
       <div class="hero-content">
-        <h1 class="hero-title">
-          MirusAI魔鲸智能，让GEO生成式引擎优化像呼吸一样简单
+        <h1 class="hero-title" style="font-size:1.875rem;line-height:1.3;">
+          <span style="font-weight:800;">MirusAI</span>魔鲸智能，让GEO生成式引擎优化像呼吸一样简单
         </h1>
         <p class="hero-desc">
           一站式生成式引擎优化平台，从诊断、策略到自动执行，全链路AI赋能。
@@ -246,7 +246,7 @@
   padding: 32px 40px;
   display: inline-block;
   width: 100%;
-  max-width: 80rem; /* = max-w-5xl, 与产品板块卡片宽度一致 */
+  max-width: 56rem; /* = max-w-4xl，略窄于下方产品卡片 max-w-5xl */
   box-sizing: border-box;
 }
 
