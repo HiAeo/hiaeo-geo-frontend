@@ -1,312 +1,547 @@
 <template>
   <section class="hero-section">
-    <div class="container">
+    <!-- Background effects -->
+    <div class="hero-bg">
+      <div class="hero-gradient"></div>
+      <div class="hero-grid"></div>
+    </div>
+    
+    <div class="section-container">
       <div class="hero-content">
-        <h1 style="font-size:3rem;line-height:1.2;font-weight:800;" class="mb-5">
-          <span style="font-weight:800">Mirus</span><span style="font-weight:400">AI</span>魔鲸智能，让GEO生成式引擎优化像呼吸一样简单
+        <!-- Badge -->
+        <div class="hero-badge animate-fade-in-up">
+          <span class="badge-dot"></span>
+          <span>国内首个 GEO 全闭环 SaaS 平台</span>
+        </div>
+        
+        <!-- Main headline -->
+        <h1 class="hero-headline animate-fade-in-up" style="animation-delay: 0.1s;">
+          让 <span class="gradient-text">GEO</span> 生成式引擎优化<br />
+          像呼吸一样简单
         </h1>
-        <p class="hero-desc">
-          一站式生成式引擎优化平台，从诊断、策略到自动执行，全链路AI赋能。
+        
+        <!-- Subheadline -->
+        <p class="hero-subheadline animate-fade-in-up" style="animation-delay: 0.2s;">
+          诊断 · 策略 · 执行 · 监控<br />
+          全链路 AI 赋能，一站式提升品牌在主流大模型中的可见度
         </p>
-        <div class="hero-actions">
-          <a class="btn-primary" href="#">预约演示</a>
-          <a class="btn-outline-inverse" href="#">获取邀请码</a>
+        
+        <!-- Key metrics -->
+        <div class="hero-metrics animate-fade-in-up" style="animation-delay: 0.3s;">
+          <div class="metric-item">
+            <span class="metric-value">6+</span>
+            <span class="metric-label">主流 AI 引擎</span>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-value">7</span>
+            <span class="metric-label">维度健康诊断</span>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <span class="metric-value">3min</span>
+            <span class="metric-label">完成首次诊断</span>
+          </div>
+        </div>
+        
+        <!-- CTA buttons -->
+        <div class="hero-actions animate-fade-in-up" style="animation-delay: 0.4s;">
+          <a href="#pricing" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="10,8 16,12 10,16" fill="currentColor"/>
+            </svg>
+            预约演示
+          </a>
+          <a href="#pricing" class="btn-outline-inverse">
+            获取邀请码
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ml-2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12,5 19,12 12,19"/>
+            </svg>
+          </a>
         </div>
       </div>
-
-      <div class="hero-visual-wrapper">
-        <div class="hero-visual glass-card">
-          <div class="visual-content">
-            <div class="model-scroll-container">
-              <div class="model-scroll-track">
-                <!-- 豆包 -->
-                <a href="https://www.doubao.com" target="_blank" rel="noopener" class="model-item" title="豆包">
-                  <svg viewBox="0 0 24 24" width="48" height="48">
-                    <path d="M5.31 15.756c.172-3.75 1.883-5.999 2.549-6.739-3.26 2.058-5.425 5.658-6.358 8.308v1.12C1.501 21.513 4.226 24 7.59 24a6.59 6.59 0 002.2-.375c.353-.12.7-.248 1.039-.378.913-.899 1.65-1.91 2.243-2.992-4.877 2.431-7.974.072-7.763-4.5l.002.001z" fill="#1E37FC"/>
-                    <path d="M22.57 10.283c-1.212-.901-4.109-2.404-7.397-2.8.295 3.792.093 8.766-2.1 12.773a12.782 12.782 0 01-2.244 2.992c3.764-1.448 6.746-3.457 8.596-5.219 2.82-2.683 3.353-5.178 3.361-6.66a2.737 2.737 0 00-.216-1.084v-.002z" fill="#37E1BE"/>
-                    <path d="M14.303 1.867C12.955.7 11.248 0 9.39 0 7.532 0 5.883.677 4.545 1.807 2.791 3.29 1.627 5.557 1.5 8.125v9.201c.932-2.65 3.097-6.25 6.357-8.307.5-.318 1.025-.595 1.569-.829 1.883-.801 3.878-.932 5.746-.706-.222-2.83-.718-5.002-.87-5.617h.001z" fill="#A569FF"/>
-                    <path d="M17.305 4.961a199.47 199.47 0 01-1.08-1.094c-.202-.213-.398-.419-.586-.622l-1.333-1.378c.151.615.648 2.786.869 5.617 3.288.395 6.185 1.898 7.396 2.8-1.306-1.275-3.475-3.487-5.266-5.323z" fill="#1E37FC"/>
-                  </svg>
-                  <span class="model-label">豆包</span>
-                </a>
-                <!-- DeepSeek -->
-                <a href="https://www.deepseek.com" target="_blank" rel="noopener" class="model-item" title="DeepSeek">
-                  <svg viewBox="0 0 24 24" width="48" height="48">
-                    <path d="M23.748 4.482c-.254-.124-.364.113-.512.234-.051.039-.094.09-.137.136-.372.397-.806.657-1.373.626-.829-.046-1.537.214-2.163.848-.133-.782-.575-1.248-1.247-1.548-.352-.156-.708-.311-.955-.65-.172-.241-.219-.51-.305-.774-.055-.16-.11-.323-.293-.35-.2-.031-.278.136-.356.276-.313.572-.434 1.202-.422 1.84.027 1.436.633 2.58 1.838 3.393.137.093.172.187.129.323-.082.28-.18.552-.266.833-.055.179-.137.217-.329.14a5.526 5.526 0 01-1.736-1.18c-.857-.828-1.631-1.742-2.597-2.458a11.365 11.365 0 00-.689-.471c-.985-.957.13-1.743.388-1.836.27-.098.093-.432-.779-.428-.872.004-1.67.295-2.687.684a3.055 3.055 0 01-.465.137 9.597 9.597 0 00-2.883-.102c-1.885.21-3.39 1.102-4.497 2.623C.082 8.606-.231 10.684.152 12.85c.403 2.284 1.569 4.175 3.36 5.653 1.858 1.533 3.997 2.284 6.438 2.14 1.482-.085 3.133-.284 4.994-1.86.47.234.962.327 1.78.397.63.059 1.236-.03 1.705-.128.735-.156.684-.837.419-.961-2.155-1.004-1.682-.595-2.113-.926 1.096-1.296 2.746-2.642 3.392-7.003.05-.347.007-.565 0-.845-.004-.17.035-.237.23-.256a4.173 4.173 0 001.545-.475c1.396-.763 1.96-2.015 2.093-3.517.02-.23-.004-.467-.247-.588zM11.581 18c-2.089-1.642-3.102-2.183-3.52-2.16-.392.024-.321.471-.235.763.09.288.207.486.371.739.114.167.192.416-.113.603-.673.416-1.842-.14-1.897-.167-1.361-.802-2.5-1.86-3.301-3.307-.774-1.393-1.224-2.887-1.298-4.482-.02-.386.093-.522.477-.592a4.696 4.696 0 011.529-.039c2.132.312 3.946 1.265 5.468 2.774.868.86 1.525 1.887 2.202 2.891.72 1.066 1.494 2.082 2.48 2.914.348.292.625.514.891.677-.802.09-2.14.11-3.054-.614zm1-6.44a.306.306 0 01.415-.287.302.302 0 01.2.288.306.306 0 01-.31.307.303.303 0 01-.304-.308zm3.11 1.596c-.2.081-.399.151-.59.16a1.245 1.245 0 01-.798-.254c-.274-.23-.47-.358-.552-.758a1.73 1.73 0 01.016-.588c.07-.327-.008-.537-.239-.727-.187-.156-.426-.199-.688-.199a.559.559 0 01-.254-.078c-.11-.054-.2-.19-.114-.358.028-.054.16-.186.192-.21.356-.202.767-.136 1.146.016.352.144.618.408 1.001.782.391.451.462.576.685.914.176.265.336.537.445.848.067.195-.019.354-.25.452z" fill="#4D6BFE"/>
-                  </svg>
-                  <span class="model-label">DeepSeek</span>
-                </a>
-                <!-- 元宝 -->
-                <a href="https://yuanbao.tencent.com" target="_blank" rel="noopener" class="model-item" title="腾讯元宝">
-                  <svg viewBox="0 0 24 24" width="48" height="48">
-                    <path d="M11.988 23.968c6.612 0 11.972-5.361 11.972-11.974S18.6.021 11.988.021C5.376.02.016 5.38.016 11.994s5.36 11.974 11.972 11.974z" fill="#E5FFE7"/>
-                    <path d="M17.281 14.715s-3.273 9.93-15.24 3.982c0 0 3.26 5.434 10.249 5.275l9.48-8.489-4.489-.77v.002z" fill="#8FF793"/>
-                    <path d="M21.64 4.9c-1.93-2.377-5.41-2.94-8.006-1.208a5.991 5.991 0 00-1.65 8.311 5.995 5.995 0 01-2.785 8.909 5.93 5.93 0 01-6.457-1.356 6.123 6.123 0 01-.886-1.152C-1.606 12.932-.097 5.663 5.32 2.044a11.936 11.936 0 0116.318 2.855h.003z" fill="#38CF6F"/>
-                    <path d="M23.75 9.66a12.77 12.77 0 00-.733-2.356c-.77-1.64-2.841-2.378-4.57-1.452-1.156.622-1.847 1.884-1.691 3.187.017.127.045.274.072.394.25.732.43 1.51.525 2.328a10.718 10.718 0 01-5.548 10.658c-.998.538-2.025.91-3.055 1.121 3.19.898 6.76.538 9.92-1.586 4.013-2.698 6.072-7.563 5.086-12.296h-.003l-.002.003z" fill="#38CF6F"/>
-                  </svg>
-                  <span class="model-label">元宝</span>
-                </a>
-                <!-- 千问 -->
-                <a href="https://tongyi.aliyun.com" target="_blank" rel="noopener" class="model-item" title="千问">
-                  <svg viewBox="0 0 24 24" width="48" height="48">
-                    <defs>
-                      <linearGradient id="qwen-g" x1="0%" x2="100%" y1="0%" y2="0%">
-                        <stop offset="0%" stop-color="#6336E7" stop-opacity=".84"/>
-                        <stop offset="100%" stop-color="#6F69F7" stop-opacity=".84"/>
-                      </linearGradient>
-                    </defs>
-                    <path d="M12.604 1.34c.393.69.784 1.382 1.174 2.075a.18.18 0 00.157.091h5.552c.174 0 .322.11.446.327l1.454 2.57c.19.337.24.478.024.837-.26.43-.513.864-.76 1.3l-.367.658c-.106.196-.223.28-.04.512l2.652 4.637c.172.301.111.494-.043.77-.437.785-.882 1.564-1.335 2.34-.159.272-.352.375-.68.37-.777-.016-1.552-.01-2.327.016a.099.099 0 00-.081.05 575.097 575.097 0 01-2.705 4.74c-.169.293-.38.363-.725.364-.997.003-2.002.004-3.017.002a.537.537 0 01-.465-.271l-1.335-2.323a.09.09 0 00-.083-.049H4.982c-.285.03-.553-.001-.805-.092l-1.603-2.77a.543.543 0 01-.002-.54l1.207-2.12a.198.198 0 000-.197 550.951 550.951 0 01-1.875-3.272l-.79-1.395c-.16-.31-.173-.496.095-.965.465-.813.927-1.625 1.387-2.436.132-.234.304-.334.584-.335a338.3 338.3 0 012.589-.001.124.124 0 00.107-.063l2.806-4.895a.488.488 0 01.422-.246c.524-.001 1.053 0 1.583-.006L11.704 1c.341-.003.724.032.9.34zm-3.432.403a.06.06 0 00-.052.03L6.254 6.788a.157.157 0 01-.135.078H3.253c-.056 0-.07.025-.041.074l5.81 10.156c.025.042.013.062-.034.063l-2.795.015a.218.218 0 00-.2.116l-1.32 2.31c-.044.078-.021.118.068.118l5.716.008c.046 0 .08.02.104.061l1.403 2.454c.046.081.092.082.139 0l5.006-8.76.783-1.382a.055.055 0 01.096 0l1.424 2.53a.122.122 0 00.107.062l2.763-.02a.04.04 0 00.035-.02.041.041 0 000-.04l-2.9-5.086a.108.108 0 010-.113l.293-.507 1.12-1.977c.024-.041.012-.062-.035-.062H9.2c-.059 0-.073-.026-.043-.077l1.434-2.505a.107.107 0 000-.114L9.225 1.774a.06.06 0 00-.053-.031zm6.29 8.02c.046 0 .058.02.034.06l-.832 1.465-2.613 4.585a.056.056 0 01-.05.029.058.058 0 01-.05-.029L8.498 9.841c-.02-.034-.01-.052.028-.054l.216-.012 6.722-.012z" fill="url(#qwen-g)" fill-rule="nonzero"/>
-                  </svg>
-                  <span class="model-label">千问</span>
-                </a>
-                <!-- 文心一言 -->
-                <a href="https://yiyan.baidu.com" target="_blank" rel="noopener" class="model-item" title="文心一言">
-                  <svg viewBox="0 0 24 24" width="48" height="48">
-                    <defs>
-                      <linearGradient id="wenxin-g" x1="9.155%" x2="90.531%" y1="75.177%" y2="25.028%">
-                        <stop offset="0%" stop-color="#0A51C3"/>
-                        <stop offset="100%" stop-color="#23A4FB"/>
-                      </linearGradient>
-                    </defs>
-                    <path d="M11.32 1.176a1.4 1.4 0 011.36 0l8.64 4.843c.421.234.68.67.68 1.141v9.68c0 .472-.259.908-.68 1.143l-8.64 4.84a1.4 1.4 0 01-1.36 0l-8.64-4.84A1.31 1.31 0 012 16.84V7.159c0-.471.259-.907.68-1.142l8.64-4.84zm7.42 13.839V8.227L12.002 12 12 19.551l6.059-3.394a1.31 1.31 0 00.68-1.142zM12.68 4.833a1.393 1.393 0 00-1.36 0L5.944 7.846c-.421.235-.68.67-.68 1.142v6.027c0 .47.259.905.68 1.142l2.795 1.566V11.09a1.546 1.546 0 00.221.79 1.527 1.527 0 01-.216-.834l.004-.094.02-.15.018-.084.017-.062.039-.117.062-.142.035-.065.081-.13.094-.122.084-.091.08-.075.125-.1.071-.048.134-.076 5.87-3.29-2.796-1.566z" fill="url(#wenxin-g)"/>
-                    <path d="M12 11.088c0-.875-.73-1.584-1.631-1.584a1.66 1.66 0 00-.855.237c-.027.016-.055.033-.08.05a2.361 2.361 0 00-.123.093c-.022.02-.045.038-.066.059l-.048.045-.063.067c-.014.016-.028.031-.04.048a2.303 2.303 0 00-.094.125l-.042.069a1.7 1.7 0 00-.07.13l-.036.081a.764.764 0 00-.022.06c-.01.03-.02.058-.028.087l-.017.062a.883.883 0 00-.03.16c-.002.025-.007.05-.008.074a1.527 1.527 0 00.213.929c.302.508.85.792 1.414.792.277 0 .558-.068.814-.212l.815-.457v-.914L12 11.088z" fill="#012F8D"/>
-                  </svg>
-                  <span class="model-label">文心一言</span>
-                </a>
-                <!-- OpenAI -->
-                <a href="https://www.openai.com" target="_blank" rel="noopener" class="model-item" title="OpenAI">
-                  <svg viewBox="0 0 24 24" width="48" height="48">
-                    <path d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z" fill="#10A37F"/>
-                  </svg>
-                  <span class="model-label">OpenAI</span>
-                </a>
-                <!-- Gemini -->
-                <a href="https://gemini.google.com" target="_blank" rel="noopener" class="model-item" title="Gemini">
-                  <svg viewBox="0 0 24 24" width="48" height="48">
-                    <defs>
-                      <linearGradient id="gemini-g1" gradientUnits="userSpaceOnUse" x1="7" x2="11" y1="15.5" y2="12">
-                        <stop stop-color="#08B962"/>
-                        <stop offset="1" stop-color="#08B962" stop-opacity="0"/>
-                      </linearGradient>
-                      <linearGradient id="gemini-g2" gradientUnits="userSpaceOnUse" x1="8" x2="11.5" y1="5.5" y2="11">
-                        <stop stop-color="#F94543"/>
-                        <stop offset="1" stop-color="#F94543" stop-opacity="0"/>
-                      </linearGradient>
-                      <linearGradient id="gemini-g3" gradientUnits="userSpaceOnUse" x1="3.5" x2="17.5" y1="13.5" y2="12">
-                        <stop stop-color="#FABC12"/>
-                        <stop offset=".46" stop-color="#FABC12" stop-opacity="0"/>
-                      </linearGradient>
-                    </defs>
-                    <path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF"/>
-                    <path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#gemini-g1)" opacity=".7"/>
-                    <path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#gemini-g2)" opacity=".7"/>
-                    <path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#gemini-g3)" opacity=".7"/>
-                  </svg>
-                  <span class="model-label">Gemini</span>
-                </a>
-                <!-- Claude -->
-                <a href="https://www.claude.ai" target="_blank" rel="noopener" class="model-item" title="Claude">
-                  <svg viewBox="0 0 24 24" width="48" height="48">
-                    <path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="#D97757" fill-rule="nonzero"/>
-                  </svg>
-                  <span class="model-label">Claude</span>
-                </a>
-                <!-- Perplexity -->
-                <a href="https://www.perplexity.ai" target="_blank" rel="noopener" class="model-item" title="Perplexity">
-                  <svg viewBox="0 0 24 24" width="48" height="48">
-                    <path d="M19.785 0v7.272H22.5V17.62h-2.935V24l-7.037-6.194v6.145h-1.091v-6.152L4.392 24v-6.465H1.5V7.188h2.884V0l7.053 6.494V.19h1.09v6.49L19.786 0zm-7.257 9.044v7.319l5.946 5.234V14.44l-5.946-5.397zm-1.099-.08l-5.946 5.398v7.235l5.946-5.234V8.965zm8.136 7.58h1.844V8.349H13.46l6.105 5.54v2.655zm-8.982-8.28H2.59v8.195h1.8v-2.576l6.192-5.62zM5.475 2.476v4.71h5.115l-5.115-4.71zm13.219 0l-5.115 4.71h5.115v-4.71z" fill="#22B8CD" fill-rule="nonzero"/>
-                  </svg>
-                  <span class="model-label">Perplexity</span>
-                </a>
-                <!-- Copilot -->
-                <a href="https://copilot.microsoft.com" target="_blank" rel="noopener" class="model-item" title="Copilot">
-                  <svg viewBox="0 0 24 24" width="48" height="48">
-                    <defs>
-                      <radialGradient id="cop-g1" cx="85.44%" cy="100.653%" fx="85.44%" fy="100.653%" gradientTransform="scale(-.8553 -1) rotate(50.927 2.041 -1.946)" r="105.116%">
-                        <stop offset="9.6%" stop-color="#00AEFF"/>
-                        <stop offset="77.3%" stop-color="#2253CE"/>
-                        <stop offset="100%" stop-color="#0736C4"/>
-                      </radialGradient>
-                      <radialGradient id="cop-g2" cx="18.143%" cy="32.928%" fx="18.143%" fy="32.928%" gradientTransform="scale(.8897 1) rotate(52.069 .193 .352)" r="95.612%">
-                        <stop offset="0%" stop-color="#FFB657"/>
-                        <stop offset="63.4%" stop-color="#FF5F3D"/>
-                        <stop offset="92.3%" stop-color="#C02B3C"/>
-                      </radialGradient>
-                      <radialGradient id="cop-g3" cx="82.987%" cy="-9.792%" fx="82.987%" fy="-9.792%" gradientTransform="scale(-1 -.9441) rotate(-70.872 .142 1.17)" r="140.622%">
-                        <stop offset="6.6%" stop-color="#8C48FF"/>
-                        <stop offset="50%" stop-color="#F2598A"/>
-                        <stop offset="89.6%" stop-color="#FFB152"/>
-                      </radialGradient>
-                      <linearGradient id="cop-g4" x1="39.465%" x2="46.884%" y1="12.117%" y2="103.774%">
-                        <stop offset="15.6%" stop-color="#0D91E1"/>
-                        <stop offset="48.7%" stop-color="#52B471"/>
-                        <stop offset="65.2%" stop-color="#98BD42"/>
-                        <stop offset="93.7%" stop-color="#FFC800"/>
-                      </linearGradient>
-                      <linearGradient id="cop-g5" x1="45.949%" x2="50%" y1="0%" y2="100%">
-                        <stop offset="0%" stop-color="#3DCBFF"/>
-                        <stop offset="24.7%" stop-color="#0588F7" stop-opacity="0"/>
-                      </linearGradient>
-                      <linearGradient id="cop-g6" x1="83.507%" x2="83.453%" y1="-6.106%" y2="21.131%">
-                        <stop offset="5.8%" stop-color="#F8ADFA"/>
-                        <stop offset="70.8%" stop-color="#A86EDD" stop-opacity="0"/>
-                      </linearGradient>
-                    </defs>
-                    <path d="M17.533 1.829A2.528 2.528 0 0015.11 0h-.737a2.531 2.531 0 00-2.484 2.087l-1.263 6.937.314-1.08a2.528 2.528 0 012.424-1.833h4.284l1.797.706 1.731-.706h-.505a2.528 2.528 0 01-2.423-1.829l-.715-2.453z" fill="url(#cop-g1)" transform="translate(0 1)"/>
-                    <path d="M6.726 20.16A2.528 2.528 0 009.152 22h1.566c1.37 0 2.49-1.1 2.525-2.48l.17-6.69-.357 1.228a2.528 2.528 0 01-2.423 1.83h-4.32l-1.54-.842-1.667.843h.497c1.124 0 2.113.75 2.426 1.84l.697 2.432z" fill="url(#cop-g2)" transform="translate(0 1)"/>
-                    <path d="M15 0H6.252c-2.5 0-4 3.331-5 6.662-1.184 3.947-2.734 9.225 1.75 9.225H6.78c1.13 0 2.12-.753 2.43-1.847.657-2.317 1.809-6.359 2.713-9.436.46-1.563.842-2.906 1.43-3.742A1.97 1.97 0 0115 0" fill="url(#cop-g4)" transform="translate(0 1)"/>
-                    <path d="M15 0H6.252c-2.5 0-4 3.331-5 6.662-1.184 3.947-2.734 9.225 1.75 9.225H6.78c1.13 0 2.12-.753 2.43-1.847.657-2.317 1.809-6.359 2.713-9.436.46-1.563.842-2.906 1.43-3.742A1.97 1.97 0 0115 0" fill="url(#cop-g5)" transform="translate(0 1)"/>
-                    <path d="M9 22h8.749c2.5 0 4-3.332 5-6.663 1.184-3.948 2.734-9.227-1.75-9.227H17.22c-1.129 0-2.12.754-2.43 1.848a1149.2 1149.2 0 01-2.713 9.437c-.46 1.564-.842 2.907-1.43 3.743A1.97 1.97 0 019 22" fill="url(#cop-g3)" transform="translate(0 1)"/>
-                    <path d="M9 22h8.749c2.5 0 4-3.332 5-6.663 1.184-3.948 2.734-9.227-1.75-9.227H17.22c-1.129 0-2.12.754-2.43 1.848a1149.2 1149.2 0 01-2.713 9.437c-.46 1.564-.842 2.907-1.43 3.743A1.97 1.97 0 019 22" fill="url(#cop-g6)" transform="translate(0 1)"/>
-                  </svg>
-                  <span class="model-label">Copilot</span>
-                </a>
-              </div>
+      
+      <!-- Dashboard preview -->
+      <div class="hero-dashboard animate-fade-in-up" style="animation-delay: 0.5s;">
+        <div class="dashboard-card">
+          <!-- Header -->
+          <div class="dashboard-header">
+            <div class="dashboard-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="dashboard-title">魔鲸GEO · 诊断看板</span>
+          </div>
+          
+          <!-- Metrics row -->
+          <div class="dashboard-metrics">
+            <div class="dash-metric">
+              <span class="dash-metric-label">GEO健康分</span>
+              <span class="dash-metric-value" style="color: #165DFF;">72</span>
+              <span class="dash-metric-trend up">↑ 8%</span>
+            </div>
+            <div class="dash-metric">
+              <span class="dash-metric-label">DeepSeek提及率</span>
+              <span class="dash-metric-value" style="color: #10B981;">+34%</span>
+              <span class="dash-metric-trend up">↑ 34%</span>
+            </div>
+            <div class="dash-metric">
+              <span class="dash-metric-label">竞品压制</span>
+              <span class="dash-metric-value" style="color: #8B5CF6;">+12%</span>
+              <span class="dash-metric-trend up">↑ 12%</span>
             </div>
           </div>
+          
+          <!-- Mini radar -->
+          <div class="dashboard-radar">
+            <svg viewBox="0 0 200 180" class="radar-svg">
+              <circle cx="100" cy="90" r="60" fill="none" stroke="rgba(22,93,255,0.1)" stroke-width="1"/>
+              <circle cx="100" cy="90" r="45" fill="none" stroke="rgba(22,93,255,0.1)" stroke-width="1"/>
+              <circle cx="100" cy="90" r="30" fill="none" stroke="rgba(22,93,255,0.1)" stroke-width="1"/>
+              <polygon
+                points="100,35 125,55 145,90 125,125 75,125 55,90 75,55"
+                fill="rgba(22,93,255,0.15)"
+                stroke="#165DFF"
+                stroke-width="2"
+              />
+              <circle cx="100" cy="35" r="4" fill="#165DFF"/>
+              <circle cx="125" cy="55" r="4" fill="#165DFF"/>
+              <circle cx="145" cy="90" r="4" fill="#10B981"/>
+              <circle cx="125" cy="125" r="4" fill="#EF4444"/>
+              <circle cx="75" cy="125" r="4" fill="#165DFF"/>
+              <circle cx="55" cy="90" r="4" fill="#8B5CF6"/>
+              <circle cx="75" cy="55" r="4" fill="#165DFF"/>
+            </svg>
+          </div>
+          
+          <!-- Engine tags -->
+          <div class="dashboard-engines">
+            <span v-for="engine in engines" :key="engine.name" 
+              class="engine-tag"
+              :style="{ '--engine-color': engine.color }">
+              {{ engine.name }}
+            </span>
+          </div>
+        </div>
+        
+        <!-- Floating cards -->
+        <div class="floating-card floating-card-1">
+          <span class="fc-icon">🚀</span>
+          <span class="fc-text">3个月内提及率提升 340%</span>
+        </div>
+        <div class="floating-card floating-card-2">
+          <span class="fc-icon">📊</span>
+          <span class="fc-text">ROI 预估提升 23%</span>
         </div>
       </div>
     </div>
   </section>
 </template>
 
+<script setup>
+const engines = [
+  { name: 'DeepSeek', color: '#4D6BFE' },
+  { name: '豆包', color: '#1E37FC' },
+  { name: '文心一言', color: '#0A51C3' },
+  { name: 'Kimi', color: '#8B6CFF' },
+  { name: '通义千问', color: '#6336E7' },
+]
+</script>
+
 <style scoped>
 .hero-section {
   min-height: 100vh;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 120px 0 80px;
+  overflow: hidden;
+  background: var(--bg-dark);
 }
 
-.container {
+/* Background effects */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(22, 93, 255, 0.15), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.1), transparent),
+    radial-gradient(ellipse 50% 30% at 20% 80%, rgba(16, 185, 129, 0.08), transparent);
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+}
+
+/* Content */
+.section-container {
   max-width: 1200px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+  margin: 0 auto;
+  padding: 0 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
   align-items: center;
-  gap: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 1024px) {
+  .section-container {
+    grid-template-columns: 1fr;
+    gap: 60px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-container {
+    padding: 0 24px;
+  }
 }
 
 .hero-content {
-  text-align: center;
-  max-width: 800px;
-}
-
-.hero-title {
-  font-size: 48px;
-  line-height: 1.2;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 24px;
-}
-
-.hero-desc {
-  font-size: 18px;
-  color: #6B7280;
-  margin-bottom: 32px;
-  line-height: 1.6;
-}
-
-.hero-actions {
   display: flex;
-  gap: 16px;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
 }
 
-.btn-primary {
-  display: inline-block;
-  padding: 12px 32px;
-  background: #111827;
-  color: #FFFFFF;
-  border-radius: 8px;
-  font-weight: 500;
-  text-decoration: none;
+@media (max-width: 1024px) {
+  .hero-content {
+    align-items: center;
+  }
 }
 
-.btn-outline-inverse {
-  display: inline-block;
-  padding: 12px 32px;
-  background: #FFFFFF;
-  color: #111827;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
-  font-weight: 500;
-  text-decoration: none;
+/* Badge */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(22, 93, 255, 0.1);
+  border: 1px solid rgba(22, 93, 255, 0.2);
+  border-radius: 9999px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.hero-visual-wrapper {
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background: #165DFF;
+  border-radius: 50%;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Headline */
+.hero-headline {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 768px) {
+  .hero-headline {
+    font-size: 2.5rem;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #165DFF, #8B5CF6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subheadline */
+.hero-subheadline {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Metrics */
+.hero-metrics {
   display: flex;
-  justify-content: center;
-  width: 100%;
+  align-items: center;
+  gap: 32px;
+  padding: 20px 28px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
 }
 
-.hero-visual {
-  padding: 32px 40px;
-  display: inline-block;
-  width: 100%;
-  max-width: 64rem;
-  box-sizing: border-box;
+@media (max-width: 640px) {
+  .hero-metrics {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
 }
 
-.visual-content h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.model-scroll-container {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: #D1D5DB transparent;
-}
-
-.model-scroll-container::-webkit-scrollbar {
-  height: 4px;
-}
-
-.model-scroll-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.model-scroll-container::-webkit-scrollbar-thumb {
-  background: #D1D5DB;
-  border-radius: 2px;
-}
-
-.model-scroll-track {
-  display: flex;
-  gap: 40px;
-  padding: 8px 4px;
-  min-width: max-content;
-  justify-content: center;
-}
-
-.model-item {
+.metric-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  cursor: pointer;
-  text-decoration: none;
-  transition: transform 0.2s ease;
+  gap: 4px;
 }
 
-.model-item:hover {
-  transform: translateY(-3px);
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
 }
 
-.model-item svg {
-  display: block;
-}
-
-.model-label {
-  font-size: 12px;
-  color: #6B7280;
+.metric-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
   white-space: nowrap;
+}
+
+.metric-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Actions */
+.hero-actions {
+  display: flex;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .hero-actions a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Dashboard preview */
+.hero-dashboard {
+  position: relative;
+  perspective: 1000px;
+}
+
+.dashboard-card {
+  background: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(22, 93, 255, 0.1);
+  transform: rotateY(-5deg) rotateX(5deg);
+  transition: transform 0.5s ease;
+}
+
+.hero-dashboard:hover .dashboard-card {
+  transform: rotateY(0) rotateX(0);
+}
+
+@media (max-width: 1024px) {
+  .dashboard-card {
+    transform: none;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.dashboard-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dashboard-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-dots span:nth-child(1) { background: #EF4444; }
+.dashboard-dots span:nth-child(2) { background: #F59E0B; }
+.dashboard-dots span:nth-child(3) { background: #10B981; }
+
+.dashboard-title {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-left: auto;
+}
+
+.dashboard-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.dash-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dash-metric-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.dash-metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.dash-metric-trend {
+  font-size: 11px;
+}
+
+.dash-metric-trend.up {
+  color: #10B981;
+}
+
+.dashboard-radar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.radar-svg {
+  width: 200px;
+  height: 180px;
+}
+
+.dashboard-engines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.engine-tag {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+}
+
+.engine-tag:hover {
+  background: rgba(22, 93, 255, 0.2);
+  border-color: rgba(22, 93, 255, 0.4);
+  color: white;
+}
+
+/* Floating cards */
+.floating-card {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  animation: float 3s ease-in-out infinite;
+}
+
+.floating-card-1 {
+  top: 10%;
+  right: -20px;
+  animation-delay: 0s;
+}
+
+.floating-card-2 {
+  bottom: 20%;
+  left: -30px;
+  animation-delay: 1.5s;
+}
+
+@media (max-width: 1024px) {
+  .floating-card {
+    display: none;
+  }
+}
+
+.fc-icon {
+  font-size: 16px;
+}
+
+.fc-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(22, 93, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(22, 93, 255, 0.6);
+  }
+}
+
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards;
 }
 </style>

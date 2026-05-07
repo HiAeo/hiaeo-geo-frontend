@@ -1,113 +1,119 @@
 <template>
-  <section id="cases" class="py-16">
+  <section id="cases" class="py-20 relative">
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Section header -->
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-medium mb-6"
+          style="background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.2);">
+          客户成长路径
+        </span>
+        <h2 class="text-4xl sm:text-5xl font-bold mb-4" style="color: white;">
           从新手到优秀，<br />每一步都有标准动作
         </h2>
-        <p class="text-gray-500 text-lg max-w-2xl mx-auto">
+        <p class="text-lg max-w-2xl mx-auto" style="color: rgba(255,255,255,0.6);">
           行业范本、真实案例、AI智能引导，让你的GEO优化不再从零摸索
         </p>
       </div>
 
-      <!-- Glass card outer -->
-      <div class="glass-card rounded-2xl max-w-5xl mx-auto transition-all duration-300 hover:shadow-lg">
-        <div style="padding:48px;">
+      <!-- Card outer -->
+      <div class="max-w-5xl mx-auto">
+        <div class="growth-card">
 
-        <!-- Tab switcher: stages + cases -->
-        <div class="flex items-center gap-2 mb-8 flex-wrap">
-          <button
-            v-for="(stage,i) in stages"
-            :key="stage.name"
-            @click="activeTab = 'stage-'+i"
-            class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-            :class="activeTab === 'stage-'+i ? 'text-white' : 'bg-gray-100 text-gray-500'"
-            :style="activeTab === 'stage-'+i ? `background:${stage.color};` : ''"
-          >
-            {{ stage.num }} · {{ stage.name }}
-          </button>
-          <button
-            v-for="c in cases"
-            :key="'case-'+c.company"
-            @click="activeTab = 'case-'+c.company"
-            class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-            :class="activeTab === 'case-'+c.company ? 'text-white' : 'bg-gray-100 text-gray-500'"
-            :style="activeTab === 'case-'+c.company ? `background:${c.color};` : ''"
-          >
-            案例
-          </button>
-        </div>
+          <!-- Tab switcher: stages + cases -->
+          <div class="flex items-center gap-2 mb-8 flex-wrap">
+            <button
+              v-for="(stage,i) in stages"
+              :key="stage.name"
+              @click="activeTab = 'stage-'+i"
+              class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+              :class="activeTab === 'stage-'+i ? 'text-white' : ''"
+              :style="activeTab === 'stage-'+i ? `background:${stage.color};` : 'background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6);'"
+            >
+              {{ stage.num }} · {{ stage.name }}
+            </button>
+            <button
+              v-for="c in cases"
+              :key="'case-'+c.company"
+              @click="activeTab = 'case-'+c.company"
+              class="px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+              :class="activeTab === 'case-'+c.company ? 'text-white' : ''"
+              :style="activeTab === 'case-'+c.company ? `background:${c.color};` : 'background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6);'"
+            >
+              案例
+            </button>
+          </div>
 
-        <!-- Stage detail view -->
-        <div v-for="(stage,i) in stages" :key="stage.name"
-          v-show="activeTab === 'stage-'+i"
-          class="p-6 rounded-2xl transition-all duration-300"
-          :style="`border:2px solid ${stage.color}20;background:${stage.color}08;`">
-          <div class="flex items-center gap-3 mb-4 group cursor-pointer">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white transition-transform duration-300 group-hover:scale-110"
-              :style="{ background: stage.color }">
-              {{ stage.num }}
+          <!-- Stage detail view -->
+          <div v-for="(stage,i) in stages" :key="stage.name"
+            v-show="activeTab === 'stage-'+i"
+            class="p-6 rounded-2xl transition-all duration-300"
+            :style="`border:1px solid ${stage.color}30;background:${stage.color}08;`">
+            <div class="flex items-center gap-3 mb-4 group cursor-pointer">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-transform duration-300 group-hover:scale-110"
+                :style="{ background: stage.color, color: 'white' }">
+                {{ stage.num }}
+              </div>
+              <div>
+                <div class="text-sm font-bold" style="color: white;">{{ stage.name }}</div>
+                <div class="text-xs" :style="{ color: stage.color }">GEO分 {{ stage.score }}</div>
+              </div>
             </div>
-            <div>
-              <div class="text-sm font-bold text-gray-900">{{ stage.name }}</div>
+            <div class="space-y-2">
+              <div v-for="task in stage.tasks" :key="task"
+                class="flex items-center gap-2.5 p-3 rounded-xl transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
+                style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ background: stage.color }"/>
+                <span class="text-sm" style="color: rgba(255,255,255,0.7);">{{ task }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Case studies view -->
+          <div v-for="c in cases" :key="'detail-'+c.company"
+            v-show="activeTab === 'case-'+c.company"
+            class="p-6 rounded-2xl transition-all duration-300"
+            :style="`border:1px solid ${c.color}30;background:${c.color}08;`">
+            <div class="flex items-center gap-3 mb-4 group cursor-pointer">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-transform duration-300 group-hover:scale-110"
+                :style="{ background: c.color, color: 'white' }">
+                {{ c.company[0] }}
+              </div>
+              <div>
+                <div class="text-sm font-bold" style="color: white;">{{ c.company }}</div>
+                <div class="text-xs" style="color: rgba(255,255,255,0.5);">{{ c.industry }}</div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div v-for="m in c.metrics" :key="m.label"
+                class="p-4 rounded-xl transition-all duration-200 hover:scale-105 cursor-pointer"
+                style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                <div class="text-xl font-bold" :style="{ color: c.color }">
+                  {{ m.before }} <span style="color: rgba(255,255,255,0.3); font-weight: 400;">→</span> {{ m.after }}
+                </div>
+                <div class="text-xs mt-1" style="color: rgba(255,255,255,0.4);">{{ m.label }}</div>
+              </div>
+            </div>
+            <p class="text-sm italic leading-relaxed p-4 rounded-xl"
+              style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.7);">
+              "{{ c.quote }}"
+            </p>
+          </div>
+
+          <!-- All stages overview (shown when no tab selected) -->
+          <div v-if="activeTab === ''" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div v-for="(stage,i) in stages" :key="stage.name"
+              class="p-5 rounded-xl text-center cursor-pointer transition-all duration-300 hover:scale-105"
+              style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);"
+              @click="activeTab = 'stage-'+i">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-3"
+                :style="{ background: stage.color, color: 'white' }">
+                {{ stage.num }}
+              </div>
+              <div class="text-sm font-semibold mb-1" style="color: white;">{{ stage.name }}</div>
               <div class="text-xs" :style="{ color: stage.color }">GEO分 {{ stage.score }}</div>
             </div>
           </div>
-          <div class="space-y-2">
-            <div v-for="task in stage.tasks" :key="task"
-              class="flex items-center gap-2.5 p-3 rounded-xl transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 cursor-pointer"
-              style="background:white;border:1px solid #F0F0F0;">
-              <div class="w-1.5 h-1.5 rounded-full shrink-0" :style="{ background: stage.color }"/>
-              <span class="text-sm text-gray-600">{{ task }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Case studies view -->
-        <div v-for="c in cases" :key="'detail-'+c.company"
-          v-show="activeTab === 'case-'+c.company"
-          class="p-6 rounded-2xl transition-all duration-300"
-          :style="`border:2px solid ${c.color}20;background:${c.color}08;`">
-          <div class="flex items-center gap-3 mb-4 group cursor-pointer">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white transition-transform duration-300 group-hover:scale-110"
-              :style="{ background: c.color }">
-              {{ c.company[0] }}
-            </div>
-            <div>
-              <div class="text-sm font-bold text-gray-900">{{ c.company }}</div>
-              <div class="text-xs text-gray-400">{{ c.industry }}</div>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-3 mb-3">
-            <div v-for="m in c.metrics" :key="m.label"
-              class="p-3 rounded-xl bg-white border border-gray-100 transition-all duration-200 hover:shadow-sm cursor-pointer">
-              <div class="text-base font-bold" :style="{ color: c.color }">
-                {{ m.before }} <span class="text-gray-300 font-normal">→</span> {{ m.after }}
-              </div>
-              <div class="text-xs text-gray-400 mt-0.5">{{ m.label }}</div>
-            </div>
-          </div>
-          <p class="text-sm text-gray-500 italic leading-relaxed p-4 rounded-xl bg-white border border-gray-100">
-            "{{ c.quote }}"
-          </p>
-        </div>
-
-        <!-- All stages overview (shown when no tab selected) -->
-        <div v-if="activeTab === ''" class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div v-for="(stage,i) in stages" :key="stage.name"
-            class="p-4 rounded-xl text-center cursor-pointer transition-all duration-300 hover:shadow-md hover:-translate-y-1"
-            style="background:#FAFAFA;border:1px solid #F0F0F0;"
-            @click="activeTab = 'stage-'+i">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white mx-auto mb-3"
-              :style="{ background: stage.color }">
-              {{ stage.num }}
-            </div>
-            <div class="text-sm font-semibold text-gray-900 mb-1">{{ stage.name }}</div>
-            <div class="text-xs" :style="{ color: stage.color }">GEO分 {{ stage.score }}</div>
-          </div>
-        </div>
 
         </div>
       </div>
@@ -152,3 +158,13 @@ const cases = [
     quote: 'Kimi口碑评分大幅提升，竞品替代风险从高危降至中低，成功守住本地市场认知。' },
 ]
 </script>
+
+<style scoped>
+.growth-card {
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 36px;
+}
+</style>

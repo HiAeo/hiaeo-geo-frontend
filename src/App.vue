@@ -1,25 +1,31 @@
 <template>
-  <div class="min-h-screen bg-[#F7F8FA] overflow-x-hidden">
+  <div class="min-h-screen overflow-x-hidden" style="background: #0A0A0F;">
     <!-- NavBar -->
     <NavBar />
 
     <!-- 板块1: Hero -->
     <HeroSection />
 
-    <!-- 板块2: 模镜 MiraSeek -->
+    <!-- 板块2: 产品价值概览 (Bento Grid) -->
+    <BentoGridSection />
+
+    <!-- 板块3: 模镜 MiraSeek -->
     <MiraSeekSection />
 
-    <!-- 板块3: 模豆 MiraMod -->
+    <!-- 板块4: 模豆 MiraMod -->
     <MiraModSection />
 
-    <!-- 板块4: 模法 MiraMag -->
+    <!-- 板块5: 模法 MiraMag -->
     <MiraMagSection />
 
-    <!-- 板块5: 魔鲸Hub -->
+    <!-- 板块6: 魔鲸Hub -->
     <HubSection />
 
-    <!-- 板块6: 客户成长路径与案例 -->
+    <!-- 板块7: 客户成长路径与案例 -->
     <GrowthSection />
+
+    <!-- 板块8: 定价 -->
+    <PricingSection />
 
     <!-- Footer -->
     <FooterSection />
@@ -29,10 +35,12 @@
 <script setup>
 import NavBar from './components/NavBar.vue'
 import HeroSection from './components/HeroSection.vue'
+import BentoGridSection from './components/BentoGridSection.vue'
 import MiraSeekSection from './components/MiraSeekSection.vue'
 import MiraModSection from './components/MiraModSection.vue'
 import MiraMagSection from './components/MiraMagSection.vue'
 import HubSection from './components/HubSection.vue'
 import GrowthSection from './components/GrowthSection.vue'
+import PricingSection from './components/PricingSection.vue'
 import FooterSection from './components/FooterSection.vue'
 </script>

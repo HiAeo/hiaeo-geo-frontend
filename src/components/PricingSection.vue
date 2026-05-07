@@ -1,80 +1,87 @@
 <template>
-  <section id="pricing" class="py-28">
-
+  <section id="pricing" class="py-20 relative">
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Header -->
       <div class="text-center mb-16">
-        <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+        <span class="inline-block px-4 py-1.5 rounded-full text-xs font-medium mb-6"
+          style="background: rgba(22, 93, 255, 0.1); color: #165DFF; border: 1px solid rgba(22, 93, 255, 0.2);">
+          定价方案
+        </span>
+        <h2 class="text-4xl sm:text-5xl font-bold mb-4" style="color: white;">
           从免费诊断到企业级全闭环<br />
           按需选择，即开即用
         </h2>
-        <p class="text-gray-500 text-lg">基础版轻量起步，专业版解锁完整策略，企业版专属数据隔离与API对接</p>
+        <p class="text-lg max-w-2xl mx-auto" style="color: rgba(255,255,255,0.6);">
+          基础版轻量起步，专业版解锁完整策略，企业版专属数据隔离与API对接
+        </p>
       </div>
 
       <!-- Pricing cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
 
         <!-- Free -->
-        <div class="glass-card p-7 flex flex-col gap-5 rounded-2xl">
-          <div>
-            <div class="text-sm font-medium text-gray-400 mb-1">免费试用</div>
-            <div class="text-3xl font-bold text-gray-900 mb-1">¥0</div>
-            <div class="text-xs text-gray-400">永久免费</div>
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <div class="text-sm font-medium mb-1" style="color: rgba(255,255,255,0.5);">免费试用</div>
+            <div class="text-3xl font-bold mb-1" style="color: white;">¥0</div>
+            <div class="text-xs" style="color: rgba(255,255,255,0.4);">永久免费</div>
           </div>
-          <div class="h-px bg-gray-200"/>
-          <div class="space-y-3">
-            <div v-for="f in free" :key="f" class="flex items-start gap-3 text-sm text-gray-600">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" class="shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <div class="h-px my-6" style="background: rgba(255,255,255,0.1);"/>
+          <div class="space-y-3 flex-1">
+            <div v-for="f in free" :key="f" class="flex items-start gap-3 text-sm" style="color: rgba(255,255,255,0.7);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0 mt-0.5" style="color: #10B981;">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
               {{ f }}
             </div>
           </div>
-          <button class="w-full py-3 rounded-xl text-sm font-medium mt-auto bg-gray-100 text-gray-700 hover:bg-gray-200">
+          <button class="w-full py-3 rounded-xl text-sm font-medium mt-6 pricing-btn-secondary">
             立即开始
           </button>
         </div>
 
-        <!-- Pro (highlighted with border) -->
-        <div class="relative glass-card p-7 flex flex-col gap-5 rounded-2xl md:-mt-3 md:mb-3 ring-2 ring-gray-300">
+        <!-- Pro (highlighted) -->
+        <div class="relative pricing-card pricing-card-popular">
           <!-- Popular badge -->
-          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
-            <div class="px-4 py-1 rounded-full text-xs font-bold text-white bg-gray-900">
-              推荐方案
-            </div>
-          </div>
+          <div class="popular-badge">推荐方案</div>
 
-          <div>
-            <div class="text-sm font-medium text-gray-400 mb-1">专业版</div>
-            <div class="text-3xl font-bold text-gray-900 mb-1">¥99<span class="text-base font-normal text-gray-400">/月</span></div>
-            <div class="text-xs text-gray-400">年付享8折优惠</div>
+          <div class="pricing-header">
+            <div class="text-sm font-medium mb-1" style="color: rgba(255,255,255,0.5);">专业版</div>
+            <div class="text-3xl font-bold mb-1" style="color: white;">¥99<span class="text-base font-normal" style="color: rgba(255,255,255,0.4);">/月</span></div>
+            <div class="text-xs" style="color: rgba(255,255,255,0.4);">年付享8折优惠</div>
           </div>
-          <div class="h-px bg-gray-200"/>
-          <div class="space-y-3">
-            <div v-for="f in pro" :key="f" class="flex items-start gap-3 text-sm text-gray-700">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" class="shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <div class="h-px my-6" style="background: rgba(255,255,255,0.1);"/>
+          <div class="space-y-3 flex-1">
+            <div v-for="f in pro" :key="f" class="flex items-start gap-3 text-sm" style="color: rgba(255,255,255,0.8);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0 mt-0.5" style="color: #165DFF;">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
               {{ f }}
             </div>
           </div>
-          <button class="w-full py-3 rounded-xl text-sm font-medium mt-auto bg-gray-900 text-white hover:bg-black">
+          <button class="w-full py-3 rounded-xl text-sm font-semibold mt-6 pricing-btn-primary">
             立即升级
           </button>
         </div>
 
         <!-- Enterprise -->
-        <div class="glass-card p-7 flex flex-col gap-5 rounded-2xl">
-          <div>
-            <div class="text-sm font-medium text-gray-400 mb-1">企业版</div>
-            <div class="text-3xl font-bold text-gray-900 mb-1">¥299<span class="text-base font-normal text-gray-400">/月</span></div>
-            <div class="text-xs text-gray-400">支持私有化部署</div>
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <div class="text-sm font-medium mb-1" style="color: rgba(255,255,255,0.5);">企业版</div>
+            <div class="text-3xl font-bold mb-1" style="color: white;">¥299<span class="text-base font-normal" style="color: rgba(255,255,255,0.4);">/月</span></div>
+            <div class="text-xs" style="color: rgba(255,255,255,0.4);">支持私有化部署</div>
           </div>
-          <div class="h-px bg-gray-200"/>
-          <div class="space-y-3">
-            <div v-for="f in enterprise" :key="f" class="flex items-start gap-3 text-sm text-gray-600">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2" class="shrink-0 mt-0.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <div class="h-px my-6" style="background: rgba(255,255,255,0.1);"/>
+          <div class="space-y-3 flex-1">
+            <div v-for="f in enterprise" :key="f" class="flex items-start gap-3 text-sm" style="color: rgba(255,255,255,0.7);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0 mt-0.5" style="color: #8B5CF6;">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
               {{ f }}
             </div>
           </div>
-          <button class="w-full py-3 rounded-xl text-sm font-medium mt-auto bg-gray-100 text-gray-700 hover:bg-gray-200">
+          <button class="w-full py-3 rounded-xl text-sm font-medium mt-6 pricing-btn-secondary">
             联系销售
           </button>
         </div>
@@ -83,8 +90,10 @@
       <!-- Trust badges -->
       <div class="flex items-center justify-center gap-8 mt-16 flex-wrap">
         <div v-for="badge in trustBadges" :key="badge"
-          class="flex items-center gap-2 text-sm text-gray-400">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          class="flex items-center gap-2 text-sm" style="color: rgba(255,255,255,0.4);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: #10B981;">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
           {{ badge }}
         </div>
       </div>
@@ -132,3 +141,71 @@ const trustBadges = [
   '7天无理由退款',
 ]
 </script>
+
+<style scoped>
+.pricing-card {
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.pricing-card-popular {
+  background: rgba(22, 93, 255, 0.08);
+  border-color: rgba(22, 93, 255, 0.3);
+  box-shadow: 0 0 60px rgba(22, 93, 255, 0.15);
+}
+
+.pricing-card-popular:hover {
+  border-color: rgba(22, 93, 255, 0.5);
+}
+
+.popular-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  background: linear-gradient(135deg, #165DFF, #8B5CF6);
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.pricing-header {
+  text-align: left;
+}
+
+.pricing-btn-primary {
+  background: #165DFF;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.pricing-btn-primary:hover {
+  background: #0040ED;
+  box-shadow: 0 0 20px rgba(22, 93, 255, 0.4);
+}
+
+.pricing-btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
+.pricing-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+</style>
