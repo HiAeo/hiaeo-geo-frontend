@@ -80,7 +80,13 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/manage/overview'
+        redirect: '/manage/hub'
+      },
+      {
+        path: 'hub',
+        name: 'admin-hub',
+        component: () => import('../components/pages/HubPage.vue'),
+        meta: { title: '魔鲸Hub驾驶舱' }
       },
       {
         path: 'overview',
