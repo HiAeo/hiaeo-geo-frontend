@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-layout" :data-theme="theme">
+  <div class="brand-layout" :data-theme="theme">
     <!-- Expand button when sidebar is collapsed -->
     <div v-if="sidebarCollapsed" class="expand-btn" @click="sidebarCollapsed = false" title="展开侧边栏">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -15,7 +15,7 @@
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
             <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <span v-if="!sidebarCollapsed" class="logo-text">魔鲸 Geo 管理后台</span>
+          <span v-if="!sidebarCollapsed" class="logo-text">魔鲸 Geo</span>
         </div>
         <button class="collapse-btn" @click="sidebarCollapsed = !sidebarCollapsed">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -27,7 +27,7 @@
 
       <nav class="sidebar-nav">
         <router-link 
-          v-for="item in adminNavItems" 
+          v-for="item in brandNavItems" 
           :key="item.id"
           :to="item.path"
           class="nav-item"
@@ -39,6 +39,15 @@
           <span v-if="item.badge && !sidebarCollapsed" class="nav-badge">{{ item.badge }}</span>
         </router-link>
       </nav>
+
+      <!-- Brand indicator -->
+      <div v-if="!sidebarCollapsed" class="brand-indicator">
+        <div class="brand-icon">G</div>
+        <div class="brand-info">
+          <span class="brand-name">{{ currentBrand || '我的品牌' }}</span>
+          <span class="brand-plan">{{ brandPlan }}</span>
+        </div>
+      </div>
 
       <div class="sidebar-footer">
         <button class="nav-item" @click="toggleTheme">
@@ -81,13 +90,10 @@ import { ref, h } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  theme: {
-    type: String,
-    default: 'dark'
-  }
+  theme: { type: String, default: 'dark' }
 })
 
-const emit = defineEmits(['toggle-theme', 'back'])
+const emit = defineEmits(['toggle-theme'])
 const router = useRouter()
 
 const handleLogout = () => {
@@ -97,7 +103,10 @@ const handleLogout = () => {
 }
 
 const sidebarCollapsed = ref(false)
-const activeTab = ref('dashboard')
+const currentBrand = ref('示例品牌')
+const brandPlan = ref('Pro 套餐')
+
+const toggleTheme = () => emit('toggle-theme')
 
 // Icon components
 const DashboardIcon = {
@@ -111,13 +120,11 @@ const DashboardIcon = {
   }
 }
 
-const UsersIcon = {
+const DiagnoseIcon = {
   render() {
     return h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': 2 }, [
-      h('path', { d: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2' }),
-      h('circle', { cx: 9, cy: 7, r: 4 }),
-      h('path', { d: 'M23 21v-2a4 4 0 0 0-3-3.87' }),
-      h('path', { d: 'M16 3.13a4 4 0 0 1 0 7.75' })
+      h('path', { d: 'M9 11l3 3L22 4' }),
+      h('path', { d: 'M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11' })
     ])
   }
 }
@@ -132,11 +139,24 @@ const CreditsIcon = {
   }
 }
 
-const DiagnoseIcon = {
+const OrdersIcon = {
   render() {
     return h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': 2 }, [
-      h('path', { d: 'M9 11l3 3L22 4' }),
-      h('path', { d: 'M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11' })
+      h('path', { d: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z' }),
+      h('polyline', { points: '14 2 14 8 20 8' }),
+      h('line', { x1: 16, y1: 13, x2: 8, y2: 13 }),
+      h('line', { x1: 16, y1: 17, x2: 8, y2: 17 }),
+      h('polyline', { points: '10 9 9 9 8 9' })
+    ])
+  }
+}
+
+const StrategyIcon = {
+  render() {
+    return h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': 2 }, [
+      h('path', { d: 'M12 2L2 7l10 5 10-5-10-5z' }),
+      h('path', { d: 'M2 17l10 5 10-5' }),
+      h('path', { d: 'M2 12l10 5 10-5' })
     ])
   }
 }
@@ -150,21 +170,18 @@ const SettingsIcon = {
   }
 }
 
-const adminNavItems = [
-  { id: 'overview', label: '运营概览', path: '/manage/overview', icon: DashboardIcon },
-  { id: 'diagnose', label: '诊断管理', path: '/manage/diagnose', icon: DiagnoseIcon },
-  { id: 'users', label: '用户管理', path: '/manage/users', icon: UsersIcon },
-  { id: 'credits', label: '积分管理', path: '/manage/credits', icon: CreditsIcon },
-  { id: 'settings', label: '系统设置', path: '/manage/settings', icon: SettingsIcon }
+const brandNavItems = [
+  { id: 'dashboard', label: '品牌仪表盘', path: '/app/dashboard', icon: DashboardIcon },
+  { id: 'diagnose', label: '诊断报告', path: '/app/diagnose', icon: DiagnoseIcon },
+  { id: 'strategy', label: '策略生成', path: '/app/strategy', icon: StrategyIcon },
+  { id: 'credits', label: '我的积分', path: '/app/credits', icon: CreditsIcon },
+  { id: 'orders', label: '订单管理', path: '/app/orders', icon: OrdersIcon },
+  { id: 'settings', label: '账户设置', path: '/app/settings', icon: SettingsIcon }
 ]
-
-const toggleTheme = () => {
-  emit('toggle-theme')
-}
 </script>
 
 <style scoped>
-.admin-layout {
+.brand-layout {
   display: flex;
   min-height: 100vh;
   background: var(--bg-primary);
@@ -196,19 +213,6 @@ const toggleTheme = () => {
   border-color: var(--color-primary);
   color: #ffffff;
   transform: translateY(-50%) scale(1.05);
-}
-
-[data-theme="light"] .expand-btn {
-  background: #ffffff;
-  border-color: #d1d5db;
-  color: #4f46e5;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .expand-btn:hover {
-  background: #4f46e5;
-  border-color: #4f46e5;
-  color: #ffffff;
 }
 
 /* Sidebar */
@@ -284,14 +288,6 @@ const toggleTheme = () => {
   overflow-y: auto;
 }
 
-.sidebar-footer {
-  padding: 12px 8px;
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
 .nav-item {
   display: flex;
   align-items: center;
@@ -306,6 +302,7 @@ const toggleTheme = () => {
   text-align: left;
   font-size: 0.875rem;
   width: 100%;
+  text-decoration: none;
 }
 
 .nav-item:hover {
@@ -348,6 +345,61 @@ const toggleTheme = () => {
   display: none;
 }
 
+/* Brand indicator */
+.brand-indicator {
+  margin: 0 8px 8px;
+  padding: 12px;
+  background: var(--bg-primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.brand-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-plan {
+  font-size: 0.6875rem;
+  color: var(--color-primary);
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 12px 8px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 /* Main Content */
 .main-content {
   flex: 1;
@@ -360,10 +412,6 @@ const toggleTheme = () => {
   margin-left: 64px;
 }
 
-.tab-content {
-  padding: 0;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .sidebar {
@@ -373,7 +421,8 @@ const toggleTheme = () => {
   .sidebar .logo-text,
   .sidebar .nav-label,
   .sidebar .nav-badge,
-  .sidebar .collapse-btn {
+  .sidebar .collapse-btn,
+  .sidebar .brand-indicator {
     display: none;
   }
   

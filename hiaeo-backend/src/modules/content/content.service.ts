@@ -68,10 +68,10 @@ export class ContentService {
 
     try {
       // 调用 AI 生成内容
-      const generated = await this.aiService.generateSeoContent({
-        topic: generateDto.topic,
-        keywords: generateDto.keywords || [],
-        targetAudience: generateDto.targetAudience || '普通用户',
+      const generated = await this.aiService.generateGeoContent({
+        brandName: generateDto.topic,
+        productNames: generateDto.keywords || [],
+        contentType: 'article',
         tone: generateDto.tone || 'professional',
         length: generateDto.length || 'medium',
       });
@@ -79,6 +79,7 @@ export class ContentService {
       // 分析内容 SEO
       const analysis = await this.aiService.analyzeContent({
         content: generated.content,
+        brandName: generateDto.topic,
         keywords: generateDto.keywords || [],
       });
 

@@ -1,250 +1,358 @@
 <template>
-  <div class="credits-page">
+  <div class="credits-page" :data-theme="theme">
     <!-- Header -->
     <div class="page-header">
       <div class="header-content">
-        <h1 class="page-title">积分管理</h1>
-        <div class="header-actions">
-          <button class="refresh-btn" @click="loadData" :class="{ spinning: loading }">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="23 4 23 10 17 10"/>
-              <polyline points="1 20 1 14 7 14"/>
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="stats-section">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon total">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="16"/>
-              <line x1="8" y1="12" x2="16" y2="12"/>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{{ formatNumber(stats.totalCredits) }}</span>
-            <span class="stat-label">平台总积分</span>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon distributed">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{{ formatNumber(stats.distributedCredits) }}</span>
-            <span class="stat-label">已分发积分</span>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon consumed">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{{ formatNumber(stats.consumedCredits) }}</span>
-            <span class="stat-label">已消耗积分</span>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon rate">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 20V10"/>
-              <path d="M18 20V4"/>
-              <path d="M6 20v-4"/>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{{ stats.consumptionRate }}%</span>
-            <span class="stat-label">消耗率</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="filters-section">
-      <div class="search-box">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input type="text" v-model="filters.search" placeholder="搜索用户..." @keyup.enter="loadData" />
-      </div>
-
-      <div class="filter-group">
-        <select v-model="filters.type" @change="loadData">
-          <option value="">全部类型</option>
-          <option value="add">充值</option>
-          <option value="deduct">扣除</option>
-          <option value="consume">消耗</option>
-        </select>
-
-        <select v-model="filters.period" @change="loadData">
-          <option value="7d">近7天</option>
-          <option value="30d">近30天</option>
-          <option value="90d">近90天</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Transaction List -->
-    <div class="list-section">
-      <div class="list-card">
-        <div class="list-header">
-          <h3>积分流水</h3>
-          <span class="list-count">{{ transactions.length }} 条记录</span>
-        </div>
-
-        <div v-if="loading" class="loading-state">
-          <div class="spinner"></div>
-          <span>加载中...</span>
-        </div>
-
-        <div v-else-if="transactions.length === 0" class="empty-state">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="16"/>
-            <line x1="8" y1="12" x2="16" y2="12"/>
+        <button class="back-btn" @click="$emit('back')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
           </svg>
-          <p>暂无积分记录</p>
+        </button>
+        <h1 class="page-title">我的积分</h1>
+      </div>
+    </div>
+
+    <!-- Credits Overview -->
+    <div class="credits-overview">
+      <div class="credits-card">
+        <div class="credits-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
         </div>
-
-        <div v-else class="transaction-list">
-          <div v-for="tx in transactions" :key="tx.id" class="transaction-item">
-            <div class="tx-icon" :class="tx.type">
-              <svg v-if="tx.type === 'add'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-              <svg v-else-if="tx.type === 'deduct'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-              <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
-            </div>
-
-            <div class="tx-content">
-              <div class="tx-main">
-                <span class="tx-user">{{ tx.userEmail }}</span>
-                <span class="tx-amount" :class="tx.type">
-                  {{ tx.type === 'add' ? '+' : '-' }}{{ tx.amount }}
-                </span>
-              </div>
-              <div class="tx-meta">
-                <span class="tx-reason">{{ tx.reason || '无备注' }}</span>
-                <span class="tx-time">{{ formatDate(tx.createdAt) }}</span>
-              </div>
-            </div>
-
-            <div class="tx-balance">
-              <span class="balance-label">余额</span>
-              <span class="balance-value">{{ formatNumber(tx.balanceAfter) }}</span>
-            </div>
-          </div>
+        <div class="credits-info">
+          <span class="credits-label">当前积分</span>
+          <span class="credits-value">{{ creditsInfo?.balance || 0 }}</span>
         </div>
+      </div>
 
-        <!-- Pagination -->
-        <div v-if="pagination.total > pagination.limit" class="pagination">
-          <button class="page-btn" :disabled="pagination.page <= 1" @click="goToPage(pagination.page - 1)">
-            上一页
-          </button>
-          <span class="page-info">第 {{ pagination.page }} / {{ totalPages }} 页</span>
-          <button class="page-btn" :disabled="pagination.page >= totalPages" @click="goToPage(pagination.page + 1)">
-            下一页
-          </button>
+      <div class="credits-stats">
+        <div class="stat-item">
+          <span class="stat-value">+{{ creditsInfo?.totalEarned || 0 }}</span>
+          <span class="stat-label">累计获得</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value">-{{ creditsInfo?.totalConsumed || 0 }}</span>
+          <span class="stat-label">累计消耗</span>
         </div>
       </div>
     </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button class="action-btn" @click="showEarnModal = true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        <span>获取积分</span>
+      </button>
+      <button class="action-btn" @click="scrollToHistory">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span>积分明细</span>
+      </button>
+    </div>
+
+    <!-- How to Earn -->
+    <div class="section">
+      <h2 class="section-title">如何获取积分</h2>
+      <div class="earn-methods">
+        <div class="earn-item">
+          <div class="earn-icon">📦</div>
+          <div class="earn-content">
+            <span class="earn-title">订阅付费套餐</span>
+            <span class="earn-desc">每消费10元获得1积分</span>
+          </div>
+          <span class="earn-rate">+1/10元</span>
+        </div>
+        <div class="earn-item">
+          <div class="earn-icon">🎁</div>
+          <div class="earn-content">
+            <span class="earn-title">新人礼包</span>
+            <span class="earn-desc">新用户注册赠送100积分</span>
+          </div>
+          <span class="earn-rate">+100</span>
+        </div>
+        <div class="earn-item">
+          <div class="earn-icon">📢</div>
+          <div class="earn-content">
+            <span class="earn-title">邀请好友</span>
+            <span class="earn-desc">每邀请1位好友获得50积分</span>
+          </div>
+          <span class="earn-rate">+50/位</span>
+        </div>
+        <div class="earn-item">
+          <div class="earn-icon">⭐</div>
+          <div class="earn-content">
+            <span class="earn-title">每日签到</span>
+            <span class="earn-desc">每日签到获得5积分</span>
+          </div>
+          <span class="earn-rate">+5/天</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transaction History -->
+    <div class="section" ref="historySection">
+      <div class="section-header">
+        <h2 class="section-title">积分明细</h2>
+        <div class="filter-tabs">
+          <button 
+            v-for="tab in tabs" 
+            :key="tab.value"
+            class="tab-btn"
+            :class="{ active: activeTab === tab.value }"
+            @click="activeTab = tab.value"
+          >
+            {{ tab.label }}
+          </button>
+        </div>
+      </div>
+
+      <div v-if="loading" class="loading-state">
+        <div class="loading-spinner"></div>
+        <span>加载中...</span>
+      </div>
+
+      <div v-else-if="transactions.length === 0" class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span>暂无积分记录</span>
+      </div>
+
+      <div v-else class="transactions-list">
+        <div 
+          v-for="tx in filteredTransactions" 
+          :key="tx.id"
+          class="transaction-item"
+          :class="{ 'is-earn': tx.type === 'earn' || tx.type === 'bonus' || tx.type === 'refund', 'is-consume': tx.type === 'consume' }"
+        >
+          <div class="tx-icon">
+            <span v-if="tx.type === 'earn' || tx.type === 'bonus'">📈</span>
+            <span v-else-if="tx.type === 'refund'">🔄</span>
+            <span v-else>📉</span>
+          </div>
+          <div class="tx-content">
+            <span class="tx-desc">{{ tx.description }}</span>
+            <span class="tx-time">{{ formatTime(tx.createdAt) }}</span>
+          </div>
+          <span class="tx-amount" :class="{ positive: tx.type !== 'consume' }">
+            {{ tx.type !== 'consume' ? '+' : '-' }}{{ tx.amount }}
+          </span>
+        </div>
+      </div>
+
+      <div v-if="hasMore" class="load-more">
+        <button @click="loadMore" :disabled="loadingMore">
+          {{ loadingMore ? '加载中...' : '加载更多' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Earn Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showEarnModal" class="modal-overlay" @click.self="showEarnModal = false">
+          <div class="modal-container">
+            <button class="modal-close" @click="showEarnModal = false">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+
+            <h2 class="modal-title">获取更多积分</h2>
+
+            <div class="earn-options">
+              <div class="earn-option" @click="goToPricing">
+                <div class="option-icon">🚀</div>
+                <div class="option-content">
+                  <span class="option-title">升级套餐</span>
+                  <span class="option-desc">订阅付费套餐，享受更多功能</span>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+
+              <div class="earn-option" @click="handleDailyCheckin">
+                <div class="option-icon">✨</div>
+                <div class="option-content">
+                  <span class="option-title">每日签到</span>
+                  <span class="option-desc">签到即可获得5积分</span>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+
+              <div class="earn-option" @click="showInviteModal">
+                <div class="option-icon">👥</div>
+                <div class="option-content">
+                  <span class="option-title">邀请好友</span>
+                  <span class="option-desc">每邀请1位好友获得50积分</span>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- Check-in Success Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showCheckinSuccess" class="modal-overlay" @click.self="showCheckinSuccess = false">
+          <div class="modal-container success-modal">
+            <div class="success-icon">🎉</div>
+            <h2 class="success-title">签到成功</h2>
+            <p class="success-message">恭喜获得 5 积分</p>
+            <button class="btn-primary" @click="showCheckinSuccess = false">确定</button>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useApi } from '../composables/useApi'
 
 const props = defineProps({
-  theme: { type: String, default: 'dark' }
+  theme: {
+    type: String,
+    default: 'dark'
+  }
 })
 
+const emit = defineEmits(['back', 'goto-pricing'])
+
+const { getCreditsInfo, getCreditsTransactions } = useApi()
+
+// State
+const creditsInfo = ref(null)
+const transactions = ref([])
 const loading = ref(false)
+const loadingMore = ref(false)
+const activeTab = ref('all')
+const hasMore = ref(false)
+const page = ref(1)
+const showEarnModal = ref(false)
+const showCheckinSuccess = ref(false)
+const historySection = ref(null)
 
-const stats = ref({
-  totalCredits: 100000,
-  distributedCredits: 77850,
-  consumedCredits: 42150,
-  consumptionRate: 54
+const tabs = [
+  { label: '全部', value: 'all' },
+  { label: '获得', value: 'earn' },
+  { label: '消耗', value: 'consume' },
+]
+
+// Computed
+const filteredTransactions = computed(() => {
+  if (activeTab.value === 'all') return transactions.value
+  return transactions.value.filter(tx => tx.type === activeTab.value)
 })
 
-const filters = reactive({
-  search: '',
-  type: '',
-  period: '7d'
-})
-
-const pagination = reactive({
-  page: 1,
-  limit: 10,
-  total: 0
-})
-
-const transactions = ref([
-  { id: 1, userEmail: 'emma@example.com', type: 'add', amount: 5000, reason: '企业套餐升级', balanceAfter: 25000, createdAt: new Date(Date.now() - 3600000) },
-  { id: 2, userEmail: 'jack@example.com', type: 'consume', amount: 200, reason: 'GEO API调用', balanceAfter: 6000, createdAt: new Date(Date.now() - 7200000) },
-  { id: 3, userEmail: 'alice@example.com', type: 'add', amount: 1000, reason: '积分充值', balanceAfter: 15000, createdAt: new Date(Date.now() - 10800000) },
-  { id: 4, userEmail: 'bob@example.com', type: 'consume', amount: 500, reason: '高级功能解锁', balanceAfter: 5000, createdAt: new Date(Date.now() - 14400000) },
-  { id: 5, userEmail: 'henry@example.com', type: 'deduct', amount: 2000, reason: '违规操作扣除', balanceAfter: 18000, createdAt: new Date(Date.now() - 18000000) },
-  { id: 6, userEmail: 'grace@example.com', type: 'consume', amount: 300, reason: 'GEO API调用', balanceAfter: 4500, createdAt: new Date(Date.now() - 21600000) },
-  { id: 7, userEmail: 'david@example.com', type: 'add', amount: 500, reason: '新手礼包', balanceAfter: 3200, createdAt: new Date(Date.now() - 25200000) },
-  { id: 8, userEmail: 'carol@example.com', type: 'consume', amount: 50, reason: '基础功能使用', balanceAfter: 50, createdAt: new Date(Date.now() - 28800000) }
-])
-
-const totalPages = computed(() => Math.ceil(pagination.total / pagination.limit) || 1)
-
+// Methods
 const loadData = async () => {
   loading.value = true
   try {
-    await new Promise(resolve => setTimeout(resolve, 500))
-    pagination.total = transactions.value.length
+    const [infoResult, txResult] = await Promise.all([
+      getCreditsInfo(),
+      getCreditsTransactions({ page: 1, limit: 20 })
+    ])
+    creditsInfo.value = infoResult
+    transactions.value = txResult.transactions || []
+    hasMore.value = txResult.page < txResult.totalPages
+    page.value = txResult.page
   } catch (error) {
-    console.error('Failed to load data:', error)
+    console.error('Failed to load credits:', error)
   } finally {
     loading.value = false
   }
 }
 
-const goToPage = (page) => {
-  pagination.page = page
-  loadData()
+const loadMore = async () => {
+  if (loadingMore.value || !hasMore.value) return
+  loadingMore.value = true
+  try {
+    const result = await getCreditsTransactions({ page: page.value + 1, limit: 20 })
+    transactions.value = [...transactions.value, ...(result.transactions || [])]
+    hasMore.value = result.page < result.totalPages
+    page.value = result.page
+  } catch (error) {
+    console.error('Failed to load more:', error)
+  } finally {
+    loadingMore.value = false
+  }
 }
 
-const formatNumber = (num) => {
-  return num?.toLocaleString() || '0'
+const formatTime = (dateStr) => {
+  const date = new Date(dateStr)
+  const now = new Date()
+  const diff = now - date
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  
+  if (days === 0) {
+    return '今天 ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+  } else if (days === 1) {
+    return '昨天 ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+  } else if (days < 7) {
+    return `${days}天前`
+  } else {
+    return date.toLocaleDateString('zh-CN')
+  }
 }
 
-const formatDate = (date) => {
-  return new Date(date).toLocaleString('zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+const scrollToHistory = () => {
+  historySection.value?.scrollIntoView({ behavior: 'smooth' })
 }
 
+const goToPricing = () => {
+  showEarnModal.value = false
+  emit('goto-pricing')
+}
+
+const handleDailyCheckin = () => {
+  showEarnModal.value = false
+  // 模拟签到
+  setTimeout(() => {
+    showCheckinSuccess.value = true
+    if (creditsInfo.value) {
+      creditsInfo.value.balance += 5
+      creditsInfo.value.totalEarned += 5
+    }
+    transactions.value.unshift({
+      id: 'new_' + Date.now(),
+      type: 'earn',
+      amount: 5,
+      description: '每日签到',
+      createdAt: new Date().toISOString(),
+    })
+  }, 300)
+}
+
+const showInviteModal = () => {
+  showEarnModal.value = false
+  // TODO: 显示邀请码
+  alert('邀请功能开发中，敬请期待！')
+}
+
+// Lifecycle
 onMounted(() => {
   loadData()
 })
@@ -257,298 +365,263 @@ onMounted(() => {
   background: var(--bg-primary);
 }
 
+/* Header */
 .page-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: var(--bg-primary);
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border-color);
-  padding: 16px 24px;
+  background: var(--bg-elevated);
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  max-width: 1400px;
-  margin: 0 auto;
+  gap: 12px;
+}
+
+.back-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
 }
 
 .page-title {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-.refresh-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+/* Credits Overview */
+.credits-overview {
+  padding: 20px;
+}
+
+.credits-card {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.refresh-btn:hover {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.refresh-btn.spinning svg {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.stats-section {
-  max-width: 1400px;
-  margin: 0 auto;
+  gap: 16px;
   padding: 24px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-@media (max-width: 1024px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 640px) {
-  .stats-grid { grid-template-columns: 1fr; }
-}
-
-.stat-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
+  background: linear-gradient(135deg, #165DFF, #8B5CF6);
   border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  gap: 16px;
+  margin-bottom: 16px;
 }
 
-.stat-icon {
+.credits-icon {
   width: 56px;
   height: 56px;
-  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
 }
 
-.stat-icon.total { background: rgba(99, 102, 241, 0.15); color: #4f46e5; }
-.stat-icon.distributed { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.stat-icon.consumed { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-.stat-icon.rate { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
-
-.stat-content {
+.credits-info {
   display: flex;
   flex-direction: column;
 }
 
-.stat-value {
-  font-size: 1.5rem;
+.credits-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.credits-value {
+  font-size: 2.5rem;
   font-weight: 700;
+  color: white;
+}
+
+.credits-stats {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 .stat-label {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  margin-top: 2px;
-}
-
-.filters-section {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 24px 20px;
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.search-box {
-  flex: 1;
-  min-width: 200px;
-  position: relative;
-}
-
-.search-box svg {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
+  font-size: 0.75rem;
   color: var(--text-tertiary);
 }
 
-.search-box input {
-  width: 100%;
-  padding: 10px 12px 10px 40px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  color: var(--text-primary);
-  font-size: 0.875rem;
-}
-
-.search-box input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
-
-.filter-group {
-  display: flex;
-  gap: 8px;
-}
-
-.filter-group select {
-  padding: 10px 12px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-.filter-group select:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
-
-.list-section {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-.list-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.list-header h3 {
-  font-size: 0.9375rem;
-  font-weight: 600;
-}
-
-.list-count {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-.loading-state,
-.empty-state {
-  padding: 60px 20px;
-  text-align: center;
-  color: var(--text-secondary);
-}
-
-.empty-state svg {
-  margin-bottom: 16px;
-  opacity: 0.5;
-}
-
-.spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 16px;
-}
-
-.transaction-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.transaction-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color);
-  transition: background 0.2s ease;
-}
-
-.transaction-item:last-child {
-  border-bottom: none;
-}
-
-.transaction-item:hover {
-  background: var(--bg-primary);
-}
-
-.tx-icon {
-  width: 40px;
+.stat-divider {
+  width: 1px;
   height: 40px;
-  border-radius: 10px;
+  background: var(--border-color);
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px;
+  margin-bottom: 24px;
+}
+
+.action-btn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.tx-icon.add { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.tx-icon.deduct { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
-.tx-icon.consume { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-
-.tx-content {
-  flex: 1;
-  min-width: 0;
+.action-btn:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--border-color-hover);
 }
 
-.tx-main {
+/* Section */
+.section {
+  padding: 0 20px;
+  margin-bottom: 24px;
+}
+
+.section-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+}
+
+.tab-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* Earn Methods */
+.earn-methods {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
-.tx-user {
+.earn-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.earn-icon {
+  font-size: 1.5rem;
+}
+
+.earn-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.earn-title {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-primary);
 }
 
-.tx-amount {
-  font-size: 0.9375rem;
-  font-weight: 700;
-}
-
-.tx-amount.add { color: #059669; }
-.tx-amount.deduct { color: #dc2626; }
-.tx-amount.consume { color: #d97706; }
-
-.tx-meta {
-  display: flex;
-  gap: 12px;
-  margin-top: 4px;
-}
-
-.tx-reason {
+.earn-desc {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
+}
+
+.earn-rate {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #10B981;
+}
+
+/* Transactions */
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.tx-icon {
+  font-size: 1.25rem;
+}
+
+.tx-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tx-desc {
+  font-size: 0.875rem;
+  color: var(--text-primary);
 }
 
 .tx-time {
@@ -556,53 +629,191 @@ onMounted(() => {
   color: var(--text-tertiary);
 }
 
-.tx-balance {
-  text-align: right;
-}
-
-.balance-label {
-  font-size: 0.6875rem;
-  color: var(--text-tertiary);
-  display: block;
-}
-
-.balance-value {
-  font-size: 0.875rem;
+.tx-amount {
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--text-secondary);
 }
 
-.pagination {
+.tx-amount.positive {
+  color: #10B981;
+}
+
+.load-more {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 20px;
+  margin-top: 16px;
 }
 
-.page-btn {
-  padding: 8px 16px;
-  font-size: 0.875rem;
-  background: var(--bg-primary);
+.load-more button {
+  padding: 10px 24px;
+  background: var(--bg-elevated);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-primary);
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.page-btn:hover:not(:disabled) {
-  background: var(--color-primary);
+/* Empty & Loading */
+.empty-state,
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 0;
+  color: var(--text-tertiary);
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.modal-container {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 28px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.earn-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.earn-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.earn-option:hover {
   border-color: var(--color-primary);
+  background: rgba(22, 93, 255, 0.05);
 }
 
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.option-icon {
+  font-size: 1.5rem;
 }
 
-.page-info {
+.option-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.option-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.option-desc {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.success-modal {
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.success-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.success-message {
   font-size: 0.875rem;
   color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Modal Animation */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
 }
 </style>

@@ -10,6 +10,8 @@ import { StrategyModule } from './modules/strategy/strategy.module';
 import { ContentModule } from './modules/content/content.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { AiModule } from './modules/ai/ai.module';
+import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { OrderModule } from './modules/order/order.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { AiModule } from './modules/ai/ai.module';
     ContentModule,
     SettingsModule,
     AiModule,
+    SubscriptionModule,
+    OrderModule,
   ],
 })
 export class AppModule {}

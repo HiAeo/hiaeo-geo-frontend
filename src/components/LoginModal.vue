@@ -40,17 +40,18 @@
           <!-- Login form (password) -->
           <form v-if="mode === 'login' && !smsMode" @submit.prevent="handleLogin" class="modal-form">
             <div class="form-group">
-              <label class="form-label">邮箱</label>
+              <label class="form-label">用户名 / 邮箱</label>
               <div class="input-wrapper">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="input-icon">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
                 </svg>
-                <input 
-                  type="email" 
-                  v-model="loginForm.account" 
-                  placeholder="请输入邮箱"
+                <input
+                  type="text"
+                  v-model="loginForm.account"
+                  placeholder="请输入用户名或邮箱"
                   class="form-input"
+                  autocomplete="username"
                 />
               </div>
             </div>
@@ -358,6 +359,7 @@ const handleLogin = async () => {
     console.log('[LoginModal] 开始登录...')
     const result = await loginWithPassword({
       email: loginForm.value.account,
+      username: loginForm.value.account,
       password: loginForm.value.password
     })
     console.log('[LoginModal] 登录成功，准备 emit login 事件')

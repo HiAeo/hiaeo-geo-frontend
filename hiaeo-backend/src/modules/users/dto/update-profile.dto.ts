@@ -26,4 +26,9 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   website?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  phone?: string;
 }

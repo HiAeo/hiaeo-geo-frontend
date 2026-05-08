@@ -71,7 +71,7 @@ export class StrategyService {
     ]);
 
     try {
-      const recommendations = JSON.parse(response);
+      const recommendations = JSON.parse(response.content);
       return this.update(id, userId, { recommendations: recommendations as Strategy['recommendations'] });
     } catch {
       // 如果解析失败，使用默认建议
@@ -114,7 +114,7 @@ export class StrategyService {
     ]);
 
     try {
-      const contentPlan = JSON.parse(response);
+      const contentPlan = JSON.parse(response.content);
       return this.update(id, userId, { contentPlan });
     } catch {
       return strategy;

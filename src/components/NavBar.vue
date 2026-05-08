@@ -54,11 +54,6 @@
           预约咨询
         </button>
 
-        <!-- Go to Admin -->
-        <button @click="$emit('goAdmin')" class="hidden sm:flex px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer nav-btn-admin">
-          产品后台
-        </button>
-
         <!-- Mobile menu button -->
         <button class="md:hidden p-2 rounded-lg transition-colors" @click="mobileOpen = !mobileOpen">
           <svg v-if="!mobileOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -105,7 +100,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['toggleTheme', 'openLogin', 'goAdmin'])
+defineEmits(['toggleTheme', 'toggle-theme', 'openLogin', 'open-login', 'openContact'])
 
 const mobileOpen = ref(false)
 const isScrolled = ref(false)
