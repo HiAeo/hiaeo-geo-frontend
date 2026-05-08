@@ -54,11 +54,11 @@
 
 /* Light Theme */
 [data-theme="light"] {
-  --bg-primary: #F7F8FA;
-  --bg-secondary: #FFFFFF;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F9FAFB;
   --bg-card: rgba(255, 255, 255, 0.95);
   --bg-card-hover: rgba(255, 255, 255, 1);
-  --bg-elevated: rgba(0, 0, 0, 0.04);
+  --bg-elevated: #FFFFFF;
   --bg-section: #F3F4F6;
   --bg-glass: rgba(0, 0, 0, 0.03);
   --bg-glass-hover: rgba(0, 0, 0, 0.06);
@@ -67,12 +67,12 @@
   --text-secondary: #4B5563;
   --text-tertiary: #9CA3AF;
   
-  --border-color: rgba(0, 0, 0, 0.08);
-  --border-color-hover: rgba(0, 0, 0, 0.15);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --border-color-hover: rgba(0, 0, 0, 0.2);
   
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
-  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 40px rgba(22, 93, 255, 0.15);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 0 30px rgba(22, 93, 255, 0.1);
 }
 
 /* Apply background color to body for light theme */
@@ -383,12 +383,12 @@ body[data-theme="light"] {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D1D5DB;
+  background: var(--border-color);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9CA3AF;
+  background: var(--border-color-hover);
 }
 
 /* Pricing Section - ensure text visibility */
@@ -494,3 +494,304 @@ body[data-theme="light"] {
 .stagger-children.animate-in > *:nth-child(4) { transition-delay: 400ms; opacity: 1; transform: translateY(0); }
 .stagger-children.animate-in > *:nth-child(5) { transition-delay: 500ms; opacity: 1; transform: translateY(0); }
 .stagger-children.animate-in > *:nth-child(6) { transition-delay: 600ms; opacity: 1; transform: translateY(0); }
+
+/* ========================================
+   Admin Panel Light Mode Specific Styles
+   ======================================== */
+
+/* Ensure admin layout containers have proper backgrounds in light mode */
+[data-theme="light"] .admin-layout,
+[data-theme="light"] .dashboard-page,
+[data-theme="light"] .credits-page,
+[data-theme="light"] .settings-page,
+[data-theme="light"] .users-page {
+  background-color: var(--bg-primary);
+}
+
+/* Admin sidebar fixes for light mode */
+[data-theme="light"] .sidebar {
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Light mode activity icons need more contrast */
+[data-theme="light"] .activity-icon.register { 
+  background: rgba(16, 185, 129, 0.12); 
+  color: #059669; 
+}
+[data-theme="light"] .activity-icon.upgrade { 
+  background: rgba(245, 158, 11, 0.12); 
+  color: #d97706; 
+}
+[data-theme="light"] .activity-icon.credits { 
+  background: rgba(99, 102, 241, 0.12); 
+  color: #4f46e5; 
+}
+
+/* Light mode stat icons need more contrast */
+[data-theme="light"] .stat-icon.total { background: rgba(99, 102, 241, 0.1); color: #4f46e5; }
+[data-theme="light"] .stat-icon.active { background: rgba(16, 185, 129, 0.1); color: #059669; }
+[data-theme="light"] .stat-icon.credits { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+[data-theme="light"] .stat-icon.revenue { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
+
+/* Light mode transaction icons */
+[data-theme="light"] .tx-icon.add { background: rgba(16, 185, 129, 0.1); color: #059669; }
+[data-theme="light"] .tx-icon.deduct { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+[data-theme="light"] .tx-icon.consume { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+
+/* Light mode user tier badges */
+[data-theme="light"] .user-tier.free { background: rgba(107, 114, 128, 0.08); color: #6b7280; }
+[data-theme="light"] .user-tier.pro { background: rgba(245, 158, 11, 0.08); color: #d97706; }
+[data-theme="light"] .user-tier.enterprise { background: rgba(139, 92, 246, 0.08); color: #7c3aed; }
+
+/* Light mode rank badges */
+[data-theme="light"] .rank.gold { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+[data-theme="light"] .rank.silver { background: rgba(107, 114, 128, 0.15); color: #6b7280; }
+[data-theme="light"] .rank.bronze { background: rgba(180, 83, 9, 0.12); color: #b45309; }
+
+/* Light mode chart line and points */
+[data-theme="light"] .chart-line {
+  stroke: #4f46e5;
+}
+[data-theme="light"] .chart-point {
+  fill: #4f46e5;
+}
+[data-theme="light"] .chart-point:hover {
+  fill: #4338ca;
+}
+
+/* Light mode area gradient */
+[data-theme="light"] #areaGradient stop:first-child {
+  stop-color: rgba(99, 102, 241, 0.2);
+}
+
+/* Light mode button hover states */
+[data-theme="light"] .refresh-btn:hover,
+[data-theme="light"] .setting-btn:hover:not(:disabled),
+[data-theme="light"] .page-btn:hover:not(:disabled) {
+  color: #ffffff;
+}
+
+/* Light mode inputs */
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Light mode pagination button */
+[data-theme="light"] .page-btn {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Light mode spinner */
+[data-theme="light"] .spinner {
+  border-color: var(--border-color);
+  border-top-color: var(--color-primary);
+}
+
+/* Light mode modal improvements */
+[data-theme="light"] .modal-container {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Light mode text colors - ensure visibility */
+[data-theme="light"] .activity-text,
+[data-theme="light"] .activity-time,
+[data-theme="light"] .user-name,
+[data-theme="light"] .user-email,
+[data-theme="light"] .page-title,
+[data-theme="light"] .page-header h1,
+[data-theme="light"] .card-header h3,
+[data-theme="light"] .chart-header h3,
+[data-theme="light"] .stat-value,
+[data-theme="light"] .stat-label,
+[data-theme="light"] .credits-value,
+[data-theme="light"] .credits-label,
+[data-theme="light"] .tx-amount,
+[data-theme="light"] .tx-reason,
+[data-theme="light"] .tx-time,
+[data-theme="light"] .tx-user,
+[data-theme="light"] .setting-label,
+[data-theme="light"] .setting-desc,
+[data-theme="light"] .admin-nav-item,
+[data-theme="light"] .nav-text,
+[data-theme="light"] .sidebar .logo-text {
+  color: var(--text-primary);
+}
+
+/* Ensure secondary text is visible */
+[data-theme="light"] .legend-label,
+[data-theme="light"] .legend-value,
+[data-theme="light"] .tab-btn {
+  color: var(--text-secondary);
+}
+
+/* Light mode icons */
+[data-theme="light"] .nav-icon,
+[data-theme="light"] .collapse-btn svg {
+  color: var(--text-secondary);
+}
+
+[data-theme="light"] .nav-item:hover .nav-icon,
+[data-theme="light"] .nav-item.active .nav-icon {
+  color: inherit;
+}
+
+/* Light mode table content */
+[data-theme="light"] .table-cell {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .table-header-cell {
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+}
+
+/* Light mode pagination text */
+[data-theme="light"] .pagination-info {
+  color: var(--text-secondary);
+}
+
+/* Light mode search input */
+[data-theme="light"] .search-input {
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Light mode select dropdown */
+[data-theme="light"] .select-dropdown {
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Light mode badge */
+[data-theme="light"] .badge {
+  color: var(--text-secondary);
+}
+
+/* Light mode chart grid lines */
+[data-theme="light"] .grid-line {
+  stroke: rgba(0, 0, 0, 0.08);
+}
+
+/* Light mode user avatar text */
+[data-theme="light"] .user-avatar {
+  color: #ffffff;
+}
+
+/* Light mode button text */
+[data-theme="light"] .btn,
+[data-theme="light"] button {
+  color: inherit;
+}
+
+/* Light mode scrollbar for sidebar */
+[data-theme="light"] .sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+}
+
+[data-theme="light"] .sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--border-color-hover);
+}
+
+/* Light mode chart area fill */
+[data-theme="light"] #areaGradient stop:first-child {
+  stop-color: rgba(79, 70, 229, 0.25);
+}
+
+/* Light mode legend items */
+[data-theme="light"] .legend-item {
+  color: var(--text-primary);
+}
+
+/* Light mode stat card content */
+[data-theme="light"] .stat-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Light mode chart card */
+[data-theme="light"] .chart-card,
+[data-theme="light"] .activity-card,
+[data-theme="light"] .top-users-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Light mode list card */
+[data-theme="light"] .list-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Light mode input focus */
+[data-theme="light"] input:focus,
+[data-theme="light"] select:focus,
+[data-theme="light"] textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Light mode nav item active state */
+[data-theme="light"] .nav-item.active {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+/* Light mode stat change values */
+[data-theme="light"] .stat-change.positive {
+  color: #059669;
+}
+
+[data-theme="light"] .stat-change.negative {
+  color: #dc2626;
+}
+
+/* Light mode pie chart text */
+[data-theme="light"] .pie-total {
+  fill: var(--text-primary);
+}
+
+[data-theme="light"] .pie-label {
+  fill: var(--text-secondary);
+}
+
+/* Light mode chart labels */
+[data-theme="light"] .chart-labels span {
+  color: var(--text-tertiary);
+}
+
+/* Light mode top user item */
+[data-theme="light"] .top-user-item {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+}
+
+/* Light mode rank number */
+[data-theme="light"] .rank:not(.gold):not(.silver):not(.bronze) {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+/* Light mode user credits */
+[data-theme="light"] .user-credits {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .credits-value {
+  color: var(--color-primary);
+}
+
+[data-theme="light"] .credits-label {
+  color: var(--text-tertiary);
+}
+
+/* Light mode tx-icon container */
+[data-theme="light"] .tx-icon {
+  border: 1px solid var(--border-color);
+}
+
+/* Light mode badge */
+[data-theme="light"] .badge {
+  border: 1px solid var(--border-color);
+}

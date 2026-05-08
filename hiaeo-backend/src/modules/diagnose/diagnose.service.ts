@@ -15,7 +15,7 @@ export class DiagnoseService {
     const report = this.diagnoseRepository.create({
       userId,
       ...createDiagnoseDto,
-      status: DiagnoseStatus.PENDING,
+      status: 'pending' as DiagnoseStatus,
     });
     return this.diagnoseRepository.save(report);
   }
@@ -39,7 +39,7 @@ export class DiagnoseService {
 
   async updateStatus(id: string, status: DiagnoseStatus, data?: Partial<DiagnoseReport>) {
     const updateData: Partial<DiagnoseReport> = { status };
-    if (status === DiagnoseStatus.COMPLETED) {
+    if (status === 'completed') {
       updateData.completedAt = new Date();
     }
     if (data) {
@@ -57,7 +57,7 @@ export class DiagnoseService {
     const report = await this.findById(id, userId);
     
     // 更新状态为运行中
-    await this.updateStatus(id, DiagnoseStatus.RUNNING);
+    await this.updateStatus(id, 'running');
 
     try {
       // TODO: 调用 AI 服务进行实际诊断
@@ -68,13 +68,13 @@ export class DiagnoseService {
         seoScore: diagnosisResult.seoScore,
         issues: diagnosisResult.issues,
         aiSearchPresence: diagnosisResult.aiSearchPresence,
-        status: DiagnoseStatus.COMPLETED,
+        status: 'completed' as DiagnoseStatus,
         completedAt: new Date(),
       });
 
       return this.findById(id, userId);
     } catch (error) {
-      await this.updateStatus(id, DiagnoseStatus.FAILED);
+      await this.updateStatus(id, 'failed');
       throw error;
     }
   }

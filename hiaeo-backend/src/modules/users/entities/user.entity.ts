@@ -14,6 +14,9 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Column({ nullable: true })
+  phone: string;
+
   @Column()
   password: string;
 
@@ -46,6 +49,9 @@ export class User {
 
   @Column({ nullable: true })
   lastLoginAt: Date;
+
+  @Column({ default: 'user' })
+  role: 'user' | 'admin';
 
   @CreateDateColumn()
   createdAt: Date;

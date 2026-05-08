@@ -10,12 +10,7 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Strategy } from '../../strategy/entities/strategy.entity';
 
-export enum ContentStatus {
-  DRAFT = 'draft',
-  GENERATING = 'generating',
-  PUBLISHED = 'published',
-  SCHEDULED = 'scheduled',
-}
+export type ContentStatus = 'draft' | 'generating' | 'published' | 'scheduled';
 
 @Entity('contents')
 export class Content {
@@ -48,17 +43,13 @@ export class Content {
   @Column({ nullable: true })
   featuredImage: string;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   keywords: string[];
 
   @Column({ nullable: true })
   category: string;
 
-  @Column({
-    type: 'enum',
-    enum: ContentStatus,
-    default: ContentStatus.DRAFT,
-  })
+  @Column({ default: 'draft' })
   status: ContentStatus;
 
   @Column({ nullable: true })
@@ -67,7 +58,7 @@ export class Content {
   @Column({ nullable: true })
   scheduledAt: Date;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   seoAnalysis: {
     seoScore: number;
     readabilityScore: number;
@@ -75,7 +66,7 @@ export class Content {
     suggestions: string[];
   };
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   aiPlatforms: Array<{
     platform: string;
     published: boolean;

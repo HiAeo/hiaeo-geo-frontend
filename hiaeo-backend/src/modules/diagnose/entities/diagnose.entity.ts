@@ -9,12 +9,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
-export enum DiagnoseStatus {
-  PENDING = 'pending',
-  RUNNING = 'running',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-}
+export type DiagnoseStatus = 'pending' | 'running' | 'completed' | 'failed';
 
 @Entity('diagnose_reports')
 export class DiagnoseReport {
@@ -37,7 +32,7 @@ export class DiagnoseReport {
   @Column({ nullable: true })
   targetIndustry: string;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   seoScore: {
     overall: number;
     technical: number;
@@ -46,7 +41,7 @@ export class DiagnoseReport {
     performance: number;
   };
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   issues: Array<{
     category: string;
     severity: 'high' | 'medium' | 'low';
@@ -55,7 +50,7 @@ export class DiagnoseReport {
     recommendation: string;
   }>;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   aiSearchPresence: {
     score: number;
     coverage: number;
@@ -63,11 +58,7 @@ export class DiagnoseReport {
     sentiment: string;
   };
 
-  @Column({
-    type: 'enum',
-    enum: DiagnoseStatus,
-    default: DiagnoseStatus.PENDING,
-  })
+  @Column({ default: 'pending' })
   status: DiagnoseStatus;
 
   @Column({ nullable: true })

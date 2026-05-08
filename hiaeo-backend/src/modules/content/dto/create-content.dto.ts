@@ -100,6 +100,6 @@ export class UpdateContentDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsEnum(ContentStatus)
-  status?: ContentStatus;
+  @IsString()
+  status?: string;
 }

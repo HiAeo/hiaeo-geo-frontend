@@ -1,43 +1,52 @@
 <template>
   <div class="min-h-screen overflow-x-hidden pb-16 md:pb-0" :data-theme="theme">
-    <!-- NavBar -->
-    <NavBar :theme="theme" @toggle-theme="toggleTheme" @open-login="showLogin = true" @open-contact="showContact = true" />
+    
+    <!-- 官网首页 -->
+    <div v-if="currentPage === 'home'">
+      <!-- NavBar -->
+      <NavBar :theme="theme" @toggle-theme="toggleTheme" @open-login="showLogin = true" @open-contact="showContact = true" @go-admin="goToAdmin" />
 
-    <!-- 板块1: Hero -->
-    <HeroSection @open-contact="showContact = true" />
+      <!-- 板块1: Hero -->
+      <HeroSection @open-contact="showContact = true" />
 
-    <!-- 板块2: 产品价值概览 (Bento Grid) -->
-    <BentoGridSection />
+      <!-- 板块2: 产品价值概览 (Bento Grid) -->
+      <BentoGridSection />
 
-    <!-- 板块3: 模镜 MiraSeek -->
-    <MiraSeekSection />
+      <!-- 板块3: 模镜 MiraSeek -->
+      <MiraSeekSection />
 
-    <!-- 板块4: 模豆 MiraMod -->
-    <MiraModSection />
+      <!-- 板块4: 模豆 MiraMod -->
+      <MiraModSection />
 
-    <!-- 板块5: 模法 MiraMag -->
-    <MiraMagSection />
+      <!-- 板块5: 模法 MiraMag -->
+      <MiraMagSection />
 
-    <!-- 板块6: 魔鲸Hub -->
-    <HubSection />
+      <!-- 板块6: 魔鲸Hub -->
+      <HubSection />
 
-    <!-- 板块7: 客户成长路径与案例 -->
-    <GrowthSection />
+      <!-- 板块7: 客户成长路径与案例 -->
+      <GrowthSection />
 
-    <!-- 板块8: 详细案例展示 -->
-    <CasesDetailSection @open-contact="showContact = true" />
+      <!-- 板块8: 详细案例展示 -->
+      <CasesDetailSection @open-contact="showContact = true" />
 
-    <!-- 板块9: 定价 -->
-    <PricingSection />
+      <!-- 板块9: 定价 -->
+      <PricingSection />
 
-    <!-- 板块10: FAQ -->
-    <FAQSection />
+      <!-- 板块10: FAQ -->
+      <FAQSection />
 
-    <!-- Footer -->
-    <FooterSection :theme="theme" />
+      <!-- Footer -->
+      <FooterSection :theme="theme" />
 
-    <!-- Mobile Bottom Nav -->
-    <BottomNav />
+      <!-- Mobile Bottom Nav -->
+      <BottomNav />
+    </div>
+
+    <!-- 产品后台页面 -->
+    <div v-else>
+      <AdminLayout :theme="theme" @back="goToHome" @toggle-theme="toggleTheme" @logout="handleLogout" />
+    </div>
 
     <!-- Login Modal -->
     <LoginModal 
@@ -58,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useApi } from './composables/useApi'
 
 // 组件导入
@@ -77,49 +86,117 @@ import FooterSection from './components/FooterSection.vue'
 import BottomNav from './components/BottomNav.vue'
 import LoginModal from './components/LoginModal.vue'
 import ContactModal from './components/ContactModal.vue'
+import AdminLayout from './components/AdminLayout.vue'
 
-const { loginWithPassword, loginWithSms, register, submitContactForm, logout, isAuthenticated } = useApi()
+const { loginWithPassword, loginWithSms, register, submitContactForm, logout } = useApi()
+
+// 响应式用户状态
+const user = ref(null)
 
 const theme = ref('dark')
 const showLogin = ref(false)
 const showContact = ref(false)
+const currentPage = ref('home') // 当前页面：home 或 admin
 
 const toggleTheme = () => {
   theme.value = theme.value === 'dark' ? 'light' : 'dark'
   localStorage.setItem('theme', theme.value)
 }
 
+// 跳转到产品后台
+const goToAdmin = () => {
+  currentPage.value = 'admin'
+}
+
+// 跳转到首页
+const goToHome = () => {
+  currentPage.value = 'home'
+}
+
 // 处理登录
 const handleLogin = async (data) => {
+  console.log('[App] 收到登录事件, data:', data)
   try {
-    // 根据数据类型判断登录方式
-    const result = data.code 
-      ? await loginWithSms({ phone: data.phone, code: data.code })
-      : await loginWithPassword(data)
+    let result
     
-    console.log('登录成功:', result.user)
-    // TODO: 保存用户信息到全局状态
-    // TODO: 跳转到的仪表盘或首页
+    // 根据数据类型判断登录方式
+    if (data.isSms) {
+      // 短信登录（模拟）
+      result = data
+    } else if (data.accessToken || data.token) {
+      // 真实 API 响应（兼容 token 和 accessToken）
+      result = data
+    } else {
+      // 调用登录 API
+      result = await loginWithPassword(data)
+    }
+    
+    // 确保 user 字段存在
+    const userData = result.user || data.user || {
+      email: data.email || 'unknown',
+      nickname: data.nickname || 'User'
+    }
+    
+    // 保存用户信息
+    user.value = userData
+    localStorage.setItem('user_info', JSON.stringify(userData))
+    
+    console.log('[App] 登录成功，准备跳转:', userData)
+    
+    // 登录成功后跳转到产品后台
+    showLogin.value = false  // 先关闭弹窗
+    await nextTick()  // 等待 DOM 更新
+    
+    console.log('[App] showLogin 已设为 false, currentPage:', currentPage.value)
+    currentPage.value = 'admin'
+    await nextTick()  // 等待页面切换
+    console.log('[App] 跳转完成, currentPage:', currentPage.value)
   } catch (error) {
-    console.error('登录失败:', error.message)
+    console.error('[App] 登录失败:', error)
     alert('登录失败: ' + error.message)
   }
 }
 
 // 处理注册
 const handleSignup = async (data) => {
+  console.log('[App] 收到注册事件, data:', data)
   try {
-    const result = await register({
-      phone: data.phone,
-      code: data.code,
-      password: data.password
-    })
+    let result
     
-    console.log('注册成功:', result.user)
-    // TODO: 保存用户信息到全局状态
-    // TODO: 自动登录并跳转
+    if (data.accessToken || data.token) {
+      // 真实 API 响应（兼容 token 和 accessToken）
+      result = data
+    } else {
+      // 调用注册 API
+      result = await register({
+        email: data.email,
+        password: data.password,
+        nickname: data.nickname
+      })
+    }
+    
+    // 确保 user 字段存在
+    const userData = result.user || {
+      email: data.email || 'unknown',
+      nickname: data.nickname || 'User'
+    }
+    
+    // 保存用户信息
+    user.value = userData
+    localStorage.setItem('user_info', JSON.stringify(userData))
+    
+    console.log('[App] 注册成功，准备跳转:', userData)
+    
+    // 注册成功后跳转到产品后台
+    showLogin.value = false  // 先关闭弹窗
+    await nextTick()  // 等待 DOM 更新
+    
+    console.log('[App] showLogin 已设为 false, currentPage:', currentPage.value)
+    currentPage.value = 'admin'
+    await nextTick()  // 等待页面切换
+    console.log('[App] 跳转完成, currentPage:', currentPage.value)
   } catch (error) {
-    console.error('注册失败:', error.message)
+    console.error('[App] 注册失败:', error)
     alert('注册失败: ' + error.message)
   }
 }
@@ -134,6 +211,18 @@ const handleContact = async (data) => {
     console.error('表单提交失败:', error.message)
     alert('提交失败: ' + error.message)
   }
+}
+
+// 处理退出登录
+const handleLogout = async () => {
+  try {
+    await logout()
+  } catch (error) {
+    console.error('退出登录失败:', error)
+  }
+  user.value = null
+  localStorage.removeItem('user_info')
+  goToHome()
 }
 
 // Scroll animation observer
@@ -167,6 +256,16 @@ onMounted(() => {
   const savedTheme = localStorage.getItem('theme')
   if (savedTheme) {
     theme.value = savedTheme
+  }
+  
+  // 从 localStorage 恢复用户状态
+  const savedUser = localStorage.getItem('user_info')
+  if (savedUser) {
+    try {
+      user.value = JSON.parse(savedUser)
+    } catch (e) {
+      console.error('Failed to parse saved user:', e)
+    }
   }
 
   // Initialize scroll animations after DOM is ready

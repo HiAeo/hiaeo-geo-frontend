@@ -31,9 +31,8 @@ export class ContentController {
 
   @Get()
   @ApiOperation({ summary: '获取内容列表' })
-  @ApiQuery({ name: 'status', required: false, enum: ContentStatus })
-  async findAll(@Request() req, @Query('status') status?: ContentStatus) {
-    return this.contentService.findAllByUser(req.user.id, status);
+  async findAll(@Request() req, @Query('status') status?: string) {
+    return this.contentService.findAllByUser(req.user.id, status as any);
   }
 
   @Get(':id')

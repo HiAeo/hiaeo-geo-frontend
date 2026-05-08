@@ -29,7 +29,7 @@ export class DashboardService {
       this.strategyRepository.count({ where: { userId } }),
       this.contentRepository.count({ where: { userId } }),
       this.contentRepository.count({
-        where: { userId, status: ContentStatus.PUBLISHED },
+        where: { userId, status: 'published' as ContentStatus },
       }),
     ]);
 
@@ -96,9 +96,9 @@ export class DashboardService {
 
     const stats = {
       total: contents.length,
-      published: contents.filter((c) => c.status === ContentStatus.PUBLISHED).length,
-      draft: contents.filter((c) => c.status === ContentStatus.DRAFT).length,
-      scheduled: contents.filter((c) => c.status === ContentStatus.SCHEDULED).length,
+      published: contents.filter((c) => c.status === 'published').length,
+      draft: contents.filter((c) => c.status === 'draft').length,
+      scheduled: contents.filter((c) => c.status === 'scheduled').length,
       totalViews: contents.reduce((sum, c) => sum + (c.views || 0), 0),
       totalLikes: contents.reduce((sum, c) => sum + (c.likes || 0), 0),
     };

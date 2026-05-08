@@ -12,6 +12,9 @@
     "@lobehub/icons": "^5.8.0",
     "@lobehub/icons-static-svg": "^1.90.0",
     "framer-motion": "^11.0.8",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "lucide-vue-next": "^0.344.0",
     "playwright": "^1.59.1",
     "vue": "^3.4.21"

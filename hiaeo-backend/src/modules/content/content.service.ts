@@ -17,7 +17,7 @@ export class ContentService {
     const content = this.contentRepository.create({
       userId,
       ...createContentDto,
-      status: ContentStatus.DRAFT,
+      status: 'draft' as ContentStatus,
     });
     return this.contentRepository.save(content);
   }
@@ -45,7 +45,7 @@ export class ContentService {
 
   async update(id: string, userId: string, data: UpdateContentDto): Promise<Content> {
     await this.findById(id, userId);
-    await this.contentRepository.update(id, data);
+    await this.contentRepository.update(id, data as any);
     return this.findById(id, userId);
   }
 
@@ -63,7 +63,7 @@ export class ContentService {
 
     // 更新状态为生成中
     await this.contentRepository.update(content.id, {
-      status: ContentStatus.GENERATING,
+      status: 'generating' as ContentStatus,
     });
 
     try {
@@ -88,13 +88,13 @@ export class ContentService {
         body: generated.content,
         metaDescription: generated.metaDescription,
         seoAnalysis: analysis,
-        status: ContentStatus.DRAFT,
+        status: 'draft' as ContentStatus,
       });
 
       return this.findById(content.id, userId);
     } catch (error) {
       await this.contentRepository.update(content.id, {
-        status: ContentStatus.DRAFT,
+        status: 'draft' as ContentStatus,
         title: `${generateDto.topic} - 生成失败`,
       });
       throw error;
@@ -105,7 +105,7 @@ export class ContentService {
     const content = await this.findById(id, userId);
     return this.contentRepository.save({
       ...content,
-      status: ContentStatus.PUBLISHED,
+      status: 'published' as ContentStatus,
       publishedAt: new Date(),
     });
   }
@@ -114,7 +114,7 @@ export class ContentService {
     const content = await this.findById(id, userId);
     return this.contentRepository.save({
       ...content,
-      status: ContentStatus.SCHEDULED,
+      status: 'scheduled' as ContentStatus,
       scheduledAt,
     });
   }

@@ -33,23 +33,23 @@ export class Strategy {
   @Column({ nullable: true })
   industry: string;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   targetKeywords: string[];
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   competitors: Array<{ name: string; url: string }>;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   aiPlatforms: string[];
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   contentPlan: {
     topics: Array<{ keyword: string; priority: number; estimatedWords: number }>;
     contentTypes: string[];
     publishingFrequency: string;
   };
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   recommendations: Array<{
     category: string;
     priority: 'high' | 'medium' | 'low';
