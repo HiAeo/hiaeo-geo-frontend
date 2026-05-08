@@ -150,17 +150,7 @@ const SettingsIcon = {
   }
 }
 
-const HubIcon = {
-  render() {
-    return h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': 2 }, [
-      h('circle', { cx: 12, cy: 12, r: 10 }),
-      h('path', { d: 'M12 6v6l4 2' })
-    ])
-  }
-}
-
 const adminNavItems = [
-  { id: 'hub', label: '魔鲸Hub', path: '/manage/hub', icon: HubIcon },
   { id: 'overview', label: '运营概览', path: '/manage/overview', icon: DashboardIcon },
   { id: 'diagnose', label: '诊断管理', path: '/manage/diagnose', icon: DiagnoseIcon },
   { id: 'users', label: '用户管理', path: '/manage/users', icon: UsersIcon },

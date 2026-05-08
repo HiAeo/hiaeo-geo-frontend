@@ -170,7 +170,28 @@ const SettingsIcon = {
   }
 }
 
+const HubIcon = {
+  render() {
+    return h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': 2 }, [
+      h('circle', { cx: 12, cy: 12, r: 10 }),
+      h('path', { d: 'M12 6v6l4 2' })
+    ])
+  }
+}
+
+const MofaIcon = {
+  render() {
+    return h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': 2 }, [
+      h('path', { d: 'M12 2L2 7l10 5 10-5-10-5z' }),
+      h('path', { d: 'M2 17l10 5 10-5' }),
+      h('path', { d: 'M2 12l10 5 10-5' })
+    ])
+  }
+}
+
 const brandNavItems = [
+  { id: 'hub', label: '魔鲸Hub', path: '/app/hub', icon: HubIcon },
+  { id: 'mofa', label: '模法内容', path: '/app/mofa', icon: MofaIcon },
   { id: 'dashboard', label: '品牌仪表盘', path: '/app/dashboard', icon: DashboardIcon },
   { id: 'diagnose', label: '诊断报告', path: '/app/diagnose', icon: DiagnoseIcon },
   { id: 'strategy', label: '策略生成', path: '/app/strategy', icon: StrategyIcon },

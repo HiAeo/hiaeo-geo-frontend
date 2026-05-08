@@ -25,7 +25,19 @@ const routes = [
       },
       {
         path: '',
-        redirect: '/app/dashboard'
+        redirect: '/app/hub'
+      },
+      {
+        path: 'hub',
+        name: 'brand-hub',
+        component: () => import('../components/pages/HubPage.vue'),
+        meta: { title: '魔鲸Hub驾驶舱' }
+      },
+      {
+        path: 'mofa',
+        name: 'brand-mofa',
+        component: () => import('../components/pages/MofaPage.vue'),
+        meta: { title: '模法内容生成' }
       },
       {
         path: 'dashboard',
@@ -80,13 +92,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/manage/hub'
-      },
-      {
-        path: 'hub',
-        name: 'admin-hub',
-        component: () => import('../components/pages/HubPage.vue'),
-        meta: { title: '魔鲸Hub驾驶舱' }
+        redirect: '/manage/overview'
       },
       {
         path: 'overview',
