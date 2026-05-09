@@ -227,9 +227,9 @@ const topUsers = ref([
 ])
 
 const tiers = [
-  { name: 'Free', count: 3, color: '#6366f1' },
-  { name: 'Pro', count: 4, color: '#f59e0b' },
-  { name: 'Enterprise', count: 3, color: '#8b5cf6' }
+  { name: 'Free', count: 3, color: 'var(--color-primary)' },
+  { name: 'Pro', count: 4, color: 'var(--color-warning)' },
+  { name: 'Enterprise', count: 3, color: 'var(--color-secondary)' }
 ]
 
 const maxValue = computed(() => Math.max(...chartData.value.map(d => d.value), 1))
@@ -285,16 +285,16 @@ const refreshData = () => {}
 
 .kpi-card { background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; display: flex; gap: 16px; }
 .kpi-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.kpi-icon.total { background: rgba(99, 102, 241, 0.15); color: #4f46e5; }
-.kpi-icon.active { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.kpi-icon.credits { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-.kpi-icon.revenue { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
+.kpi-icon.total { background: rgba(99, 102, 241, 0.15); color: var(--color-primary); }
+.kpi-icon.active { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+.kpi-icon.credits { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
+.kpi-icon.revenue { background: rgba(139, 92, 246, 0.15); color: var(--color-secondary); }
 .kpi-body { display: flex; flex-direction: column; }
 .kpi-value { font-size: 1.5rem; font-weight: 700; }
 .kpi-label { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
 .kpi-change { font-size: 0.75rem; font-weight: 600; margin-top: 4px; }
-.kpi-change.positive { color: #059669; }
-.kpi-change.negative { color: #dc2626; }
+.kpi-change.positive { color: var(--color-success); }
+.kpi-change.negative { color: var(--color-danger); }
 
 .charts-section { max-width: 1400px; margin: 16px auto 0; padding: 0 24px; display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
 @media (max-width: 1024px) { .charts-section { grid-template-columns: 1fr; } }
@@ -306,8 +306,8 @@ const refreshData = () => {}
 .chart-tabs button.active { background: var(--color-primary); color: white; }
 .chart-svg { width: 100%; height: 200px; }
 .grid-line { stroke: var(--border-color); stroke-width: 1; stroke-dasharray: 4; }
-.chart-line { fill: none; stroke: #6366f1; stroke-width: 2.5; stroke-linecap: round; }
-.chart-point { fill: #6366f1; }
+.chart-line { fill: none; stroke: var(--color-primary); stroke-width: 2.5; stroke-linecap: round; }
+.chart-point { fill: var(--color-primary); }
 .chart-labels { display: flex; justify-content: space-between; padding: 8px 0 0; }
 .chart-labels span { font-size: 0.6875rem; color: var(--text-tertiary); }
 
@@ -331,9 +331,9 @@ const refreshData = () => {}
 .activity-list { display: flex; flex-direction: column; gap: 12px; }
 .activity-item { display: flex; gap: 12px; align-items: flex-start; }
 .act-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.act-icon.register { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.act-icon.upgrade { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-.act-icon.credits { background: rgba(99, 102, 241, 0.15); color: #4f46e5; }
+.act-icon.register { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+.act-icon.upgrade { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
+.act-icon.credits { background: rgba(99, 102, 241, 0.15); color: var(--color-primary); }
 .act-content { display: flex; flex-direction: column; gap: 2px; }
 .act-text { font-size: 0.8125rem; color: var(--text-primary); }
 .act-time { font-size: 0.6875rem; color: var(--text-tertiary); }
@@ -341,15 +341,15 @@ const refreshData = () => {}
 .top-list { display: flex; flex-direction: column; gap: 12px; }
 .top-item { display: flex; align-items: center; gap: 12px; padding: 10px; background: var(--bg-primary); border-radius: 10px; }
 .rank { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; background: var(--bg-elevated); }
-.rank.rank-1 { background: rgba(245, 158, 11, 0.2); color: #d97706; }
-.rank.rank-2 { background: rgba(156, 163, 175, 0.25); color: #6b7280; }
-.rank.rank-3 { background: rgba(180, 83, 9, 0.2); color: #b45309; }
-.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600; color: white; }
+.rank.rank-1 { background: rgba(245, 158, 11, 0.2); color: var(--color-warning); }
+.rank.rank-2 { background: rgba(156, 163, 175, 0.25); color: var(--text-secondary); }
+.rank.rank-3 { background: rgba(180, 83, 9, 0.2); color: var(--color-warning); }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600; color: white; }
 .user-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .user-name { font-size: 0.875rem; font-weight: 500; color: var(--text-primary); }
 .user-tier { font-size: 0.6875rem; padding: 2px 6px; border-radius: 4px; width: fit-content; }
-.user-tier.free { background: rgba(107, 114, 128, 0.15); color: #6b7280; }
-.user-tier.pro { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-.user-tier.enterprise { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
+.user-tier.free { background: rgba(107, 114, 128, 0.15); color: var(--text-secondary); }
+.user-tier.pro { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
+.user-tier.enterprise { background: rgba(139, 92, 246, 0.15); color: var(--color-secondary); }
 .user-credits { font-size: 0.9375rem; font-weight: 700; color: var(--color-primary); }
 </style>

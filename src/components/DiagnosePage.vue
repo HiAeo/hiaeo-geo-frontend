@@ -1,5 +1,5 @@
 <template>
-  <div class="diagnose-page">
+  <div class="diagnose-page" :data-theme="theme">
     <!-- Header -->
     <div class="page-header">
       <div class="header-content">
@@ -409,10 +409,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import jsPDF from 'jspdf'
+import { useTheme } from '../composables/useTheme'
 
-const props = defineProps({
-  theme: { type: String, default: 'dark' }
-})
+// 获取主题
+const { theme, initTheme } = useTheme()
 
 // Stats
 const stats = ref({

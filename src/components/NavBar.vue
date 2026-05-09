@@ -3,8 +3,8 @@
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
       <!-- Logo -->
-      <a href="#" class="flex items-center gap-2 cursor-pointer group">
-        <img :src="theme === 'dark' ? '/logo-white.png' : '/logo-header.png'" alt="HiAeo" class="h-6 w-auto transition-transform duration-300 group-hover:scale-110" />
+      <a href="/" class="flex items-center gap-2 cursor-pointer group">
+        <img :src="theme === 'dark' ? '/logo-header.png' : '/logo-footer.png'" alt="MiraMod" class="logo-main" />
         <span class="alpha-badge" :style="theme === 'dark' ? 'background:rgba(22,93,255,0.15);color:#165DFF;' : 'background:rgba(22,93,255,0.1);color:#165DFF;'">Alpha</span>
       </a>
 
@@ -141,6 +141,16 @@ nav {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.logo-main {
+  height: 42px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+
+.group:hover .logo-main {
+  transform: scale(1.08);
 }
 
 [data-theme="light"] .nav-scrolled {

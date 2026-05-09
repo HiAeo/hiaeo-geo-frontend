@@ -4,8 +4,8 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">诊断报告</h1>
-          <span class="page-subtitle">AI 驱动的品牌健康诊断</span>
+          <h1 class="page-title">模镜 MiraSeek · AI可见度诊断</h1>
+          <span class="page-subtitle">实时抓取 DeepSeek、豆包、Kimi 等主流大模型的回答数据，精准量化实体独占率与替代风险指数</span>
         </div>
         <div class="header-actions">
           <button class="primary-btn" @click="showCreateModal = true">
@@ -382,20 +382,44 @@ onMounted(() => {
 <style scoped>
 .brand-diagnose { min-height: 100vh; padding-bottom: 40px; background: var(--bg-primary); }
 
+/* 统一页面头部 */
 .page-header {
   position: sticky; top: 0; z-index: 50;
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
-  padding: 16px 24px;
+  padding: 20px 24px;
 }
 
 .header-content {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: flex-start; justify-content: space-between;
   max-width: 1400px; margin: 0 auto;
 }
 
-.page-title { font-size: 1.25rem; font-weight: 700; }
-.page-subtitle { font-size: 0.8125rem; color: var(--text-secondary); }
+.header-left { flex: 1; }
+.header-actions { display: flex; gap: 12px; align-items: flex-start; }
+
+.page-title { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.page-subtitle { font-size: 0.875rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
+
+/* 统一按钮样式 */
+.primary-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; background: var(--color-primary); color: white;
+  border: none; border-radius: 10px; font-size: 0.875rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s ease;
+}
+.primary-btn:hover { background: var(--color-primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22, 93, 255, 0.3); }
+.primary-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.secondary-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; background: var(--bg-elevated); color: var(--text-primary);
+  border: 1px solid var(--border-color); border-radius: 10px; font-size: 0.875rem;
+  font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+}
+.secondary-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+.btn-sm { padding: 6px 12px; font-size: 0.8125rem; }
 
 .loading-section {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -423,10 +447,10 @@ onMounted(() => {
   width: 48px; height: 48px; border-radius: 12px;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.stat-icon.total { background: rgba(99, 102, 241, 0.15); color: #4f46e5; }
-.stat-icon.completed { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.stat-icon.running { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-.stat-icon.score { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
+.stat-icon.total { background: rgba(99, 102, 241, 0.15); color: var(--color-primary); }
+.stat-icon.completed { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+.stat-icon.running { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
+.stat-icon.score { background: rgba(139, 92, 246, 0.15); color: var(--color-secondary); }
 
 .stat-content { display: flex; flex-direction: column; }
 .stat-value { font-size: 1.5rem; font-weight: 700; }
@@ -457,9 +481,9 @@ onMounted(() => {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   flex-shrink: 0; border: 3px solid;
 }
-.report-score-circle.score-high { border-color: #059669; background: rgba(16, 185, 129, 0.1); color: #059669; }
-.report-score-circle.score-mid { border-color: #4f46e5; background: rgba(99, 102, 241, 0.1); color: #4f46e5; }
-.report-score-circle.score-low { border-color: #d97706; background: rgba(245, 158, 11, 0.1); color: #d97706; }
+.report-score-circle.score-high { border-color: var(--color-success); background: rgba(16, 185, 129, 0.1); color: var(--color-success); }
+.report-score-circle.score-mid { border-color: var(--color-primary); background: rgba(99, 102, 241, 0.1); color: var(--color-primary); }
+.report-score-circle.score-low { border-color: var(--color-warning); background: rgba(245, 158, 11, 0.1); color: var(--color-warning); }
 .report-score-circle.score-none { border-color: var(--border-color); color: var(--text-tertiary); }
 
 .score-num { font-size: 1.25rem; font-weight: 800; line-height: 1; }
@@ -473,13 +497,13 @@ onMounted(() => {
 .report-status {
   display: inline-flex; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; width: fit-content;
 }
-.report-status.status-completed { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.report-status.status-running { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+.report-status.status-completed { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+.report-status.status-running { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
 
 .report-actions { display: flex; gap: 8px; }
 .action-btn { padding: 8px 16px; border-radius: 8px; font-size: 0.8125rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); transition: all 0.2s; }
 .action-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
-.action-btn.running { border-color: #d97706; color: #d97706; }
+.action-btn.running { border-color: var(--color-warning); color: var(--color-warning); }
 
 .empty-state { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 60px; color: var(--text-tertiary); text-align: center; }
 .empty-state p { font-size: 0.9375rem; color: var(--text-secondary); }
@@ -516,7 +540,7 @@ onMounted(() => {
 
 .form-group { display: flex; flex-direction: column; gap: 8px; }
 .form-group label { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); }
-.form-group .required { color: #ef4444; }
+.form-group .required { color: var(--color-danger); }
 .form-group input, .form-group textarea { padding: 10px 14px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 10px; font-size: 0.875rem; color: var(--text-primary); outline: none; transition: border-color 0.2s; }
 .form-group input:focus, .form-group textarea:focus { border-color: var(--color-primary); }
 .form-group textarea { resize: vertical; }

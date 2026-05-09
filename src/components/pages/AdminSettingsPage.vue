@@ -199,7 +199,7 @@ const editPlan = (plan) => { console.log('edit plan', plan.id) }
 .plan-credits { font-size: 0.875rem; color: var(--color-primary); }
 .plan-features { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
 .plan-features li { font-size: 0.8125rem; color: var(--text-secondary); padding-left: 16px; position: relative; }
-.plan-features li::before { content: '✓'; position: absolute; left: 0; color: #059669; }
+.plan-features li::before { content: '✓'; position: absolute; left: 0; color: var(--color-success); }
 .secondary-btn.small { padding: 8px 12px; background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8125rem; cursor: pointer; color: var(--text-primary); margin-top: auto; }
 
 .system-info { display: flex; flex-direction: column; gap: 12px; }
@@ -208,8 +208,8 @@ const editPlan = (plan) => { console.log('edit plan', plan.id) }
 .info-row span:last-child { font-weight: 600; color: var(--text-primary); }
 
 .danger-zone { margin-top: 16px; padding: 16px; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; }
-.danger-zone h3 { font-size: 0.875rem; font-weight: 600; color: #dc2626; margin-bottom: 12px; }
-.danger-btn { padding: 8px 14px; background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; font-size: 0.8125rem; cursor: pointer; margin-right: 8px; }
+.danger-zone h3 { font-size: 0.875rem; font-weight: 600; color: var(--color-danger); margin-bottom: 12px; }
+.danger-btn { padding: 8px 14px; background: rgba(239, 68, 68, 0.15); color: var(--color-danger); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; font-size: 0.8125rem; cursor: pointer; margin-right: 8px; }
 
 .primary-btn { padding: 10px 20px; background: var(--color-primary); color: white; border: none; border-radius: 10px; font-size: 0.875rem; font-weight: 600; cursor: pointer; width: fit-content; }
 </style>

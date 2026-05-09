@@ -164,22 +164,22 @@ const deleteUser = (u) => { if (confirm(`确定删除用户 ${u.email}?`)) conso
 .users-table tr:hover td { background: var(--bg-primary); }
 
 .user-cell { display: flex; align-items: center; gap: 10px; }
-.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600; color: white; flex-shrink: 0; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600; color: white; flex-shrink: 0; }
 .user-info { display: flex; flex-direction: column; gap: 2px; }
 .user-name { font-weight: 600; }
 .user-email { font-size: 0.75rem; color: var(--text-secondary); }
 
 .tier-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
-.tier-free { background: rgba(107, 114, 128, 0.15); color: #6b7280; }
-.tier-pro { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-.tier-enterprise { background: rgba(139, 92, 246, 0.15); color: #7c3aed; }
+.tier-free { background: rgba(107, 114, 128, 0.15); color: var(--text-secondary); }
+.tier-pro { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
+.tier-enterprise { background: rgba(139, 92, 246, 0.15); color: var(--color-secondary); }
 
 .status-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
-.status-active { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.status-inactive { background: rgba(107, 114, 128, 0.15); color: #6b7280; }
+.status-active { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+.status-inactive { background: rgba(107, 114, 128, 0.15); color: var(--text-secondary); }
 
 .action-btns { display: flex; gap: 4px; }
 .action-btn { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
 .action-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
-.action-btn.danger:hover { border-color: #dc2626; color: #dc2626; }
+.action-btn.danger:hover { border-color: var(--color-danger); color: var(--color-danger); }
 </style>

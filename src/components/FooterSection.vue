@@ -5,8 +5,8 @@
       <!-- Top: Logo + Slogan -->
       <div class="footer-top">
         <div class="footer-brand">
-          <a href="#" class="flex items-center gap-2 group cursor-pointer mb-4">
-            <img :src="theme === 'dark' ? '/logo-footer.png' : '/logo-header.png'" alt="HiAeo" class="h-7 w-auto transition-transform duration-300 group-hover:scale-105" />
+          <a href="/" class="flex items-center gap-2 group cursor-pointer mb-4">
+            <img :src="theme === 'dark' ? '/logo-header.png' : '/logo-footer.png'" alt="MiraMod" class="footer-logo" />
             <span class="alpha-badge footer-alpha">Alpha</span>
           </a>
           <p class="text-sm footer-slogan mb-6 max-w-xs">
@@ -125,6 +125,16 @@ const footerCols = [
 .footer-brand {
   display: flex;
   flex-direction: column;
+}
+
+.footer-logo {
+  height: 42px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+
+.group:hover .footer-logo {
+  transform: scale(1.08);
 }
 
 .footer-alpha {

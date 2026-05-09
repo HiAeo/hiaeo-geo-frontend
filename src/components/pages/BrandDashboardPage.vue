@@ -4,7 +4,8 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">品牌健康仪表盘</h1>
+          <h1 class="page-title">品牌监控 · 全维度数据看板</h1>
+          <span class="page-subtitle">实时追踪品牌可见度、提及率与搜索引流数据，辅助科学决策</span>
           <div class="brand-tag">
             <span class="brand-name">{{ brandName }}</span>
             <span class="report-count">{{ reports.length }} 份诊断报告</span>
@@ -205,11 +206,11 @@ const topDimensions = ref([
 ])
 
 const engines = ref([
-  { name: 'DeepSeek', usage: 85, avgScore: 76, calls: 1240, color: '#6366f1' },
-  { name: 'Kimi', usage: 62, avgScore: 74, calls: 890, color: '#f59e0b' },
-  { name: 'Qwen', usage: 45, avgScore: 78, calls: 650, color: '#10b981' },
-  { name: '智谱 GLM', usage: 38, avgScore: 72, calls: 540, color: '#ef4444' },
-  { name: '豆包', usage: 28, avgScore: 71, calls: 410, color: '#8b5cf6' }
+  { name: 'DeepSeek', usage: 85, avgScore: 76, calls: 1240, color: 'var(--color-primary)' },
+  { name: 'Kimi', usage: 62, avgScore: 74, calls: 890, color: 'var(--color-warning)' },
+  { name: 'Qwen', usage: 45, avgScore: 78, calls: 650, color: 'var(--color-success)' },
+  { name: '智谱 GLM', usage: 38, avgScore: 72, calls: 540, color: 'var(--color-danger)' },
+  { name: '豆包', usage: 28, avgScore: 71, calls: 410, color: 'var(--color-secondary)' }
 ])
 
 const reports = ref([
@@ -232,10 +233,10 @@ const gradeLabel = computed(() => {
 })
 
 const gaugeColor = computed(() => {
-  if (overallScore.value >= 85) return '#10b981'
-  if (overallScore.value >= 70) return '#6366f1'
-  if (overallScore.value >= 55) return '#f59e0b'
-  return '#ef4444'
+  if (overallScore.value >= 85) return 'var(--color-success)'
+  if (overallScore.value >= 70) return 'var(--color-primary)'
+  if (overallScore.value >= 55) return 'var(--color-warning)'
+  return 'var(--color-danger)'
 })
 
 const gaugeBackgroundArc = computed(() => {
@@ -261,10 +262,10 @@ const gaugeScoreArc = computed(() => {
 })
 
 const getDimColor = (score) => {
-  if (score >= 80) return '#10b981'
-  if (score >= 65) return '#6366f1'
-  if (score >= 50) return '#f59e0b'
-  return '#ef4444'
+  if (score >= 80) return 'var(--color-success)'
+  if (score >= 65) return 'var(--color-primary)'
+  if (score >= 50) return 'var(--color-warning)'
+  return 'var(--color-danger)'
 }
 
 const getScoreClass = (score) => {
@@ -318,6 +319,14 @@ onMounted(async () => {
 .page-title {
   font-size: 1.25rem;
   font-weight: 700;
+  color: var(--text-primary);
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.5;
 }
 
 .brand-tag {
@@ -459,11 +468,11 @@ onMounted(async () => {
   width: fit-content;
 }
 
-.grade-A { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.grade-B { background: rgba(99, 102, 241, 0.15); color: #4f46e5; }
-.grade-C { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-.grade-D { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
-.grade-F { background: rgba(107, 114, 128, 0.15); color: #6b7280; }
+.grade-A { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+.grade-B { background: rgba(99, 102, 241, 0.15); color: var(--color-primary); }
+.grade-C { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
+.grade-D { background: rgba(239, 68, 68, 0.15); color: var(--color-danger); }
+.grade-F { background: rgba(107, 114, 128, 0.15); color: var(--text-secondary); }
 
 .health-meta {
   display: flex;
@@ -487,8 +496,8 @@ onMounted(async () => {
   color: var(--text-primary);
 }
 
-.meta-value.positive { color: #059669; }
-.meta-value.negative { color: #dc2626; }
+.meta-value.positive { color: var(--color-success); }
+.meta-value.negative { color: var(--color-danger); }
 
 .dimension-preview {
   display: flex;
@@ -571,17 +580,17 @@ onMounted(async () => {
 
 .plan-basic {
   background: rgba(16, 185, 129, 0.15);
-  color: #10B981;
+  color: var(--color-success);
 }
 
 .plan-pro {
   background: rgba(99, 102, 241, 0.15);
-  color: #6366f1;
+  color: var(--color-primary);
 }
 
 .plan-enterprise {
   background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
+  color: var(--color-warning);
 }
 
 .sub-days {
@@ -600,7 +609,7 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   color: white;
   border: none;
   border-radius: 10px;
@@ -810,9 +819,9 @@ onMounted(async () => {
   font-weight: 800;
 }
 
-.score-high { color: #059669; }
-.score-mid { color: #4f46e5; }
-.score-low { color: #d97706; }
+.score-high { color: var(--color-success); }
+.score-mid { color: var(--color-primary); }
+.score-low { color: var(--color-warning); }
 
 .report-date {
   font-size: 0.75rem;
@@ -860,9 +869,9 @@ onMounted(async () => {
   flex-shrink: 0;
 }
 
-.comp-rank.rank-1 { background: rgba(245, 158, 11, 0.2); color: #d97706; }
-.comp-rank.rank-2 { background: rgba(156, 163, 175, 0.25); color: #6b7280; }
-.comp-rank.rank-3 { background: rgba(180, 83, 9, 0.2); color: #b45309; }
+.comp-rank.rank-1 { background: rgba(245, 158, 11, 0.2); color: var(--color-warning); }
+.comp-rank.rank-2 { background: rgba(156, 163, 175, 0.25); color: var(--text-secondary); }
+.comp-rank.rank-3 { background: rgba(180, 83, 9, 0.2); color: var(--color-warning); }
 
 .comp-info {
   width: 100px;

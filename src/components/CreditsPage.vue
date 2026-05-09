@@ -3,13 +3,10 @@
     <!-- Header -->
     <div class="page-header">
       <div class="header-content">
-        <button class="back-btn" @click="$emit('back')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="19" y1="12" x2="5" y2="12"/>
-            <polyline points="12 19 5 12 12 5"/>
-          </svg>
-        </button>
-        <h1 class="page-title">我的积分</h1>
+        <div class="header-left">
+          <h1 class="page-title">我的积分</h1>
+          <span class="page-subtitle">查看积分余额、获取方式和交易明细</span>
+        </div>
       </div>
     </div>
 
@@ -367,39 +364,45 @@ onMounted(() => {
 
 /* Header */
 .page-header {
-  padding: 16px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-elevated);
+  padding: 16px 24px;
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.back-btn {
-  width: 36px;
-  height: 36px;
+.header-left {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-secondary);
-  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .page-title {
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: var(--text-primary);
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
 }
 
 /* Credits Overview */
 .credits-overview {
-  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
 }
 
 .credits-card {
@@ -477,8 +480,9 @@ onMounted(() => {
 .quick-actions {
   display: flex;
   gap: 12px;
-  padding: 0 20px;
-  margin-bottom: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px 24px;
 }
 
 .action-btn {
@@ -487,26 +491,27 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px;
-  background: var(--bg-card);
+  padding: 12px 20px;
+  background: var(--bg-elevated);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   color: var(--text-primary);
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .action-btn:hover {
-  background: var(--bg-glass-hover);
-  border-color: var(--border-color-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 /* Section */
 .section {
-  padding: 0 20px;
-  margin-bottom: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px 24px;
 }
 
 .section-header {
@@ -548,19 +553,25 @@ onMounted(() => {
 
 /* Earn Methods */
 .earn-methods {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
 .earn-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
-  background: var(--bg-card);
+  gap: 16px;
+  padding: 20px;
+  background: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+.earn-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .earn-icon {
@@ -601,11 +612,16 @@ onMounted(() => {
 .transaction-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   padding: 16px;
-  background: var(--bg-card);
+  background: var(--bg-elevated);
   border: 1px solid var(--border-color);
   border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.transaction-item:hover {
+  border-color: var(--color-primary);
 }
 
 .tx-icon {
@@ -642,17 +658,24 @@ onMounted(() => {
 .load-more {
   display: flex;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 24px;
 }
 
 .load-more button {
   padding: 10px 24px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--text-primary);
   font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.load-more button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 /* Empty & Loading */
@@ -804,6 +827,13 @@ onMounted(() => {
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(22, 93, 255, 0.3);
 }
 
 /* Modal Animation */

@@ -426,6 +426,21 @@ export async function sendRegisterSmsCode(phone) {
  * 获取用户信息
  */
 export async function getUserProfile() {
+  // Mock 模式
+  if (USE_MOCK) {
+    await mockDelay()
+    const savedUser = localStorage.getItem('user_info')
+    if (savedUser) {
+      return JSON.parse(savedUser)
+    }
+    return {
+      id: 'mock-user-1',
+      email: 'admin@example.com',
+      nickname: '管理员',
+      role: 'admin',
+    }
+  }
+  
   const result = await request('/users/profile')
   currentUser.value = result
   localStorage.setItem('user_info', JSON.stringify(result))
@@ -1587,6 +1602,90 @@ export async function deleteCMSConfig(configId) {
   return request(`/publish/cms/config/${configId}`, { method: 'DELETE' })
 }
 
+// ==================== 发布管理 Mock API ====================
+
+/**
+ * 获取发布列表
+ */
+export async function getPublishList(params = {}) {
+  if (USE_MOCK) {
+    await mockDelay()
+    return {
+      list: [
+        { id: 'pub_1', title: '品牌问答指南', platformResults: [{ platform: 'website', status: 'published' }], createdAt: new Date().toISOString() },
+        { id: 'pub_2', title: '小红书种草文案', platformResults: [{ platform: 'xiaohongshu', status: 'pending' }], createdAt: new Date(Date.now() - 86400000).toISOString() },
+      ],
+      total: 2,
+      page: params.page || 1,
+      pageSize: params.pageSize || 20,
+    }
+  }
+  const queryString = new URLSearchParams(params).toString()
+  return request(`/publish/list${queryString ? '?' + queryString : ''}`)
+}
+
+/**
+ * 获取平台状态
+ */
+export async function getPlatformStatus() {
+  if (USE_MOCK) {
+    await mockDelay()
+    return {
+      platforms: [
+        { id: 'website', name: '官网', status: 'connected', lastSync: new Date().toISOString() },
+        { id: 'wechat', name: '微信公众号', status: 'connected', lastSync: new Date().toISOString() },
+        { id: 'xiaohongshu', name: '小红书', status: 'connected', lastSync: new Date().toISOString() },
+        { id: 'douyin', name: '抖音', status: 'disconnected', lastSync: null },
+        { id: 'weibo', name: '微博', status: 'disconnected', lastSync: null },
+      ]
+    }
+  }
+  return request('/publish/platforms/status')
+}
+
+/**
+ * 发布内容
+ */
+export async function publishContent(data) {
+  if (USE_MOCK) {
+    await mockDelay(2000)
+    return {
+      success: true,
+      platformResults: data.targetPlatforms.map(p => ({
+        platform: p.platform,
+        status: 'pending',
+        message: '发布任务已创建'
+      }))
+    }
+  }
+  return request('/publish/content', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * 重试发布
+ */
+export async function retryPublish(recordId) {
+  if (USE_MOCK) {
+    await mockDelay()
+    return { success: true, message: '重新发布已启动' }
+  }
+  return request(`/publish/${recordId}/retry`, { method: 'POST' })
+}
+
+/**
+ * 取消发布
+ */
+export async function cancelPublish(recordId) {
+  if (USE_MOCK) {
+    await mockDelay()
+    return { success: true, message: '发布已取消' }
+  }
+  return request(`/publish/${recordId}/cancel`, { method: 'POST' })
+}
+
 // ==================== 策略管理 API ====================
 
 /**
@@ -1837,6 +1936,11 @@ export function useApi() {
     saveCMSConfig: (config) => apiCall(saveCMSConfig, config),
     getCMSConfigs: () => apiCall(getCMSConfigs),
     deleteCMSConfig: (id) => apiCall(deleteCMSConfig, id),
+    getPublishList: (params) => apiCall(getPublishList, params),
+    getPlatformStatus: () => apiCall(getPlatformStatus),
+    publishContent: (data) => apiCall(publishContent, data),
+    retryPublish: (id) => apiCall(retryPublish, id),
+    cancelPublish: (id) => apiCall(cancelPublish, id),
     // 语义库相关
     getSemanticEntityTypes: () => apiCall(getSemanticEntityTypes),
     getSemanticEntities: (type) => apiCall(getSemanticEntities, type),
@@ -1933,6 +2037,11 @@ export default {
   saveCMSConfig,
   getCMSConfigs,
   deleteCMSConfig,
+  getPublishList,
+  getPlatformStatus,
+  publishContent,
+  retryPublish,
+  cancelPublish,
   // 语义库相关
   getSemanticEntityTypes,
   getSemanticEntities,

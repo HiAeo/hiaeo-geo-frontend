@@ -151,10 +151,10 @@ const formatNumber = (n) => n?.toLocaleString() || '0'
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .stat-card { background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; display: flex; gap: 16px; }
 .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.stat-icon.total { background: rgba(99, 102, 241, 0.15); color: #4f46e5; }
-.stat-icon.distributed { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.stat-icon.consumed { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
-.stat-icon.balance { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+.stat-icon.total { background: rgba(99, 102, 241, 0.15); color: var(--color-primary); }
+.stat-icon.distributed { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+.stat-icon.consumed { background: rgba(239, 68, 68, 0.15); color: var(--color-danger); }
+.stat-icon.balance { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
 .stat-content { display: flex; flex-direction: column; }
 .stat-value { font-size: 1.5rem; font-weight: 700; }
 .stat-label { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
@@ -172,10 +172,10 @@ const formatNumber = (n) => n?.toLocaleString() || '0'
 .credits-table tr:last-child td { border-bottom: none; }
 .credits-table tr:hover td { background: var(--bg-primary); }
 .user-cell { display: flex; align-items: center; gap: 10px; }
-.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: white; }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: white; }
 .type-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
-.type-badge.income { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.type-badge.expense { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
-td.income { color: #059669; font-weight: 600; }
-td.expense { color: #dc2626; font-weight: 600; }
+.type-badge.income { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+.type-badge.expense { background: rgba(239, 68, 68, 0.15); color: var(--color-danger); }
+td.income { color: var(--color-success); font-weight: 600; }
+td.expense { color: var(--color-danger); font-weight: 600; }
 </style>

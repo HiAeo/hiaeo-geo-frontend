@@ -10,13 +10,10 @@
     <!-- Sidebar -->
     <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
       <div class="sidebar-header">
-        <div class="logo">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-            <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span v-if="!sidebarCollapsed" class="logo-text">魔鲸 Geo 管理后台</span>
-        </div>
+        <a href="/" class="logo">
+          <img :src="theme === 'dark' ? '/logo-white.png' : '/logo.png'" alt="MiraMod" class="logo-img" />
+          <span v-if="!sidebarCollapsed" class="alpha-badge" :style="theme === 'dark' ? 'background:rgba(22,93,255,0.15);color:#165DFF;' : 'background:rgba(22,93,255,0.1);color:#165DFF;'">Alpha</span>
+        </a>
         <button class="collapse-btn" @click="sidebarCollapsed = !sidebarCollapsed">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path v-if="sidebarCollapsed" d="M9 18l6-6-6-6"/>
@@ -79,16 +76,12 @@
 <script setup>
 import { ref, h } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTheme } from '../composables/useTheme'
 
-const props = defineProps({
-  theme: {
-    type: String,
-    default: 'dark'
-  }
-})
-
-const emit = defineEmits(['toggle-theme', 'back'])
 const router = useRouter()
+
+// 直接使用 useTheme 获取全局主题状态（自动初始化）
+const { theme, toggleTheme } = useTheme()
 
 const handleLogout = () => {
   localStorage.removeItem('user_info')
@@ -157,10 +150,6 @@ const adminNavItems = [
   { id: 'credits', label: '积分管理', path: '/manage/credits', icon: CreditsIcon },
   { id: 'settings', label: '系统设置', path: '/manage/settings', icon: SettingsIcon }
 ]
-
-const toggleTheme = () => {
-  emit('toggle-theme')
-}
 </script>
 
 <style scoped>
@@ -242,7 +231,24 @@ const toggleTheme = () => {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.logo-img {
+  height: 42px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover .logo-img {
+  transform: scale(1.08);
+}
+
+.alpha-badge {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
 }
 
 .logo-text {

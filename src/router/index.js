@@ -25,13 +25,13 @@ const routes = [
       },
       {
         path: '',
-        redirect: '/app/hub'
+        redirect: '/app/diagnose'
       },
       {
         path: 'hub',
         name: 'brand-hub',
         component: () => import('../components/pages/HubPage.vue'),
-        meta: { title: '魔鲸Hub驾驶舱' }
+        meta: { title: '协同驾驶 · AI协同驾驶舱' }
       },
       {
         path: 'mofa',
@@ -43,19 +43,25 @@ const routes = [
         path: 'dashboard',
         name: 'brand-dashboard',
         component: () => import('../components/pages/BrandDashboardPage.vue'),
-        meta: { title: '品牌仪表盘' }
+        meta: { title: '品牌监控 · 全维度数据看板' }
       },
       {
         path: 'diagnose',
         name: 'brand-diagnose',
         component: () => import('../components/pages/BrandDiagnosePage.vue'),
-        meta: { title: '诊断报告' }
+        meta: { title: '模镜 MiraSeek · AI可见度诊断' }
       },
       {
         path: 'strategy',
         name: 'brand-strategy',
-        component: () => import('../components/StrategyPage.vue'),
-        meta: { title: '策略生成' }
+        component: () => import('../components/pages/StrategyPage.vue'),
+        meta: { title: '模豆 MiraMod · GEO智能策略生成' }
+      },
+      {
+        path: 'publish',
+        name: 'brand-publish',
+        component: () => import('../components/PublishPage.vue'),
+        meta: { title: '模法 MiraMag · GEO Agent自动执行优化' }
       },
       {
         path: 'diagnose/:id',

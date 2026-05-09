@@ -49,7 +49,7 @@
             <span class="metric-label">GEO健康分</span>
             <span class="metric-trend positive">↑ 8%</span>
           </div>
-          <div class="metric-value">{{ bossStats.geoScore }}</div>
+          <div class="metric-value primary">{{ bossStats.geoScore }}</div>
           <div class="metric-bar">
             <div class="metric-bar-fill" :style="{ width: bossStats.geoScore + '%' }"></div>
           </div>
@@ -289,7 +289,7 @@
             <div class="health-item">
               <div class="health-label">页面性能</div>
               <div class="health-bar">
-                <div class="health-bar-fill" :class="techStats.performance > 80 ? 'green' : 'yellow'" :style="{ width: techStats.performance + '%' }"></div>
+                <div class="health-bar-fill" :class="[techStats.performance > 80 ? 'green' : 'yellow']" :style="{ width: techStats.performance + '%' }"></div>
               </div>
               <span class="health-value">{{ techStats.performance }}</span>
             </div>
@@ -458,8 +458,12 @@ const getRankClass = (index) => {
 }
 
 const getStatusColor = (status) => {
-  const colors = { pending: '#00A3FF', draft: '#A78BFA', published: '#10B981' }
-  return colors[status] || '#8B6CFF'
+  const colors = { 
+    pending: 'var(--color-info)', 
+    draft: 'var(--color-secondary)', 
+    published: 'var(--color-success)' 
+  }
+  return colors[status] || 'var(--color-primary)'
 }
 
 const getTaskStatusText = (status) => {
@@ -573,52 +577,57 @@ onMounted(() => {
 /* Role Tabs */
 .role-tabs {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   padding: 20px 24px;
   max-width: 1400px;
   margin: 0 auto;
+  background: var(--bg-elevated);
+  border-radius: 12px;
+  margin-bottom: 24px;
 }
 
 .role-tab {
   flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-elevated);
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 14px;
+  color: var(--text-secondary);
 }
 
 .role-tab:hover {
-  border-color: var(--color-primary);
+  background: var(--bg-primary);
 }
 
 .role-tab.active {
   background: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.role-tab.active .role-label,
-.role-tab.active .role-desc {
   color: white;
 }
 
 .role-icon {
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
 
 .role-label {
   font-weight: 600;
-  color: var(--text-primary);
+  color: inherit;
 }
 
 .role-desc {
   font-size: 0.75rem;
   color: var(--text-secondary);
+  margin-left: 4px;
+}
+
+.role-tab.active .role-desc {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 /* Content */
@@ -658,18 +667,22 @@ onMounted(() => {
 }
 
 .metric-card.primary {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, #8b5cf6));
-  border: none;
+  background: rgba(22, 93, 255, 0.1);
+  border-color: var(--color-primary);
 }
 
 .metric-card.primary .metric-label,
 .metric-card.primary .metric-trend,
 .metric-card.primary .metric-compare {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--color-primary);
 }
 
 .metric-card.primary .metric-value {
-  color: white;
+  color: var(--color-primary);
+}
+
+.metric-card.primary .metric-bar-fill {
+  background: var(--color-primary);
 }
 
 .metric-header {
@@ -689,8 +702,8 @@ onMounted(() => {
   font-weight: 600;
 }
 
-.metric-trend.positive { color: #059669; }
-.metric-trend.negative { color: #dc2626; }
+.metric-trend.positive { color: var(--color-success); }
+.metric-trend.negative { color: var(--color-danger); }
 
 .metric-value {
   font-size: 2rem;
@@ -698,9 +711,10 @@ onMounted(() => {
   color: var(--text-primary);
 }
 
-.metric-value.accent { color: #00A3FF; }
-.metric-value.purple { color: #8B5CF6; }
-.metric-value.green { color: #10B981; }
+.metric-value.accent { color: var(--color-info); }
+.metric-value.purple { color: var(--color-secondary); }
+.metric-value.green { color: var(--color-success); }
+.metric-value.primary { color: var(--color-primary); }
 
 .metric-bar {
   height: 6px;
@@ -717,9 +731,9 @@ onMounted(() => {
   transition: width 0.5s ease;
 }
 
-.metric-bar-fill.blue { background: #00A3FF; }
-.metric-bar-fill.purple { background: #8B5CF6; }
-.metric-bar-fill.green { background: #10B981; }
+.metric-bar-fill.blue { background: var(--color-info); }
+.metric-bar-fill.purple { background: var(--color-secondary); }
+.metric-bar-fill.green { background: var(--color-success); }
 
 .metric-footer {
   font-size: 0.75rem;
@@ -785,7 +799,7 @@ onMounted(() => {
   stroke-linejoin: round;
 }
 
-.chart-line.blue { stroke: #165DFF; }
+.chart-line.blue { stroke: var(--color-info); }
 
 .chart-point {
   fill: var(--color-primary);
@@ -854,9 +868,9 @@ onMounted(() => {
   background: var(--bg-primary);
 }
 
-.rank.gold { background: rgba(245, 158, 11, 0.2); color: #d97706; }
-.rank.silver { background: rgba(156, 163, 175, 0.25); color: #6b7280; }
-.rank.bronze { background: rgba(180, 83, 9, 0.2); color: #b45309; }
+.rank.gold { background: rgba(245, 158, 11, 0.2); color: var(--color-warning); }
+.rank.silver { background: rgba(156, 163, 175, 0.25); color: var(--text-secondary); }
+.rank.bronze { background: rgba(180, 83, 9, 0.2); color: var(--color-warning); }
 
 .brand-name {
   font-weight: 500;
@@ -871,8 +885,8 @@ onMounted(() => {
   color: var(--text-secondary);
 }
 
-.trend.up { color: #059669; }
-.trend.down { color: #dc2626; }
+.trend.up { color: var(--color-success); }
+.trend.down { color: var(--color-danger); }
 
 /* Ops View */
 .ops-grid {
@@ -913,12 +927,12 @@ onMounted(() => {
 
 .badge.warning {
   background: rgba(245, 158, 11, 0.15);
-  color: #d97706;
+  color: var(--color-warning);
 }
 
 .badge.success {
   background: rgba(16, 185, 129, 0.15);
-  color: #059669;
+  color: var(--color-success);
 }
 
 .task-list {
@@ -960,11 +974,11 @@ onMounted(() => {
 }
 
 .task-style {
-  color: #00A3FF;
+  color: var(--color-info);
 }
 
 .task-platform {
-  color: #A78BFA;
+  color: var(--color-secondary);
 }
 
 .task-actions {
@@ -984,21 +998,21 @@ onMounted(() => {
 
 .task-btn.approve {
   background: rgba(16, 185, 129, 0.15);
-  color: #059669;
+  color: var(--color-success);
 }
 
 .task-btn.approve:hover {
-  background: #059669;
+  background: var(--color-success);
   color: white;
 }
 
 .task-btn.reject {
   background: rgba(239, 68, 68, 0.15);
-  color: #dc2626;
+  color: var(--color-danger);
 }
 
 .task-btn.reject:hover {
-  background: #dc2626;
+  background: var(--color-danger);
   color: white;
 }
 
@@ -1046,17 +1060,17 @@ onMounted(() => {
 
 .suggestion-tag.high {
   background: rgba(239, 68, 68, 0.15);
-  color: #dc2626;
+  color: var(--color-danger);
 }
 
 .suggestion-tag.medium {
   background: rgba(245, 158, 11, 0.15);
-  color: #d97706;
+  color: var(--color-warning);
 }
 
 .suggestion-tag.low {
   background: rgba(107, 114, 128, 0.15);
-  color: #6b7280;
+  color: var(--text-tertiary);
 }
 
 /* Content Stats */
@@ -1087,8 +1101,8 @@ onMounted(() => {
   color: var(--text-primary);
 }
 
-.mini-value.success { color: #059669; }
-.mini-value.warning { color: #d97706; }
+.mini-value.success { color: var(--color-success); }
+.mini-value.warning { color: var(--color-warning); }
 
 .mini-label {
   font-size: 0.75rem;
@@ -1142,17 +1156,17 @@ onMounted(() => {
 
 .task-icon.completed {
   background: rgba(16, 185, 129, 0.15);
-  color: #059669;
+  color: var(--color-success);
 }
 
 .task-icon.pending {
   background: rgba(245, 158, 11, 0.15);
-  color: #d97706;
+  color: var(--color-warning);
 }
 
 .task-icon.in-progress {
   background: rgba(22, 93, 255, 0.15);
-  color: #165DFF;
+  color: var(--color-info);
 }
 
 .tech-task-item .task-title {
@@ -1176,12 +1190,12 @@ onMounted(() => {
 
 .task-status-badge.completed {
   background: rgba(16, 185, 129, 0.15);
-  color: #059669;
+  color: var(--color-success);
 }
 
 .task-status-badge.pending {
   background: rgba(245, 158, 11, 0.15);
-  color: #d97706;
+  color: var(--color-warning);
 }
 
 /* Health Metrics */
@@ -1217,10 +1231,10 @@ onMounted(() => {
   transition: width 0.5s ease;
 }
 
-.health-bar-fill.green { background: #059669; }
-.health-bar-fill.blue { background: #165DFF; }
-.health-bar-fill.purple { background: #8B5CF6; }
-.health-bar-fill.yellow { background: #F59E0B; }
+.health-bar-fill.green { background: var(--color-success); }
+.health-bar-fill.blue { background: var(--color-info); }
+.health-bar-fill.purple { background: var(--color-secondary); }
+.health-bar-fill.yellow { background: var(--color-warning); }
 
 .health-value {
   width: 50px;

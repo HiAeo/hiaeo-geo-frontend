@@ -136,7 +136,7 @@ const formatNumber = (num) => num?.toLocaleString() || '0'
 .balance-section { max-width: 1400px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
 @media (max-width: 1024px) { .balance-section { grid-template-columns: 1fr; } }
 
-.balance-card { background: linear-gradient(135deg, var(--color-primary), #8b5cf6); border-radius: 20px; padding: 28px; color: white; display: flex; flex-direction: column; gap: 16px; }
+.balance-card { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); border-radius: 20px; padding: 28px; color: white; display: flex; flex-direction: column; gap: 16px; }
 .balance-header { display: flex; justify-content: space-between; align-items: center; }
 .balance-label { font-size: 0.875rem; opacity: 0.8; }
 .balance-plan { font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 4px; }
@@ -147,7 +147,7 @@ const formatNumber = (num) => num?.toLocaleString() || '0'
 .bstat { display: flex; flex-direction: column; gap: 2px; }
 .bstat-label { font-size: 0.75rem; opacity: 0.7; }
 .bstat-value { font-size: 1rem; font-weight: 600; }
-.bstat-value.available { color: #4ade80; }
+.bstat-value.available { color: var(--color-success); }
 .recharge-btn { padding: 12px; background: white; color: var(--color-primary); border: none; border-radius: 12px; font-size: 0.9375rem; font-weight: 700; cursor: pointer; margin-top: auto; transition: all 0.2s; }
 .recharge-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 
@@ -170,12 +170,12 @@ const formatNumber = (num) => num?.toLocaleString() || '0'
 .record-item:last-child { border-bottom: none; }
 .record-item:hover { background: var(--bg-primary); }
 .record-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.record-icon.income { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.record-icon.expense { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+.record-icon.income { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+.record-icon.expense { background: rgba(239, 68, 68, 0.15); color: var(--color-danger); }
 .record-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .record-title { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); }
 .record-time { font-size: 0.75rem; color: var(--text-secondary); }
 .record-amount { font-size: 0.9375rem; font-weight: 700; }
-.record-amount.income { color: #059669; }
-.record-amount.expense { color: #dc2626; }
+.record-amount.income { color: var(--color-success); }
+.record-amount.expense { color: var(--color-danger); }
 </style>

@@ -10,13 +10,10 @@
     <!-- Sidebar -->
     <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
       <div class="sidebar-header">
-        <div class="logo">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-            <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span v-if="!sidebarCollapsed" class="logo-text">魔鲸 Geo</span>
-        </div>
+        <a href="/" class="logo">
+          <img :src="theme === 'dark' ? '/logo-white.png' : '/logo.png'" alt="MiraMod" class="logo-img" />
+          <span v-if="!sidebarCollapsed" class="alpha-badge" :style="theme === 'dark' ? 'background:rgba(22,93,255,0.15);color:#165DFF;' : 'background:rgba(22,93,255,0.1);color:#165DFF;'">Alpha</span>
+        </a>
         <button class="collapse-btn" @click="sidebarCollapsed = !sidebarCollapsed">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path v-if="sidebarCollapsed" d="M9 18l6-6-6-6"/>
@@ -88,13 +85,12 @@
 <script setup>
 import { ref, h } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTheme } from '../../composables/useTheme'
 
-const props = defineProps({
-  theme: { type: String, default: 'dark' }
-})
-
-const emit = defineEmits(['toggle-theme'])
 const router = useRouter()
+
+// 直接使用 useTheme 获取全局主题状态（自动初始化）
+const { theme, toggleTheme } = useTheme()
 
 const handleLogout = () => {
   localStorage.removeItem('user_info')
@@ -105,8 +101,6 @@ const handleLogout = () => {
 const sidebarCollapsed = ref(false)
 const currentBrand = ref('示例品牌')
 const brandPlan = ref('Pro 套餐')
-
-const toggleTheme = () => emit('toggle-theme')
 
 // Icon components
 const DashboardIcon = {
@@ -161,6 +155,16 @@ const StrategyIcon = {
   }
 }
 
+const PublishIcon = {
+  render() {
+    return h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': 2 }, [
+      h('path', { d: 'M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8' }),
+      h('polyline', { points: '16 6 12 2 8 6' }),
+      h('line', { x1: 12, y1: 2, x2: 12, y2: 15 })
+    ])
+  }
+}
+
 const SettingsIcon = {
   render() {
     return h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': 2 }, [
@@ -189,15 +193,16 @@ const MofaIcon = {
   }
 }
 
+// 按照产品使用流程排序：诊断 → 策略 → 执行 → 监控
 const brandNavItems = [
-  { id: 'hub', label: '魔鲸Hub', path: '/app/hub', icon: HubIcon },
-  { id: 'mofa', label: '模法内容', path: '/app/mofa', icon: MofaIcon },
-  { id: 'dashboard', label: '品牌仪表盘', path: '/app/dashboard', icon: DashboardIcon },
-  { id: 'diagnose', label: '诊断报告', path: '/app/diagnose', icon: DiagnoseIcon },
-  { id: 'strategy', label: '策略生成', path: '/app/strategy', icon: StrategyIcon },
-  { id: 'credits', label: '我的积分', path: '/app/credits', icon: CreditsIcon },
-  { id: 'orders', label: '订单管理', path: '/app/orders', icon: OrdersIcon },
-  { id: 'settings', label: '账户设置', path: '/app/settings', icon: SettingsIcon }
+  { id: 'diagnose', label: '诊断报告', path: '/app/diagnose', icon: DiagnoseIcon },     // 1. 模镜 - 诊断
+  { id: 'strategy', label: '策略生成', path: '/app/strategy', icon: StrategyIcon },       // 2. 模豆 - 策略
+  { id: 'publish', label: '内容发布', path: '/app/publish', icon: PublishIcon },         // 3. 模法 - 执行发布
+  { id: 'hub', label: '协同驾驶', path: '/app/hub', icon: HubIcon },                     // 4. 魔鲸Hub - 监控驾驶舱
+  { id: 'dashboard', label: '品牌监控', path: '/app/dashboard', icon: DashboardIcon },   // 5. 品牌仪表盘 - 品牌监控
+  { id: 'credits', label: '我的积分', path: '/app/credits', icon: CreditsIcon },         // 6. 积分
+  { id: 'orders', label: '订单管理', path: '/app/orders', icon: OrdersIcon },           // 7. 订单
+  { id: 'settings', label: '账户设置', path: '/app/settings', icon: SettingsIcon }        // 8. 设置
 ]
 </script>
 
@@ -267,7 +272,24 @@ const brandNavItems = [
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.logo-img {
+  height: 42px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover .logo-img {
+  transform: scale(1.08);
+}
+
+.alpha-badge {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
 }
 
 .logo-text {

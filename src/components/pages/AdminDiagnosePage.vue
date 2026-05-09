@@ -156,14 +156,14 @@ const retry = (d) => { console.log('retry', d.id) }
 .engine-tags { display: flex; gap: 4px; flex-wrap: wrap; }
 .engine-tag { padding: 2px 8px; background: rgba(99, 102, 241, 0.1); color: var(--color-primary); border-radius: 4px; font-size: 0.75rem; }
 .score-val { font-weight: 700; }
-.score-val.high { color: #059669; }
-.score-val.mid { color: #4f46e5; }
-.score-val.low { color: #d97706; }
+.score-val.high { color: var(--color-success); }
+.score-val.mid { color: var(--color-primary); }
+.score-val.low { color: var(--color-warning); }
 .score-val.none { color: var(--text-tertiary); }
 .status-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
-.status-completed { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.status-running { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-.status-failed { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+.status-completed { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+.status-running { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
+.status-failed { background: rgba(239, 68, 68, 0.15); color: var(--color-danger); }
 .action-btns { display: flex; gap: 4px; }
 .action-btn { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; }
 .action-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }

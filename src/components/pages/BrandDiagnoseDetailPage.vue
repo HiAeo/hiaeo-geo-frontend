@@ -167,10 +167,10 @@ const report = ref({
 })
 
 const getDimColor = (score) => {
-  if (score >= 80) return '#10b981'
-  if (score >= 65) return '#6366f1'
-  if (score >= 50) return '#f59e0b'
-  return '#ef4444'
+  if (score >= 80) return 'var(--color-success)'
+  if (score >= 65) return 'var(--color-primary)'
+  if (score >= 50) return 'var(--color-warning)'
+  return 'var(--color-danger)'
 }
 
 const getGrade = (score) => {
@@ -272,10 +272,10 @@ onMounted(() => {
 .big-score-card { text-align: center; flex-shrink: 0; }
 .big-score { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--text-primary); }
 .score-grade { display: inline-block; padding: 6px 20px; border-radius: 8px; font-size: 1.25rem; font-weight: 800; margin: 8px 0; }
-.grade-A { background: rgba(16, 185, 129, 0.15); color: #059669; }
-.grade-B { background: rgba(99, 102, 241, 0.15); color: #4f46e5; }
-.grade-C { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-.grade-D { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+.grade-A { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
+.grade-B { background: rgba(99, 102, 241, 0.15); color: var(--color-primary); }
+.grade-C { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
+.grade-D { background: rgba(239, 68, 68, 0.15); color: var(--color-danger); }
 .score-label { font-size: 0.875rem; color: var(--text-secondary); }
 
 .dimension-cards { flex: 1; display: flex; flex-direction: column; gap: 12px; }
@@ -327,9 +327,9 @@ onMounted(() => {
 .issues-list { display: flex; flex-direction: column; gap: 12px; }
 .issue-card { background: var(--bg-primary); border-radius: 12px; padding: 16px; display: flex; gap: 12px; }
 .issue-priority { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
-.priority-高 { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
-.priority-中 { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-.priority-低 { background: rgba(16, 185, 129, 0.15); color: #059669; }
+.priority-高 { background: rgba(239, 68, 68, 0.15); color: var(--color-danger); }
+.priority-中 { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
+.priority-低 { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
 .issue-body h4 { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
 .issue-body p { font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 8px; }
 .issue-suggestion { font-size: 0.8125rem; color: var(--text-primary); background: var(--bg-elevated); padding: 8px 12px; border-radius: 8px; }

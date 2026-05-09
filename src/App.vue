@@ -65,9 +65,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useApi } from './composables/useApi'
+import { initTheme, toggleTheme as globalToggleTheme } from './composables/useTheme'
 
 // 组件导入 (官网)
 import NavBar from './components/NavBar.vue'
@@ -94,12 +95,25 @@ const theme = ref('dark')
 const showLogin = ref(false)
 const showContact = ref(false)
 
+// 初始化主题
+onMounted(() => {
+  theme.value = initTheme()
+})
+
+// 监听路由变化，确保子应用页面同步主题
+watch(() => route.path, () => {
+  const savedTheme = localStorage.getItem('theme') || 'dark'
+  theme.value = savedTheme
+  document.documentElement.setAttribute('data-theme', savedTheme)
+})
+
 // 判断是否在 App/Manage 子路由中
 const isSubApp = computed(() => route.path.startsWith('/app') || route.path.startsWith('/manage'))
 
 const toggleTheme = () => {
-  theme.value = theme.value === 'dark' ? 'light' : 'dark'
-  localStorage.setItem('theme', theme.value)
+  globalToggleTheme()
+  // globalToggleTheme 已经更新了 theme.value，这里同步即可
+  theme.value = localStorage.getItem('theme') || 'dark'
 }
 
 // 处理登录 - 根据用户名判断角色

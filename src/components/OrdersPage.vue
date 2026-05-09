@@ -3,13 +3,10 @@
     <!-- Header -->
     <div class="page-header">
       <div class="header-content">
-        <button class="back-btn" @click="$emit('back')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="19" y1="12" x2="5" y2="12"/>
-            <polyline points="12 19 5 12 12 5"/>
-          </svg>
-        </button>
-        <h1 class="page-title">我的订单</h1>
+        <div class="header-left">
+          <h1 class="page-title">我的订单</h1>
+          <span class="page-subtitle">管理订阅套餐购买记录和退款申请</span>
+        </div>
       </div>
     </div>
 
@@ -306,41 +303,47 @@ onMounted(() => {
 
 /* Header */
 .page-header {
-  padding: 16px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-elevated);
+  padding: 16px 24px;
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.back-btn {
-  width: 36px;
-  height: 36px;
+.header-left {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-secondary);
-  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .page-title {
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: var(--text-primary);
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
 }
 
 /* Tabs */
 .tabs {
   display: flex;
   gap: 8px;
-  padding: 16px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 0;
   overflow-x: auto;
 }
 
@@ -376,11 +379,12 @@ onMounted(() => {
 .stats-bar {
   display: flex;
   align-items: center;
-  margin: 0 20px 16px;
-  padding: 16px;
-  background: var(--bg-card);
+  max-width: 1400px;
+  margin: 0 auto 16px;
+  padding: 20px;
+  background: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 16px;
 }
 
 .stat-item {
@@ -410,7 +414,9 @@ onMounted(() => {
 
 /* Orders List */
 .orders-container {
-  padding: 0 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
 .orders-list {
@@ -420,10 +426,16 @@ onMounted(() => {
 }
 
 .order-card {
-  padding: 16px;
-  background: var(--bg-card);
+  padding: 20px;
+  background: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .order-header {
@@ -518,24 +530,38 @@ onMounted(() => {
 }
 
 .btn-primary {
-  padding: 8px 16px;
+  padding: 10px 18px;
   background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(22, 93, 255, 0.3);
 }
 
 .btn-outline {
-  padding: 8px 16px;
-  background: transparent;
+  padding: 10px 18px;
+  background: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 0.75rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .load-more {
