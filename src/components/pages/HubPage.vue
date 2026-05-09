@@ -1,5 +1,5 @@
 <template>
-  <div class="hub-page">
+  <div class="hub-page" :data-theme="theme">
     <!-- Header -->
     <div class="page-header">
       <div class="header-content">
@@ -318,6 +318,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useApi } from '../../composables/useApi'
+import { useTheme } from '../../composables/useTheme'
+
+// 使用全局主题状态
+const { theme } = useTheme()
 
 const props = defineProps({
   theme: { type: String, default: 'dark' }

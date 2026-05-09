@@ -11,7 +11,7 @@
           你可能想问的
         </h2>
         <p class="text-lg faq-desc scroll-animate delay-200">
-          还有其他问题？<a href="mailto:contact@hiaeo.com" class="faq-link">联系我们</a>
+          还有其他问题？<a href="mailto:contact@modelbuddy.net" class="faq-link">联系我们</a>
         </p>
       </div>
 

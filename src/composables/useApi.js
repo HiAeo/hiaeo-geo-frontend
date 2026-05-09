@@ -23,14 +23,14 @@ function mockDelay(ms = 500) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-// AI 引擎配置
+// AI 引擎配置 - 使用真实品牌 Logo
 const mockAIEngines = [
-  { id: 'deepseek', name: 'DeepSeek', provider: 'DeepSeek', logo: '🔮', status: 'available', models: ['deepseek-chat', 'deepseek-coder'] },
-  { id: 'doubao', name: '豆包', provider: '字节跳动', logo: '🫛', status: 'available', models: ['doubao-pro-32k', 'doubao-lite-32k'] },
-  { id: 'wenxin', name: '文心一言', provider: '百度', logo: '🟠', status: 'available', models: ['ernie-4.0-8k', 'ernie-3.5-8k'] },
-  { id: 'kimi', name: 'Kimi', provider: '月之暗面', logo: '🌙', status: 'available', models: ['moonshot-v1-128k', 'moonshot-v1-32k'] },
-  { id: 'qwen', name: '通义千问', provider: '阿里云', logo: '🐎', status: 'available', models: ['qwen-turbo', 'qwen-plus', 'qwen-max'] },
-  { id: 'zhipu', name: '智谱清言', provider: '智谱AI', logo: '💎', status: 'available', models: ['glm-4', 'glm-4-flash', 'glm-3-turbo'] },
+  { id: 'deepseek', name: 'DeepSeek', provider: 'DeepSeek', logo: '🔮', logoUrl: '/ai-logos/deepseek-color.svg', status: 'available', models: ['deepseek-chat', 'deepseek-coder'] },
+  { id: 'doubao', name: '豆包', provider: '字节跳动', logo: '🫛', logoUrl: '/ai-logos/doubao-color.svg', status: 'available', models: ['doubao-pro-32k', 'doubao-lite-32k'] },
+  { id: 'wenxin', name: '文心一言', provider: '百度', logo: '🟠', logoUrl: '/ai-logos/wenxin-color.svg', status: 'available', models: ['ernie-4.0-8k', 'ernie-3.5-8k'] },
+  { id: 'kimi', name: 'Kimi', provider: '月之暗面', logo: '🌙', logoUrl: '/ai-logos/kimi-color.svg', status: 'available', models: ['moonshot-v1-128k', 'moonshot-v1-32k'] },
+  { id: 'qwen', name: '通义千问', provider: '阿里云', logo: '🐎', logoUrl: '/ai-logos/qwen-color.svg', status: 'available', models: ['qwen-turbo', 'qwen-plus', 'qwen-max'] },
+  { id: 'zhipu', name: '智谱AI', provider: '智谱AI', logo: '💎', logoUrl: '/ai-logos/zhipu-color.svg', status: 'available', models: ['glm-4', 'glm-4-flash', 'glm-3-turbo'] },
 ]
 
 // Mock AI 诊断结果
@@ -39,7 +39,7 @@ function mockDiagnoseResult(engineId, brandData) {
   return {
     engineId: engine.id,
     engineName: engine.name,
-    engineLogo: engine.logo,
+    engineLogo: engine.logoUrl || engine.logo,
     timestamp: new Date().toISOString(),
     overallScore: Math.floor(Math.random() * 20) + 70,
     dimensions: [

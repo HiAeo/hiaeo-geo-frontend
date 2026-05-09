@@ -1007,7 +1007,7 @@ const exportToPDF = async () => {
   doc.setFontSize(8)
   setDocFont('normal')
   doc.text('魔鲸GEO - 让GEO像呼吸一样简单', 15, pageHeight - 12)
-  doc.text(`报告 ID: ${report.id || 'N/A'} | 官网: www.hiaeo.cn`, 15, pageHeight - 7)
+  doc.text(`报告 ID: ${report.id || 'N/A'} | 官网: www.modelbuddy.net`, 15, pageHeight - 7)
   
   // ==================== PAGE 2: Issues ====================
   if (report.issues && report.issues.length > 0) {

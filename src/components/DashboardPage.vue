@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-page">
+  <div class="dashboard-page" :data-theme="theme">
     <!-- Header -->
     <div class="page-header">
       <div class="header-content">
@@ -219,10 +219,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useApi } from '../composables/useApi'
+import { useTheme } from '../composables/useTheme'
 
-const props = defineProps({
-  theme: { type: String, default: 'dark' }
-})
+// 使用全局主题状态
+const { theme } = useTheme()
 
 const { getAdminStats } = useApi()
 

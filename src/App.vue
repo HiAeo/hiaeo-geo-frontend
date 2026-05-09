@@ -48,7 +48,6 @@
       <!-- Login Modal -->
       <LoginModal
         :show="showLogin"
-        :theme="theme"
         @close="showLogin = false"
         @login="handleLogin"
         @signup="handleSignup"
@@ -68,7 +67,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useApi } from './composables/useApi'
-import { initTheme, toggleTheme as globalToggleTheme } from './composables/useTheme'
+import { initTheme, toggleTheme as globalToggleTheme, theme as globalTheme, setTheme } from './composables/useTheme'
 
 // 组件导入 (官网)
 import NavBar from './components/NavBar.vue'
@@ -91,29 +90,31 @@ const route = useRoute()
 const router = useRouter()
 const { loginWithPassword, register, submitContactForm, logout } = useApi()
 
-const theme = ref('dark')
+// 使用全局主题状态，确保所有组件同步
+const theme = globalTheme
 const showLogin = ref(false)
 const showContact = ref(false)
 
 // 初始化主题
 onMounted(() => {
-  theme.value = initTheme()
+  initTheme()
 })
 
-// 监听路由变化，确保子应用页面同步主题
+// 监听路由变化，确保子应用页面同步主题到 DOM
 watch(() => route.path, () => {
-  const savedTheme = localStorage.getItem('theme') || 'dark'
-  theme.value = savedTheme
-  document.documentElement.setAttribute('data-theme', savedTheme)
-})
+  // 进入后台时强制深色主题
+  if (route.path.startsWith('/app') || route.path.startsWith('/manage')) {
+    setTheme('dark')
+  }
+  document.documentElement.setAttribute('data-theme', theme.value)
+}, { immediate: false })
 
 // 判断是否在 App/Manage 子路由中
 const isSubApp = computed(() => route.path.startsWith('/app') || route.path.startsWith('/manage'))
 
+// 切换主题 - 使用全局函数
 const toggleTheme = () => {
   globalToggleTheme()
-  // globalToggleTheme 已经更新了 theme.value，这里同步即可
-  theme.value = localStorage.getItem('theme') || 'dark'
 }
 
 // 处理登录 - 根据用户名判断角色
@@ -157,7 +158,8 @@ const handleLogin = async (data) => {
     if (userRole === 'admin') {
       router.push('/manage/overview')
     } else {
-      router.push('/app/dashboard')
+      // 品牌用户默认跳转到诊断报告页
+      router.push('/app/diagnose')
     }
   } catch (error) {
     console.error('[App] 登录失败:', error)
@@ -191,7 +193,7 @@ const handleSignup = async (data) => {
     localStorage.setItem('user_role', 'brand')
 
     showLogin.value = false
-    router.push('/app/dashboard')
+    router.push('/app/diagnose')
   } catch (error) {
     console.error('[App] 注册失败:', error)
     alert('注册失败: ' + error.message)

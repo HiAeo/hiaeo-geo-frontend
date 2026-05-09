@@ -51,7 +51,7 @@
       <div class="footer-bottom">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center">
           <div class="text-xs sm:text-sm footer-copyright">
-            © 2026 HiAeo. 让AI生成式引擎优化像呼吸一样简单。
+            © 2026 ModelBuddy. 让AI生成式引擎优化像呼吸一样简单。
           </div>
           <div class="flex items-center gap-3 sm:gap-5 text-xs sm:text-sm footer-legal flex-wrap justify-center">
             <a href="#" class="footer-legal-link">隐私政策</a>

@@ -5,7 +5,7 @@
 import { ref, watch, onMounted } from 'vue'
 
 // 全局主题状态
-const theme = ref('dark')
+export const theme = ref('dark')
 
 // 初始化主题 - 每次调用都同步 localStorage
 export const initTheme = () => {

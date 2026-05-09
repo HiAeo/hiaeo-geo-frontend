@@ -237,25 +237,26 @@ nav {
 }
 
 .nav-btn-secondary {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.8) !important;
+  color: white !important;
+  border: 1px solid rgba(0, 0, 0, 0.8) !important;
 }
 
 .nav-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(0, 0, 0, 0.9) !important;
 }
 
+/* Light theme: black background with white text */
 [data-theme="light"] .nav-btn-secondary {
-  color: #4B5563;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.8) !important;
+  color: white !important;
+  border: 1px solid rgba(0, 0, 0, 0.8) !important;
 }
 
 [data-theme="light"] .nav-btn-secondary:hover {
-  background: rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.25);
-  color: #111827;
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(0, 0, 0, 0.9) !important;
 }
 
 .mobile-menu {

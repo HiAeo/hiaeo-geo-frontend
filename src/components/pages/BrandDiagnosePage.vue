@@ -1,5 +1,5 @@
 <template>
-  <div class="brand-diagnose">
+  <div class="brand-diagnose" :data-theme="theme">
     <!-- Header -->
     <div class="page-header">
       <div class="header-content">
@@ -171,7 +171,8 @@
                 @click="toggleEngine(engine.id)"
                 class="engine-btn"
               >
-                <span class="engine-logo">{{ engine.logo }}</span>
+                <img v-if="engine.logoUrl" :src="engine.logoUrl" :alt="engine.name" class="engine-logo-img" />
+                <span v-else class="engine-logo">{{ engine.logo }}</span>
                 <span class="engine-name">{{ engine.name }}</span>
               </button>
             </div>
@@ -206,6 +207,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useApi } from '../../composables/useApi'
+import { useTheme } from '../../composables/useTheme'
+
+// 使用全局主题状态
+const { theme } = useTheme()
 
 const router = useRouter()
 const { getAIEngines, diagnoseWithAI, diagnoseWithMultipleAI } = useApi()
@@ -530,13 +535,13 @@ onMounted(() => {
 }
 
 /* Modal */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-.modal-content { background: var(--bg-elevated); border-radius: 20px; width: 560px; max-width: 90vw; border: 1px solid var(--border-color); }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); padding: 20px; }
+.modal-content { background: var(--bg-elevated); border-radius: 20px; width: 560px; max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column; border: 1px solid var(--border-color); }
 .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border-color); }
 .modal-header h3 { font-size: 1rem; font-weight: 700; }
 .close-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; }
-.modal-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 8px; }
+.modal-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; flex: 1; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
 
 .form-group { display: flex; flex-direction: column; gap: 8px; }
 .form-group label { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); }
@@ -555,6 +560,7 @@ onMounted(() => {
 .engine-btn { padding: 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all 0.2s; }
 .engine-btn.active { border-color: var(--color-primary); background: rgba(99, 102, 241, 0.1); }
 .engine-logo { font-size: 1.5rem; }
+.engine-logo-img { width: 32px; height: 32px; object-fit: contain; }
 .engine-name { font-size: 0.75rem; color: var(--text-secondary); }
 .engine-hint { font-size: 0.75rem; color: var(--text-tertiary); margin-top: 4px; }
 </style>

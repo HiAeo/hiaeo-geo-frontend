@@ -201,6 +201,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useApi } from '../../composables/useApi'
+import { useTheme } from '../../composables/useTheme'
+
+// 使用全局主题状态
+const { theme } = useTheme()
 
 const { getUserProfile, updateUserProfile, changePassword } = useApi()
 

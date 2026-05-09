@@ -149,6 +149,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useApi } from '../composables/useApi'
+import { useTheme } from '../composables/useTheme'
+
+// 使用全局主题状态
+const { theme } = useTheme()
 
 const props = defineProps({
   theme: {

@@ -196,7 +196,7 @@
           <div class="about-info">
             <div class="about-item">
               <span class="about-label">产品名称</span>
-              <span class="about-value">HiAeo GEO Admin</span>
+              <span class="about-value">ModelBuddy GEO Admin</span>
             </div>
             <div class="about-item">
               <span class="about-label">版本号</span>

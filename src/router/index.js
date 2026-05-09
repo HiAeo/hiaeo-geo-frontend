@@ -168,7 +168,7 @@ router.beforeEach((to, from, next) => {
 
   // 更新页面标题
   if (to.meta.title) {
-    document.title = `${to.meta.title} - HiAeo`
+    document.title = `${to.meta.title} - ModelBuddy`
   }
 
   next()

@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
+      <div v-if="show" class="modal-overlay" :data-theme="theme" @click.self="$emit('close')">
         <div class="modal-container">
 
           <!-- Close button -->
@@ -15,7 +15,7 @@
           <!-- Header -->
           <div class="modal-header">
             <h2 class="modal-title">{{ mode === 'login' ? '欢迎回来' : '开启 GEO 之旅' }}</h2>
-            <p class="modal-subtitle">{{ mode === 'login' ? '登录您的 HiAeo 账号' : '创建账号，免费开始诊断' }}</p>
+            <p class="modal-subtitle">{{ mode === 'login' ? '登录您的 ModelBuddy 账号' : '创建账号，免费开始诊断' }}</p>
           </div>
 
           <!-- Tab switch -->
@@ -270,6 +270,10 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useApi } from '../composables/useApi'
+import { useTheme } from '../composables/useTheme'
+
+// 使用全局主题状态
+const { theme } = useTheme()
 
 const props = defineProps({
   show: {
@@ -279,10 +283,6 @@ const props = defineProps({
   initialMode: {
     type: String,
     default: 'login'
-  },
-  theme: {
-    type: String,
-    default: 'dark'
   }
 })
 

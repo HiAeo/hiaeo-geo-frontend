@@ -132,8 +132,8 @@ const sections = [
 ]
 
 const settings = ref({
-  platformName: '魔鲸 Geo',
-  contactEmail: 'admin@hiaeo.com'
+  platformName: 'ModelBuddy',
+  contactEmail: 'admin@modelbuddy.net'
 })
 
 const engineSettings = ref([

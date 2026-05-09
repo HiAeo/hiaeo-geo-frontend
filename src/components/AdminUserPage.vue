@@ -726,6 +726,10 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useApi } from '../composables/useApi'
+import { useTheme } from '../composables/useTheme'
+
+// 使用全局主题状态
+const { theme } = useTheme()
 
 const props = defineProps({
   theme: {
@@ -1029,7 +1033,7 @@ const handleCreditsOperation = async () => {
       id: Date.now(),
       type: 'credits',
       message: `为用户 ${selectedUser.value.email} ${action} ${creditsForm.amount} 积分${creditsForm.reason ? '，原因：' + creditsForm.reason : ''}`,
-      admin: 'admin@hiaeo.com',
+      admin: 'admin@modelbuddy.net',
       time: new Date()
     })
     

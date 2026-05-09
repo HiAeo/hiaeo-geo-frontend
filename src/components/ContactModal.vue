@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div v-if="show" class="contact-overlay" @click.self="$emit('close')">
+      <div v-if="show" class="contact-overlay" :data-theme="theme" @click.self="$emit('close')">
         <div class="contact-container">
 
           <!-- Close button -->
@@ -109,7 +109,7 @@
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                 <polyline points="22,6 12,13 2,6"/>
               </svg>
-              <span>contact@hiaeo.com</span>
+              <span>contact@modelbuddy.net</span>
             </div>
           </div>
 
@@ -122,6 +122,10 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useApi } from '../composables/useApi'
+import { useTheme } from '../composables/useTheme'
+
+// 使用全局主题状态
+const { theme } = useTheme()
 
 const props = defineProps({
   show: {
