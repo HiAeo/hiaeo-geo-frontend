@@ -1,7 +1,7 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1'
 
 const request = async (url, options = {}) => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('auth_token')
   
   const headers = {
     'Content-Type': 'application/json',
@@ -18,10 +18,26 @@ const request = async (url, options = {}) => {
     headers['X-API-Key'] = apiKey
   }
   
+  // Build URL with query params if provided
+  let fullUrl = `${BASE_URL}${url}`
+  if (options.params) {
+    const searchParams = new URLSearchParams()
+    Object.entries(options.params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        searchParams.append(key, value)
+      }
+    })
+    const queryString = searchParams.toString()
+    if (queryString) {
+      fullUrl += `?${queryString}`
+    }
+  }
+  
   try {
-    const response = await fetch(`${BASE_URL}${url}`, {
-      ...options,
-      headers
+    const response = await fetch(fullUrl, {
+      method: options.method || 'GET',
+      headers,
+      body: options.body
     })
     
     const data = await response.json()

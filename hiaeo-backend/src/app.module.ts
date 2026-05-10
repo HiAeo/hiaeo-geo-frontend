@@ -12,6 +12,9 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { AiModule } from './modules/ai/ai.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { OrderModule } from './modules/order/order.module';
+import { TeamModule } from './modules/team/team.module';
+import { DeployModule } from './modules/deploy/deploy.module';
+import { PublishModule } from './modules/publish/publish.module';
 
 @Module({
   imports: [
@@ -30,6 +33,9 @@ import { OrderModule } from './modules/order/order.module';
     AiModule,
     SubscriptionModule,
     OrderModule,
+    TeamModule,
+    DeployModule,
+    PublishModule,
   ],
 })
 export class AppModule {}

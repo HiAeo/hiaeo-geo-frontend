@@ -359,7 +359,6 @@ const handleLogin = async () => {
     console.log('[LoginModal] 开始登录...')
     const result = await loginWithPassword({
       email: loginForm.value.account,
-      username: loginForm.value.account,
       password: loginForm.value.password
     })
     console.log('[LoginModal] 登录成功，准备 emit login 事件')

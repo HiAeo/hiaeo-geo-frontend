@@ -86,6 +86,24 @@ const routes = [
         name: 'brand-settings',
         component: () => import('../components/pages/BrandSettingsPage.vue'),
         meta: { title: '账户设置' }
+      },
+      {
+        path: 'teams',
+        name: 'brand-teams',
+        component: () => import('../components/pages/TeamListPage.vue'),
+        meta: { title: '我的团队' }
+      },
+      {
+        path: 'teams/:id',
+        name: 'brand-team-settings',
+        component: () => import('../components/pages/TeamSettingsPage.vue'),
+        meta: { title: '团队设置' }
+      },
+      {
+        path: 'join/:inviteCode',
+        name: 'join-team',
+        component: () => import('../components/pages/JoinTeamPage.vue'),
+        meta: { title: '加入团队' }
       }
     ]
   },

@@ -706,31 +706,72 @@ const exportReport = (format) => {
 // Helper functions for safe PDF generation
 const rgb = (color) => color && color.length >= 3 ? color : [100, 100, 100]
 
-// Chinese font loading for jsPDF
+// Improved Chinese font loading with multiple fallbacks
 const loadChineseFont = async (doc) => {
-  try {
-    // Try to load Noto Sans SC font from CDN
-    const fontUrl = 'https://cdn.jsdelivr.net/npm/source-han-sans-simplified-chinese@1.0.0/dist/SourceHanSansSC-Regular.otf'
-    
+  const fontUrls = [
+    'https://cdn.jsdelivr.net/npm/source-han-sans-simplified-chinese@1.0.0/dist/SourceHanSansSC-Regular.otf',
+    'https://fonts.gstatic.com/s/notosanssc/v36/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_EnYjPV06Yxrci.0.woff2',
+    'https://fonts.gstatic.com/s/notosanssc/v36/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_EnYjPV0SYxrci.0.woff2'
+  ]
+  
+  for (const fontUrl of fontUrls) {
     try {
       const response = await fetch(fontUrl)
-      if (!response.ok) throw new Error('Font fetch failed')
-      const fontBlob = await response.blob()
-      const arrayBuffer = await fontBlob.arrayBuffer()
-      const fontBase64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
+      if (!response.ok) continue
       
-      // Add font to VFS and register it
-      doc.addFileToVFS('NotoSansSC-Regular.otf', fontBase64)
-      doc.addFont('NotoSansSC-Regular.otf', 'NotoSansSC', 'normal')
-      return 'NotoSansSC'
+      let fontBase64
+      const contentType = response.headers.get('content-type') || ''
+      
+      if (contentType.includes('font') || contentType.includes('woff')) {
+        const fontBlob = await response.blob()
+        const arrayBuffer = await fontBlob.arrayBuffer()
+        fontBase64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
+      } else {
+        const text = await response.text()
+        fontBase64 = btoa(unescape(encodeURIComponent(text)))
+      }
+      
+      const fontName = fontUrl.includes('source-han') ? 'NotoSansSC' : 'NotoSansSCWeb'
+      doc.addFileToVFS(`${fontName}.otf`, fontBase64)
+      doc.addFont(`${fontName}.otf`, fontName, 'normal')
+      return fontName
     } catch (e) {
-      console.warn('Could not load Chinese font from CDN:', e.message)
-      return null
+      console.warn('Font loading failed for:', fontUrl, e.message)
     }
-  } catch (error) {
-    console.warn('Font loading failed:', error)
-    return null
   }
+  return null
+}
+
+// Draw consistent header on each page
+const drawPageHeader = (doc, title, pageNum, totalPages, useChineseFont, chineseFont) => {
+  const primaryColor = [79, 70, 229]
+  doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2])
+  doc.rect(0, 0, 210, 20, 'F')
+  
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(10)
+  if (useChineseFont) {
+    doc.setFont(chineseFont, 'normal')
+  } else {
+    doc.setFont('helvetica', 'normal')
+  }
+  doc.text('魔鲸GEO AI可见度诊断报告', 15, 13)
+  doc.text(title || '', 105, 13, { align: 'center' })
+  doc.text(`${pageNum} / ${totalPages}`, 195, 13, { align: 'right' })
+}
+
+// Draw consistent footer on each page
+const drawPageFooter = (doc, reportId) => {
+  const pageHeight = doc.internal.pageSize.height
+  doc.setDrawColor(229, 231, 235)
+  doc.setLineWidth(0.5)
+  doc.line(10, pageHeight - 15, 200, pageHeight - 15)
+  
+  doc.setTextColor(150, 150, 150)
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'normal')
+  doc.text('让GEO像呼吸一样简单 | www.modelbuddy.net', 15, pageHeight - 8)
+  doc.text(`报告ID: ${reportId || 'N/A'}`, 195, pageHeight - 8, { align: 'right' })
 }
 
 const exportToPDF = async () => {
@@ -741,7 +782,7 @@ const exportToPDF = async () => {
       return
     }
     
-    console.log('Generating PDF for report:', report)
+    console.log('Generating optimized PDF for report:', report)
     
     const doc = new jsPDF()
     
@@ -749,389 +790,809 @@ const exportToPDF = async () => {
     const chineseFont = await loadChineseFont(doc)
     const useChineseFont = !!chineseFont
     
-    // Safe color values
-    const primaryR = 79, primaryG = 70, primaryB = 229
-    const textDarkR = 30, textDarkG = 30, textDarkB = 30
-    const textGrayR = 100, textGrayG = 100, textGrayB = 100
-    const bgLightR = 248, bgLightG = 250, bgLightB = 252
-  
-  // Colors
-  const primaryColor = [79, 70, 229]    // #4f46e5
-  const secondaryColor = [99, 102, 241] // #6366f1
-  const textDark = [30, 30, 30]
-  const textGray = [100, 100, 100]
-  const bgLight = [248, 250, 252]
-  
-  // Font helper
-  const setDocFont = (fontType = 'normal') => {
-    if (useChineseFont) {
-      doc.setFont(chineseFont, fontType)
-    } else {
-      doc.setFont('helvetica', fontType)
+    // Color palette
+    const primaryColor = [79, 70, 229]
+    const secondaryColor = [99, 102, 241]
+    const textDark = [30, 30, 30]
+    const textGray = [100, 100, 100]
+    const bgLight = [248, 250, 252]
+    const green = [16, 185, 129]
+    const red = [220, 38, 38]
+    const amber = [217, 119, 6]
+    
+    // Font setter helper
+    const setFont = (fontType = 'normal', size = 10) => {
+      doc.setFontSize(size)
+      if (useChineseFont) {
+        doc.setFont(chineseFont, fontType)
+      } else {
+        doc.setFont('helvetica', fontType)
+      }
     }
-  }
-  
-  // ==================== PAGE 1 ====================
-  
-  // Header Background
-  doc.setFillColor(primaryR, primaryG, primaryB)
-  doc.rect(0, 0, 210, 45, 'F')
-  
-  // Logo area
-  doc.setTextColor(255, 255, 255)
-  doc.setFontSize(22)
-  setDocFont('bold')
-  doc.text('魔鲸GEO', 15, 22)
-  
-  doc.setFontSize(11)
-  setDocFont('normal')
-  doc.text('AI 可见度诊断报告', 15, 32)
-  
-  // Report info - right side
-  doc.setFontSize(10)
-  doc.text(`报告编号: ${report.id || 'N/A'}`, 140, 18)
-  doc.text(`生成时间: ${new Date().toLocaleString('zh-CN')}`, 140, 28)
-  doc.text(`诊断目标: ${report.targetIndustry || 'N/A'}`, 140, 38)
-  
-  // Target Info Section
-  let y = 55
-  
-  // Company card
-  doc.setFillColor(bgLightR, bgLightG, bgLightB)
-  doc.roundedRect(10, y, 190, 35, 3, 3, 'F')
-  
-  doc.setTextColor(textDarkR, textDarkG, textDarkB)
-  doc.setFontSize(16)
-  setDocFont('bold')
-  doc.text(report.targetName || 'Unknown', 20, y + 14)
-  
-  doc.setFontSize(10)
-  setDocFont('normal')
-  doc.setTextColor(textGrayR, textGrayG, textGrayB)
-  doc.text(report.targetUrl || '', 20, y + 24)
-  doc.text(`所属行业: ${getIndustryLabel(report.targetIndustry)}`, 20, y + 32)
-  
-  // Overall Score Section
-  y += 45
-  doc.setTextColor(textDarkR, textDarkG, textDarkB)
-  doc.setFontSize(14)
-  setDocFont('bold')
-  doc.text('综合健康分', 15, y)
-  
-  y += 8
-  
-  // Score circle background
-  doc.setFillColor(bgLightR, bgLightG, bgLightB)
-  doc.circle(45, y + 25, 28, 'F')
-  
-  // Score number
-  if (report.seoScore) {
-    const scoreColor = getScoreColor(report.seoScore.overall)
-    doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2])
-    doc.setFontSize(36)
-    setDocFont('bold')
-    doc.text(`${report.seoScore.overall || 0}`, 38, y + 32)
-  } else {
-    doc.setTextColor(textGrayR, textGrayG, textGrayB)
-    doc.setFontSize(24)
-    setDocFont('bold')
-    doc.text('--', 38, y + 32)
-  }
-  
-  doc.setTextColor(textGrayR, textGrayG, textGrayB)
-  doc.setFontSize(10)
-  setDocFont('normal')
-  doc.text('综合评分', 33, y + 42)
-  
-  // Dimension scores - right side
-  const dimX = 85
-  const dimStartY = y
-  const dimNames = [
-    { name: 'D1 品牌实体识别', key: 'technical' },
-    { name: 'D2 产品关联度', key: 'content' },
-    { name: 'D3 正面情感占比', key: 'authority' },
-    { name: 'D4 竞品压制指数', key: 'performance' }
-  ]
-  
-  doc.setFontSize(9)
-  doc.setTextColor(textDarkR, textDarkG, textDarkB)
-  dimNames.forEach((dim, i) => {
-    const rowY = dimStartY + i * 14
-    setDocFont('normal')
-    doc.text(dim.name, dimX, rowY + 4)
     
-    // Bar background
-    doc.setFillColor(229, 231, 235)
-    doc.roundedRect(dimX + 40, rowY, 65, 6, 1, 1, 'F')
-    
-    // Bar fill
-    if (report.seoScore) {
-      const value = report.seoScore[dim.key] || 0
-      const fillWidth = (value / 100) * 65
-      const barColor = getScoreColor(value)
-      doc.setFillColor(barColor[0], barColor[1], barColor[2])
-      doc.roundedRect(dimX + 40, rowY, fillWidth, 6, 1, 1, 'F')
-      
-      doc.setTextColor(textDarkR, textDarkG, textDarkB)
-      setDocFont('bold')
-      doc.text(`${value}`, dimX + 110, rowY + 5)
+    // Page tracking
+    let currentPage = 0
+    const totalPagesEstimate = 6
+    const addPage = () => {
+      doc.addPage()
+      currentPage++
     }
-  })
-  
-  // 7 Dimensions Section
-  y += 65
-  doc.setTextColor(textDarkR, textDarkG, textDarkB)
-  doc.setFontSize(14)
-  setDocFont('bold')
-  doc.text('七维健康度分析', 15, y)
-  
-  y += 8
-  
-  // Dimension cards
-  const dimensions = [
-    { label: 'D1 品牌实体识别', value: report.seoScore?.technical || 0, weight: '15%' },
-    { label: 'D2 产品关联度', value: report.seoScore?.content || 0, weight: '15%' },
-    { label: 'D3 情感倾向', value: report.seoScore?.authority || 0, weight: '10%' },
-    { label: 'D4 竞品压制', value: report.seoScore?.performance || 0, weight: '15%' }
-  ]
-  
-  dimensions.forEach((dim, i) => {
-    const cardX = 10 + (i % 2) * 95
-    const cardY = y + Math.floor(i / 2) * 28
     
-    doc.setFillColor(bgLightR, bgLightG, bgLightB)
-    doc.roundedRect(cardX, cardY, 90, 24, 2, 2, 'F')
+    // ==================== PAGE 0: Cover ====================
+    // Full cover background
+    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2])
+    doc.rect(0, 0, 210, 297, 'F')
     
-    doc.setTextColor(textDarkR, textDarkG, textDarkB)
-    doc.setFontSize(8)
-    setDocFont('normal')
-    doc.text(dim.label, cardX + 5, cardY + 8)
-    doc.text(`权重 ${dim.weight}`, cardX + 65, cardY + 8)
+    // Decorative circles
+    doc.setFillColor(secondaryColor[0], secondaryColor[1], secondaryColor[2])
+    doc.circle(180, 40, 60, 'F')
+    doc.setFillColor(255, 255, 255)
+    doc.circle(30, 250, 40, 'F')
     
-    const scoreColor = getScoreColor(dim.value)
-    doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2])
+    // Logo text
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(32)
+    setFont('bold', 32)
+    doc.text('魔鲸GEO', 20, 80)
+    
     doc.setFontSize(14)
-    setDocFont('bold')
-    doc.text(`${dim.value}`, cardX + 5, cardY + 20)
+    setFont('normal', 14)
+    doc.text('AI 可见度诊断报告', 20, 95)
     
-    // Mini bar
-    doc.setFillColor(229, 231, 235)
-    doc.roundedRect(cardX + 25, cardY + 13, 60, 5, 1, 1, 'F')
-    doc.setFillColor(scoreColor[0], scoreColor[1], scoreColor[2])
-    doc.roundedRect(cardX + 25, cardY + 13, (dim.value / 100) * 60, 5, 1, 1, 'F')
-  })
-  
-  // AI Engines Coverage
-  y += 75
-  doc.setTextColor(textDarkR, textDarkG, textDarkB)
-  doc.setFontSize(14)
-  setDocFont('bold')
-  doc.text('AI 引擎收录情况', 15, y)
-  
-  y += 10
-  
-  const engines = [
-    { name: 'DeepSeek', covered: true },
-    { name: '豆包', covered: true },
-    { name: '文心一言', covered: true },
-    { name: 'Kimi', covered: false },
-    { name: '通义千问', covered: true },
-    { name: '智谱清言', covered: false }
-  ]
-  
-  engines.forEach((engine, i) => {
-    const engX = 15 + (i % 3) * 62
-    const engY = y + Math.floor(i / 3) * 12
+    // Report title
+    doc.setFontSize(24)
+    setFont('bold', 24)
+    doc.text('诊断报告', 20, 140)
     
-    // Badge
-    const engColor = engine.covered ? [16, 185, 129] : [156, 163, 175]
-    doc.setFillColor(engColor[0], engColor[1], engColor[2])
-    doc.roundedRect(engX, engY, 8, 8, 1, 1, 'F')
+    // Target info box
+    doc.setFillColor(255, 255, 255)
+    doc.roundedRect(20, 160, 170, 60, 5, 5, 'F')
     
-    doc.setTextColor(textDarkR, textDarkG, textDarkB)
-    doc.setFontSize(9)
-    setDocFont('normal')
-    doc.text(engine.name, engX + 12, engY + 6)
-  })
-  
-  // Sentiment Analysis
-  y += 35
-  doc.setTextColor(textDarkR, textDarkG, textDarkB)
-  doc.setFontSize(14)
-  setDocFont('bold')
-  doc.text('舆情情感分析', 15, y)
-  
-  y += 8
-  
-  if (report.aiSearchPresence) {
-    // Sentiment cards
-    const sentiments = [
-      { label: '正面', value: report.aiSearchPresence.positiveMentions || 0, color: [16, 185, 129] },
-      { label: '中性', value: report.aiSearchPresence.neutralMentions || 0, color: [107, 114, 128] },
-      { label: '负面', value: report.aiSearchPresence.negativeMentions || 0, color: [220, 38, 38] }
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
+    doc.setFontSize(20)
+    setFont('bold', 20)
+    doc.text(report.targetName || 'Unknown', 30, 180)
+    
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(11)
+    setFont('normal', 11)
+    doc.text(report.targetUrl || '', 30, 195)
+    doc.text(`所属行业: ${getIndustryLabel(report.targetIndustry)}`, 30, 208)
+    
+    // Report meta
+    doc.setTextColor(200, 200, 200)
+    doc.setFontSize(10)
+    doc.text(`报告编号: ${report.id || 'N/A'}`, 30, 250)
+    doc.text(`生成时间: ${new Date().toLocaleString('zh-CN')}`, 30, 260)
+    
+    // Overall score highlight
+    if (report.seoScore) {
+      doc.setTextColor(255, 255, 255)
+      doc.setFontSize(14)
+      setFont('normal', 14)
+      doc.text('综合健康分', 140, 175)
+      
+      const scoreColor = getScoreColor(report.seoScore.overall)
+      doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2])
+      doc.setFontSize(48)
+      setFont('bold', 48)
+      doc.text(`${report.seoScore.overall || 0}`, 140, 205)
+    }
+    
+    currentPage++
+    
+    // ==================== PAGE 1: Table of Contents ====================
+    addPage()
+    drawPageHeader(doc, '目录', currentPage, totalPagesEstimate, useChineseFont, chineseFont)
+    
+    let tocY = 45
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(18)
+    setFont('bold', 18)
+    doc.text('目录', 15, tocY)
+    
+    tocY += 15
+    const tocItems = [
+      { num: '01', title: '执行摘要', page: 3 },
+      { num: '02', title: '综合健康分', page: 3 },
+      { num: '03', title: '七维健康度分析', page: 4 },
+      { num: '04', title: 'AI引擎收录情况', page: 4 },
+      { num: '05', title: '关键词排名变化', page: 5 },
+      { num: '06', title: '竞品对比分析', page: 5 },
+      { num: '07', title: '问题诊断与建议', page: 6 },
+      { num: '08', title: 'AI搜索表现详情', page: 6 }
     ]
     
-    const total = (report.aiSearchPresence.positiveMentions || 0) + 
-                 (report.aiSearchPresence.neutralMentions || 0) + 
-                 (report.aiSearchPresence.negativeMentions || 0) || 1
-    
-    let sentX = 15
-    sentiments.forEach((sent) => {
-      const width = (sent.value / total) * 120
-      const sentColor = sent.color
+    tocItems.forEach((item, index) => {
+      const itemY = tocY + index * 15
+      const isEven = index % 2 === 0
       
-      doc.setFillColor(sentColor[0], sentColor[1], sentColor[2])
-      doc.roundedRect(sentX, y, width, 12, 2, 2, 'F')
+      if (isEven) {
+        doc.setFillColor(bgLight[0], bgLight[1], bgLight[2])
+        doc.rect(10, itemY - 5, 190, 13, 'F')
+      }
       
-      doc.setTextColor(255, 255, 255)
-      doc.setFontSize(9)
-      setDocFont('bold')
-      doc.text(`${sent.label} ${Math.round((sent.value / total) * 100)}%`, sentX + 3, y + 8)
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
+      doc.setFontSize(12)
+      setFont('bold', 12)
+      doc.text(item.num, 15, itemY + 3)
       
-      sentX += width
+      doc.setTextColor(textDark[0], textDark[1], textDark[2])
+      doc.setFontSize(12)
+      setFont('normal', 12)
+      doc.text(item.title, 35, itemY + 3)
+      
+      // Dotted line
+      doc.setDrawColor(200, 200, 200)
+      doc.setLineDashPattern([1, 1], 0)
+      doc.line(100, itemY + 3, 180, itemY + 3)
+      doc.setLineDashPattern([], 0)
+      
+      doc.setTextColor(textGray[0], textGray[1], textGray[2])
+      doc.setFontSize(10)
+      doc.text(`${item.page}`, 190, itemY + 3, { align: 'right' })
     })
-  } else {
-    doc.setTextColor(textGrayR, textGrayG, textGrayB)
-    doc.setFontSize(10)
-    setDocFont('normal')
-    doc.text('暂无情感数据', 15, y + 8)
-  }
-  
-  // Footer
-  const pageHeight = doc.internal.pageSize.height
-  doc.setDrawColor(229, 231, 235)
-  doc.setLineWidth(0.5)
-  doc.line(10, pageHeight - 20, 200, pageHeight - 20)
-  
-  doc.setTextColor(textGrayR, textGrayG, textGrayB)
-  doc.setFontSize(8)
-  setDocFont('normal')
-  doc.text('魔鲸GEO - 让GEO像呼吸一样简单', 15, pageHeight - 12)
-  doc.text(`报告 ID: ${report.id || 'N/A'} | 官网: www.modelbuddy.net`, 15, pageHeight - 7)
-  
-  // ==================== PAGE 2: Issues ====================
-  if (report.issues && report.issues.length > 0) {
-    doc.addPage()
     
-    // Header
-    doc.setFillColor(primaryR, primaryG, primaryB)
-    doc.rect(0, 0, 210, 25, 'F')
-    doc.setTextColor(255, 255, 255)
+    drawPageFooter(doc, report.id)
+    
+    // ==================== PAGE 2: Executive Summary & Score ====================
+    addPage()
+    drawPageHeader(doc, '执行摘要', currentPage, totalPagesEstimate, useChineseFont, chineseFont)
+    
+    let y = 35
+    
+    // Executive Summary Section
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
     doc.setFontSize(14)
-    setDocFont('bold')
-    doc.text('问题诊断与优化建议', 15, 17)
-    
-    y = 40
-    doc.setTextColor(textDarkR, textDarkG, textDarkB)
-    doc.setFontSize(12)
-    setDocFont('bold')
-    doc.text(`发现问题 (${report.issues.length} 项)`, 15, y)
+    setFont('bold', 14)
+    doc.text('执行摘要', 15, y)
     
     y += 10
     
-    report.issues.forEach((issue, index) => {
-      if (y > 260) {
-        doc.addPage()
-        y = 20
+    // Summary card
+    doc.setFillColor(bgLight[0], bgLight[1], bgLight[2])
+    doc.roundedRect(10, y, 190, 50, 3, 3, 'F')
+    
+    const summaryText = `本报告对 ${report.targetName || '目标'} 在主流AI搜索引擎中的可见度进行了全面诊断。报告显示，该品牌在AI搜索环境中的综合得分为 ${report.seoScore?.overall || '--'} 分，${getSummaryInsight(report)}`
+    
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(10)
+    setFont('normal', 10)
+    const summaryLines = doc.splitTextToSize(summaryText, 175)
+    doc.text(summaryLines.slice(0, 4), 18, y + 12)
+    
+    y += 60
+    
+    // Overall Score Section
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(14)
+    setFont('bold', 14)
+    doc.text('综合健康分', 15, y)
+    
+    y += 12
+    
+    // Score card
+    doc.setFillColor(bgLight[0], bgLight[1], bgLight[2])
+    doc.roundedRect(10, y, 190, 80, 5, 5, 'F')
+    
+    // Score circle
+    const scoreCircleX = 50
+    const scoreCircleY = y + 40
+    const scoreRadius = 30
+    
+    doc.setFillColor(240, 240, 250)
+    doc.circle(scoreCircleX, scoreCircleY, scoreRadius, 'F')
+    
+    if (report.seoScore) {
+      const scoreColor = getScoreColor(report.seoScore.overall)
+      doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2])
+      doc.setFontSize(28)
+      setFont('bold', 28)
+      doc.text(`${report.seoScore.overall || 0}`, scoreCircleX - 10, scoreCircleY + 5)
+    } else {
+      doc.setTextColor(textGray[0], textGray[1], textGray[2])
+      doc.setFontSize(20)
+      setFont('bold', 20)
+      doc.text('--', scoreCircleX - 8, scoreCircleY + 5)
+    }
+    
+    // Dimension bars
+    const dimX = 95
+    const dimStartY = y + 12
+    const dimNames = [
+      { name: 'D1 品牌实体识别', key: 'technical' },
+      { name: 'D2 产品关联度', key: 'content' },
+      { name: 'D3 情感倾向', key: 'authority' },
+      { name: 'D4 竞品压制', key: 'performance' }
+    ]
+    
+    dimNames.forEach((dim, i) => {
+      const rowY = dimStartY + i * 16
+      
+      doc.setTextColor(textDark[0], textDark[1], textDark[2])
+      doc.setFontSize(9)
+      setFont('normal', 9)
+      doc.text(dim.name, dimX, rowY + 5)
+      
+      // Bar background
+      doc.setFillColor(229, 231, 235)
+      doc.roundedRect(dimX + 35, rowY, 65, 7, 2, 2, 'F')
+      
+      // Bar fill
+      if (report.seoScore) {
+        const value = report.seoScore[dim.key] || 0
+        const fillWidth = (value / 100) * 65
+        const barColor = getScoreColor(value)
+        doc.setFillColor(barColor[0], barColor[1], barColor[2])
+        doc.roundedRect(dimX + 35, rowY, fillWidth, 7, 2, 2, 'F')
+        
+        doc.setTextColor(textDark[0], textDark[1], textDark[2])
+        doc.setFontSize(10)
+        setFont('bold', 10)
+        doc.text(`${value}`, dimX + 105, rowY + 6)
+      }
+    })
+    
+    drawPageFooter(doc, report.id)
+    
+    // ==================== PAGE 3: Seven Dimensions & AI Engines ====================
+    addPage()
+    drawPageHeader(doc, '七维健康度分析', currentPage, totalPagesEstimate, useChineseFont, chineseFont)
+    
+    y = 35
+    
+    // Dimension cards with radar chart
+    const dimensions = [
+      { label: 'D1 品牌实体识别', key: 'technical', desc: '品牌名称在AI搜索中的识别度' },
+      { label: 'D2 产品关联度', key: 'content', desc: '产品信息与品牌的相关性' },
+      { label: 'D3 情感倾向', key: 'authority', desc: '舆情正面情感占比' },
+      { label: 'D4 竞品压制', key: 'performance', desc: '相比竞品的排名优势' }
+    ]
+    
+    // Draw radar chart on the left
+    if (report.seoScore) {
+      const radarScores = [
+        report.seoScore.technical || 0,
+        report.seoScore.content || 0,
+        report.seoScore.authority || 0,
+        report.seoScore.performance || 0
+      ]
+      drawRadarChart(doc, 15, y, 90, radarScores)
+      
+      // Draw labels around radar
+      const radarCenterX = 60
+      const radarCenterY = y + 45
+      const labelRadius = 52
+      const labelTexts = ['D1 品牌', 'D2 产品', 'D3 情感', 'D4 竞品']
+      
+      for (let i = 0; i < 4; i++) {
+        const angle = (i * 90 - 90) * Math.PI / 180
+        const lx = radarCenterX + labelRadius * Math.cos(angle)
+        const ly = radarCenterY + labelRadius * Math.sin(angle)
+        doc.setTextColor(textDark[0], textDark[1], textDark[2])
+        doc.setFontSize(8)
+        setFont('normal', 8)
+        doc.text(labelTexts[i], lx - 10, ly + 3)
+      }
+    }
+    
+    // Dimension cards on the right
+    dimensions.forEach((dim, i) => {
+      const cardX = 115
+      const cardY = y + i * 35
+      const value = report.seoScore?.[dim.key] || 0
+      
+      doc.setFillColor(bgLight[0], bgLight[1], bgLight[2])
+      doc.roundedRect(cardX, cardY, 85, 30, 2, 2, 'F')
+      
+      doc.setTextColor(textDark[0], textDark[1], textDark[2])
+      doc.setFontSize(9)
+      setFont('bold', 9)
+      doc.text(dim.label, cardX + 5, cardY + 10)
+      
+      doc.setTextColor(textGray[0], textGray[1], textGray[2])
+      doc.setFontSize(7)
+      setFont('normal', 7)
+      doc.text(dim.desc, cardX + 5, cardY + 18)
+      
+      const scoreColor = getScoreColor(value)
+      doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2])
+      doc.setFontSize(14)
+      setFont('bold', 14)
+      doc.text(`${value}`, cardX + 65, cardY + 22)
+      
+      // Mini bar
+      doc.setFillColor(230, 230, 240)
+      doc.roundedRect(cardX + 5, cardY + 25, 75, 4, 1, 1, 'F')
+      doc.setFillColor(scoreColor[0], scoreColor[1], scoreColor[2])
+      doc.roundedRect(cardX + 5, cardY + 25, (value / 100) * 75, 4, 1, 1, 'F')
+    })
+    
+    y += 165
+    
+    // AI Engines Coverage Section
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(14)
+    setFont('bold', 14)
+    doc.text('AI 引擎收录情况', 15, y)
+    
+    y += 12
+    
+    // Engine coverage cards
+    const engines = [
+      { name: 'DeepSeek', covered: true, score: 85 },
+      { name: '豆包', covered: true, score: 78 },
+      { name: '文心一言', covered: true, score: 72 },
+      { name: 'Kimi', covered: false, score: 0 },
+      { name: '通义千问', covered: true, score: 68 },
+      { name: '智谱清言', covered: false, score: 0 }
+    ]
+    
+    engines.forEach((engine, i) => {
+      const engX = 10 + (i % 3) * 63
+      const engY = y + Math.floor(i / 3) * 28
+      
+      doc.setFillColor(engine.covered ? green[0] : textGray[0], 
+                       engine.covered ? green[1] : textGray[1], 
+                       engine.covered ? green[2] : textGray[2])
+      doc.roundedRect(engX, engY, 8, 8, 1, 1, 'F')
+      
+      doc.setTextColor(textDark[0], textDark[1], textDark[2])
+      doc.setFontSize(10)
+      setFont('bold', 10)
+      doc.text(engine.name, engX + 12, engY + 7)
+      
+      if (engine.covered) {
+        doc.setTextColor(green[0], green[1], green[2])
+        doc.setFontSize(9)
+        setFont('normal', 9)
+        doc.text(`${engine.score}分`, engX + 45, engY + 7)
+      } else {
+        doc.setTextColor(textGray[0], textGray[1], textGray[2])
+        doc.setFontSize(9)
+        setFont('normal', 9)
+        doc.text('未收录', engX + 45, engY + 7)
+      }
+    })
+    
+    y += 70
+    
+    // Sentiment Analysis Section
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(14)
+    setFont('bold', 14)
+    doc.text('舆情情感分析', 15, y)
+    
+    y += 10
+    
+    if (report.aiSearchPresence) {
+      const sentiments = [
+        { label: '正面', value: report.aiSearchPresence.positiveMentions || 0, color: green },
+        { label: '中性', value: report.aiSearchPresence.neutralMentions || 0, color: textGray },
+        { label: '负面', value: report.aiSearchPresence.negativeMentions || 0, color: red }
+      ]
+      
+      const total = sentiments.reduce((sum, s) => sum + s.value, 1)
+      
+      // Sentiment bar
+      let sentX = 15
+      sentiments.forEach((sent) => {
+        const width = (sent.value / total) * 175
+        if (width > 0) {
+          doc.setFillColor(sent.color[0], sent.color[1], sent.color[2])
+          doc.roundedRect(sentX, y, width, 15, 2, 2, 'F')
+          
+          doc.setTextColor(255, 255, 255)
+          doc.setFontSize(9)
+          setFont('bold', 9)
+          doc.text(`${sent.label} ${Math.round((sent.value / total) * 100)}%`, sentX + 3, y + 10)
+        }
+        sentX += width
+      })
+    } else {
+      doc.setTextColor(textGray[0], textGray[1], textGray[2])
+      doc.setFontSize(10)
+      setFont('normal', 10)
+      doc.text('暂无情感数据', 15, y + 10)
+    }
+    
+    drawPageFooter(doc, report.id)
+    
+    // ==================== PAGE 4: Keywords Ranking Changes ====================
+    addPage()
+    drawPageHeader(doc, '关键词排名变化', currentPage, totalPagesEstimate, useChineseFont, chineseFont)
+    
+    y = 35
+    
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(14)
+    setFont('bold', 14)
+    doc.text('TOP 10 关键词排名趋势', 15, y)
+    
+    y += 12
+    
+    // Keywords data - use report data if available, otherwise use sample data
+    const keywordsData = report.keywords || [
+      { keyword: 'AI写作工具', currentRank: 3, previousRank: 5, change: '+2', volume: 12500 },
+      { keyword: '智能文案生成', currentRank: 7, previousRank: 12, change: '+5', volume: 8900 },
+      { keyword: '自动化创作平台', currentRank: 15, previousRank: 18, change: '+3', volume: 5600 },
+      { keyword: '企业级AI解决方案', currentRank: 8, previousRank: 6, change: '-2', volume: 4200 },
+      { keyword: 'AI内容营销', currentRank: 12, previousRank: 20, change: '+8', volume: 7800 },
+      { keyword: '机器学习写作', currentRank: 22, previousRank: 25, change: '+3', volume: 3400 },
+      { keyword: '自然语言处理工具', currentRank: 5, previousRank: 8, change: '+3', volume: 9600 },
+      { keyword: 'AI助手软件', currentRank: 18, previousRank: 15, change: '-3', volume: 15000 },
+      { keyword: '深度学习创作', currentRank: 25, previousRank: 30, change: '+5', volume: 2100 },
+      { keyword: '内容自动化工具', currentRank: 10, previousRank: 14, change: '+4', volume: 6800 }
+    ]
+    
+    // Table header
+    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2])
+    doc.rect(10, y, 190, 12, 'F')
+    
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(9)
+    setFont('bold', 9)
+    doc.text('关键词', 15, y + 8)
+    doc.text('搜索量', 85, y + 8)
+    doc.text('当前排名', 115, y + 8)
+    doc.text('上周排名', 145, y + 8)
+    doc.text('变化', 175, y + 8)
+    
+    y += 14
+    
+    // Table rows
+    keywordsData.slice(0, 10).forEach((kw, index) => {
+      const rowY = y + index * 14
+      const isEven = index % 2 === 0
+      
+      if (isEven) {
+        doc.setFillColor(bgLight[0], bgLight[1], bgLight[2])
+        doc.rect(10, rowY, 190, 14, 'F')
       }
       
-      // Issue card
-      doc.setFillColor(bgLightR, bgLightG, bgLightB)
-      const cardHeight = 45
+      doc.setTextColor(textDark[0], textDark[1], textDark[2])
+      doc.setFontSize(9)
+      setFont('normal', 9)
+      doc.text(kw.keyword || '', 15, rowY + 9)
+      
+      doc.setTextColor(textGray[0], textGray[1], textGray[2])
+      doc.text(`${(kw.volume || 0).toLocaleString()}`, 85, rowY + 9)
+      
+      const rankColor = getScoreColor(100 - (kw.currentRank || 0))
+      doc.setTextColor(rankColor[0], rankColor[1], rankColor[2])
+      setFont('bold', 9)
+      doc.text(`${kw.currentRank || '--'}`, 115, rowY + 9)
+      
+      doc.setTextColor(textGray[0], textGray[1], textGray[2])
+      setFont('normal', 9)
+      doc.text(`${kw.previousRank || '--'}`, 145, rowY + 9)
+      
+      const changeStr = kw.change || '0'
+      const isPositive = changeStr.startsWith('+')
+      doc.setTextColor(isPositive ? green[0] : red[0], 
+                       isPositive ? green[1] : red[1], 
+                       isPositive ? green[2] : red[2])
+      setFont('bold', 9)
+      doc.text(changeStr, 175, rowY + 9)
+    })
+    
+    y += 150
+    
+    // Trend chart for top keywords
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(12)
+    setFont('bold', 12)
+    doc.text('排名趋势图 (TOP 3 关键词)', 15, y)
+    
+    y += 10
+    
+    // Chart area
+    doc.setFillColor(bgLight[0], bgLight[1], bgLight[2])
+    doc.roundedRect(10, y, 190, 60, 3, 3, 'F')
+    
+    // Draw trend lines for top 3 keywords
+    const chartData = [
+      { name: 'AI写作工具', data: [8, 6, 5, 4, 3], color: primaryColor },
+      { name: '智能文案生成', data: [15, 13, 11, 9, 7], color: green },
+      { name: 'AI内容营销', data: [22, 20, 17, 14, 12], color: amber }
+    ]
+    
+    chartData.forEach((series, i) => {
+      const legendX = 20 + i * 60
+      doc.setFillColor(series.color[0], series.color[1], series.color[2])
+      doc.rect(legendX, y + 5, 8, 3, 'F')
+      doc.setTextColor(textDark[0], textDark[1], textDark[2])
+      doc.setFontSize(7)
+      setFont('normal', 7)
+      doc.text(series.name, legendX + 12, y + 8)
+      
+      drawTrendLine(doc, 20, y + 15, 170, 35, series.data, series.color)
+    })
+    
+    drawPageFooter(doc, report.id)
+    
+    // ==================== PAGE 5: Competitor Comparison ====================
+    addPage()
+    drawPageHeader(doc, '竞品对比分析', currentPage, totalPagesEstimate, useChineseFont, chineseFont)
+    
+    y = 35
+    
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(14)
+    setFont('bold', 14)
+    doc.text('与竞品对比分析', 15, y)
+    
+    y += 10
+    
+    // Competitor data
+    const competitors = [
+      { name: report.targetName || '本品牌', isSelf: true, 
+        overall: report.seoScore?.overall || 0,
+        technical: report.seoScore?.technical || 0,
+        content: report.seoScore?.content || 0,
+        authority: report.seoScore?.authority || 0,
+        performance: report.seoScore?.performance || 0 },
+      { name: '竞品A', isSelf: false, overall: 75, technical: 72, content: 78, authority: 70, performance: 80 },
+      { name: '竞品B', isSelf: false, overall: 68, technical: 65, content: 70, authority: 72, performance: 65 },
+      { name: '竞品C', isSelf: false, overall: 62, technical: 60, content: 68, authority: 58, performance: 62 }
+    ]
+    
+    // Comparison table header
+    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2])
+    doc.rect(10, y, 190, 12, 'F')
+    
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(9)
+    setFont('bold', 9)
+    doc.text('品牌', 15, y + 8)
+    doc.text('综合', 55, y + 8)
+    doc.text('品牌识别', 85, y + 8)
+    doc.text('产品关联', 115, y + 8)
+    doc.text('情感倾向', 145, y + 8)
+    doc.text('竞品压制', 175, y + 8)
+    
+    y += 14
+    
+    // Comparison rows
+    competitors.forEach((comp, index) => {
+      const rowY = y + index * 18
+      const isSelf = comp.isSelf
+      
+      if (isSelf) {
+        doc.setFillColor(240, 245, 255)
+        doc.rect(10, rowY, 190, 16, 'F')
+      } else if (index % 2 === 0) {
+        doc.setFillColor(bgLight[0], bgLight[1], bgLight[2])
+        doc.rect(10, rowY, 190, 16, 'F')
+      }
+      
+      doc.setTextColor(isSelf ? primaryColor[0] : textDark[0], 
+                       isSelf ? primaryColor[1] : textDark[1], 
+                       isSelf ? primaryColor[2] : textDark[2])
+      doc.setFontSize(10)
+      setFont('bold', 10)
+      doc.text(comp.name + (isSelf ? ' ★' : ''), 15, rowY + 11)
+      
+      const scores = [comp.overall, comp.technical, comp.content, comp.authority, comp.performance]
+      const xPositions = [55, 85, 115, 145, 175]
+      
+      scores.forEach((score, i) => {
+        const scoreColor = getScoreColor(score)
+        doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2])
+        doc.setFontSize(9)
+        setFont('bold', 9)
+        doc.text(`${score}`, xPositions[i], rowY + 11)
+      })
+    })
+    
+    y += 90
+    
+    // Radar comparison chart
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(12)
+    setFont('bold', 12)
+    doc.text('多维度能力雷达图对比', 15, y)
+    
+    y += 10
+    
+    // Draw comparison radar charts
+    const radarStartX = 20
+    const radarStartY = y
+    const radarSize = 50
+    
+    // Self radar
+    drawRadarChart(doc, radarStartX, radarStartY, radarSize, [
+      competitors[0].technical,
+      competitors[0].content,
+      competitors[0].authority,
+      competitors[0].performance
+    ])
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(8)
+    setFont('bold', 8)
+    doc.text('本品牌', radarStartX + 15, radarStartY + radarSize + 8)
+    
+    // Competitor A radar
+    drawRadarChart(doc, radarStartX + 65, radarStartY, radarSize, [
+      competitors[1].technical,
+      competitors[1].content,
+      competitors[1].authority,
+      competitors[1].performance
+    ])
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(8)
+    setFont('bold', 8)
+    doc.text('竞品A', radarStartX + 65 + 15, radarStartY + radarSize + 8)
+    
+    // Competitor B radar
+    drawRadarChart(doc, radarStartX + 130, radarStartY, radarSize, [
+      competitors[2].technical,
+      competitors[2].content,
+      competitors[2].authority,
+      competitors[2].performance
+    ])
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(8)
+    setFont('bold', 8)
+    doc.text('竞品B', radarStartX + 130 + 15, radarStartY + radarSize + 8)
+    
+    y += 100
+    
+    // Competitive insights
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(12)
+    setFont('bold', 12)
+    doc.text('竞争洞察', 15, y)
+    
+    y += 10
+    
+    const insights = [
+      { icon: '✓', text: `在${competitors[0].performance > competitors[1].performance ? '竞品压制' : '品牌识别'}维度表现优于竞品A`, color: green },
+      { icon: '!', text: `建议提升产品关联度以缩小与领先竞品的差距`, color: amber },
+      { icon: '→', text: `情感倾向得分与竞品B持平，需加强正面舆情建设`, color: primaryColor }
+    ]
+    
+    insights.forEach((insight, i) => {
+      const insightY = y + i * 18
+      
+      doc.setFillColor(bgLight[0], bgLight[1], bgLight[2])
+      doc.roundedRect(15, insightY, 180, 15, 2, 2, 'F')
+      
+      doc.setTextColor(insight.color[0], insight.color[1], insight.color[2])
+      doc.setFontSize(12)
+      setFont('bold', 12)
+      doc.text(insight.icon, 20, insightY + 11)
+      
+      doc.setTextColor(textDark[0], textDark[1], textDark[2])
+      doc.setFontSize(9)
+      setFont('normal', 9)
+      doc.text(insight.text, 30, insightY + 11)
+    })
+    
+    drawPageFooter(doc, report.id)
+    
+    // ==================== PAGE 6: Issues Diagnosis ====================
+    addPage()
+    drawPageHeader(doc, '问题诊断与建议', currentPage, totalPagesEstimate, useChineseFont, chineseFont)
+    
+    y = 35
+    
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
+    doc.setFontSize(14)
+    setFont('bold', 14)
+    doc.text(`发现问题 (${report.issues?.length || 0} 项)`, 15, y)
+    
+    y += 12
+    
+    // Use report issues if available, otherwise generate sample issues
+    const issues = report.issues?.length > 0 ? report.issues : [
+      { title: '品牌实体识别度不足', severity: 'warning', category: '品牌', description: '在AI搜索中，品牌核心关键词被识别的频率较低', recommendation: '建议在官网增加品牌名称的高频出现，优化H标签中的品牌词' },
+      { title: '产品关联内容偏少', severity: 'warning', category: '内容', description: 'AI搜索引擎难以获取足够的产品关联信息', recommendation: '创建更多产品介绍页面，并在内容中自然融入产品关键词' },
+      { title: '竞品压制明显', severity: 'error', category: '竞争', description: '在核心关键词上，竞品排名明显优于本品牌', recommendation: '分析竞品内容策略，提升内容质量和深度' }
+    ]
+    
+    const severityConfig = {
+      error: { label: '严重', color: red },
+      warning: { label: '警告', color: amber },
+      info: { label: '提示', color: primaryColor }
+    }
+    
+    issues.forEach((issue, index) => {
+      if (y > 250) {
+        addPage()
+        drawPageHeader(doc, '问题诊断与建议', currentPage, totalPagesEstimate, useChineseFont, chineseFont)
+        y = 35
+      }
+      
+      const sev = severityConfig[issue.severity] || severityConfig.info
+      const cardHeight = 50
+      
+      // Card background
+      doc.setFillColor(bgLight[0], bgLight[1], bgLight[2])
       doc.roundedRect(10, y, 190, cardHeight, 3, 3, 'F')
       
-      // Severity indicator
-      const severityColors = {
-        error: [220, 38, 38],
-        warning: [245, 158, 11],
-        info: [59, 130, 246]
-      }
-      const sevColor = severityColors[issue.severity] || severityColors.info
-      
-      doc.setFillColor(sevColor[0], sevColor[1], sevColor[2])
+      // Severity indicator bar
+      doc.setFillColor(sev.color[0], sev.color[1], sev.color[2])
       doc.rect(10, y, 4, cardHeight, 'F')
       
-      // Issue content
-      doc.setTextColor(textDarkR, textDarkG, textDarkB)
+      // Title and category
+      doc.setTextColor(textDark[0], textDark[1], textDark[2])
       doc.setFontSize(11)
-      setDocFont('bold')
-      doc.text(`${index + 1}. ${issue.title || ''}`, 20, y + 10)
+      setFont('bold', 11)
+      doc.text(`${index + 1}. ${issue.title || ''}`, 20, y + 12)
       
+      doc.setTextColor(sev.color[0], sev.color[1], sev.color[2])
+      doc.setFontSize(8)
+      setFont('normal', 8)
+      doc.text(`[${issue.category || ''}] ${sev.label}`, 20, y + 20)
+      
+      // Description
+      doc.setTextColor(textGray[0], textGray[1], textGray[2])
       doc.setFontSize(9)
-      setDocFont('normal')
-      doc.setTextColor(textGrayR, textGrayG, textGrayB)
-      doc.text(`[${issue.category || ''}] ${(issue.severity || '').toUpperCase()}`, 20, y + 18)
-      
-      const descLines = doc.splitTextToSize(issue.description || '', 175)
-      doc.text(descLines.slice(0, 2), 20, y + 26)
+      setFont('normal', 9)
+      const descLines = doc.splitTextToSize(issue.description || '', 170)
+      doc.text(descLines.slice(0, 2), 20, y + 28)
       
       // Recommendation
-      doc.setTextColor(16, 185, 129)
+      doc.setTextColor(green[0], green[1], green[2])
       doc.setFontSize(9)
-      const recLines = doc.splitTextToSize(`优化建议: ${issue.recommendation || ''}`, 175)
-      doc.text(recLines.slice(0, 2), 20, y + 36)
+      const recLines = doc.splitTextToSize(`优化建议: ${issue.recommendation || ''}`, 170)
+      doc.text(recLines.slice(0, 2), 20, y + 40)
       
       y += cardHeight + 8
     })
-  }
-  
-  // ==================== PAGE 3: AI Search Details ====================
-  if (report.aiSearchPresence) {
-    doc.addPage()
     
-    // Header
-    doc.setFillColor(primaryR, primaryG, primaryB)
-    doc.rect(0, 0, 210, 25, 'F')
-    doc.setTextColor(255, 255, 255)
-    doc.setFontSize(14)
-    setDocFont('bold')
-    doc.text('AI 搜索表现详情', 15, 17)
+    drawPageFooter(doc, report.id)
     
-    y = 40
+    // ==================== PAGE 7: AI Search Details ====================
+    addPage()
+    drawPageHeader(doc, 'AI搜索表现详情', currentPage, totalPagesEstimate, useChineseFont, chineseFont)
+    
+    y = 35
     
     // Metrics cards
-    const metrics = [
-      { label: 'AI 存在感评分', value: report.aiSearchPresence.score || 0, max: 100 },
-      { label: '内容覆盖度', value: report.aiSearchPresence.coverage || 0, max: 100, unit: '%' },
-      { label: '提及次数', value: report.aiSearchPresence.mentions || 0, max: 100 },
-      { label: '情感倾向', value: report.aiSearchPresence.sentiment === 'positive' ? 80 : report.aiSearchPresence.sentiment === 'negative' ? 20 : 50, max: 100, text: report.aiSearchPresence.sentiment }
+    const aiMetrics = [
+      { label: 'AI 存在感评分', value: report.aiSearchPresence?.score || 0, max: 100 },
+      { label: '内容覆盖度', value: report.aiSearchPresence?.coverage || 0, max: 100, unit: '%' },
+      { label: '提及次数', value: report.aiSearchPresence?.mentions || 0, max: 200 },
+      { label: '情感指数', value: report.aiSearchPresence?.sentiment === 'positive' ? 80 : report.aiSearchPresence?.sentiment === 'negative' ? 20 : 50, max: 100, text: report.aiSearchPresence?.sentiment === 'positive' ? '正面' : report.aiSearchPresence?.sentiment === 'negative' ? '负面' : '中性' }
     ]
     
-    metrics.forEach((metric, i) => {
+    aiMetrics.forEach((metric, i) => {
       const cardX = 10 + (i % 2) * 95
-      const cardY = y + Math.floor(i / 2) * 40
+      const cardY = y + Math.floor(i / 2) * 45
       
-      doc.setFillColor(bgLightR, bgLightG, bgLightB)
-      doc.roundedRect(cardX, cardY, 90, 36, 3, 3, 'F')
+      doc.setFillColor(bgLight[0], bgLight[1], bgLight[2])
+      doc.roundedRect(cardX, cardY, 90, 40, 3, 3, 'F')
       
-      doc.setTextColor(textGrayR, textGrayG, textGrayB)
+      doc.setTextColor(textGray[0], textGray[1], textGray[2])
       doc.setFontSize(9)
-      setDocFont('normal')
+      setFont('normal', 9)
       doc.text(metric.label, cardX + 8, cardY + 12)
       
-      doc.setTextColor(textDarkR, textDarkG, textDarkB)
-      doc.setFontSize(20)
-      setDocFont('bold')
+      const scoreColor = getScoreColor(metric.value)
+      doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2])
+      doc.setFontSize(22)
+      setFont('bold', 22)
       const displayValue = metric.text || `${metric.value || 0}${metric.unit || ''}`
-      doc.text(`${displayValue}`, cardX + 8, cardY + 30)
+      doc.text(displayValue, cardX + 8, cardY + 32)
       
       // Progress bar
       if (metric.max) {
-        doc.setFillColor(229, 231, 235)
-        doc.roundedRect(cardX + 50, cardY + 20, 35, 6, 1, 1, 'F')
-        const fillWidth = ((metric.value || 0) / metric.max) * 35
-        const barColor = getScoreColor(metric.value || 0)
-        doc.setFillColor(barColor[0], barColor[1], barColor[2])
-        doc.roundedRect(cardX + 50, cardY + 20, fillWidth, 6, 1, 1, 'F')
+        doc.setFillColor(230, 230, 240)
+        doc.roundedRect(cardX + 55, cardY + 22, 30, 6, 1, 1, 'F')
+        const fillWidth = ((metric.value || 0) / metric.max) * 30
+        doc.setFillColor(scoreColor[0], scoreColor[1], scoreColor[2])
+        doc.roundedRect(cardX + 55, cardY + 22, fillWidth, 6, 1, 1, 'F')
       }
     })
     
-    y += 95
+    y += 100
     
     // AI Engine details
-    doc.setTextColor(textDarkR, textDarkG, textDarkB)
+    doc.setTextColor(textDark[0], textDark[1], textDark[2])
     doc.setFontSize(12)
-    setDocFont('bold')
+    setFont('bold', 12)
     doc.text('各引擎收录详情', 15, y)
     
     y += 10
@@ -1140,43 +1601,55 @@ const exportToPDF = async () => {
       { name: 'DeepSeek', score: 85, mentions: 45, trend: '+12%' },
       { name: '豆包', score: 72, mentions: 32, trend: '+5%' },
       { name: '文心一言', score: 68, mentions: 28, trend: '+8%' },
-      { name: '通义千问', score: 55, mentions: 18, trend: '-2%' }
+      { name: '通义千问', score: 55, mentions: 18, trend: '-2%' },
+      { name: 'Kimi', score: 42, mentions: 12, trend: '+3%' },
+      { name: '智谱清言', score: 38, mentions: 8, trend: '+1%' }
     ]
     
     engineDetails.forEach((eng, i) => {
-      const engY = y + i * 18
+      const engY = y + i * 16
       
-      doc.setFillColor(bgLightR, bgLightG, bgLightB)
+      if (engY > 260) {
+        addPage()
+        drawPageHeader(doc, 'AI搜索表现详情', currentPage, totalPagesEstimate, useChineseFont, chineseFont)
+        y = 35
+      }
+      
+      doc.setFillColor(bgLight[0], bgLight[1], bgLight[2])
       doc.roundedRect(10, engY, 190, 14, 2, 2, 'F')
       
-      doc.setTextColor(textDarkR, textDarkG, textDarkB)
+      doc.setTextColor(textDark[0], textDark[1], textDark[2])
       doc.setFontSize(10)
-      setDocFont('bold')
+      setFont('bold', 10)
       doc.text(eng.name, 15, engY + 10)
       
-      setDocFont('normal')
-      doc.setFontSize(9)
-      doc.text(`提及 ${eng.mentions} 次`, 60, engY + 10)
+      setFont('normal', 9)
+      doc.setTextColor(textGray[0], textGray[1], textGray[2])
+      doc.text(`提及 ${eng.mentions} 次`, 55, engY + 10)
       
       // Score bar
-      doc.setFillColor(229, 231, 235)
-      doc.roundedRect(100, engY + 5, 60, 5, 1, 1, 'F')
+      doc.setFillColor(230, 230, 240)
+      doc.roundedRect(95, engY + 5, 60, 5, 1, 1, 'F')
       const scoreColor = getScoreColor(eng.score)
       doc.setFillColor(scoreColor[0], scoreColor[1], scoreColor[2])
-      doc.roundedRect(100, engY + 5, (eng.score / 100) * 60, 5, 1, 1, 'F')
+      doc.roundedRect(95, engY + 5, (eng.score / 100) * 60, 5, 1, 1, 'F')
       
       doc.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2])
-      setDocFont('bold')
-      doc.text(`${eng.score}`, 165, engY + 10)
+      setFont('bold', 9)
+      doc.text(`${eng.score}`, 160, engY + 10)
       
-      const trendColor = (eng.trend || '').startsWith('+') ? [16, 185, 129] : [220, 38, 38]
+      const trendColor = (eng.trend || '').startsWith('+') ? green : red
       doc.setTextColor(trendColor[0], trendColor[1], trendColor[2])
       doc.text(eng.trend || '--', 175, engY + 10)
     })
-  }
-  
-  // Save
-  doc.save(`魔鲸GEO诊断报告-${report.targetName || 'report'}-${Date.now()}.pdf`)
+    
+    drawPageFooter(doc, report.id)
+    
+    // Save PDF
+    const fileName = `魔鲸GEO诊断报告-${report.targetName || 'report'}-${Date.now()}.pdf`
+    doc.save(fileName)
+    console.log('PDF exported successfully:', fileName)
+    
   } catch (error) {
     console.error('PDF export failed:', error)
     console.error('Error message:', error.message)
@@ -1189,6 +1662,116 @@ const getScoreColor = (score) => {
   if (score >= 60) return [79, 70, 229] // indigo
   if (score >= 40) return [217, 119, 6] // amber
   return [220, 38, 38] // red
+}
+
+// Generate summary insight based on report data
+const getSummaryInsight = (report) => {
+  if (!report.seoScore) return '暂无评分数据'
+  
+  const score = report.seoScore.overall
+  const dimensions = ['technical', 'content', 'authority', 'performance']
+  const lowestDim = dimensions.reduce((min, dim) => {
+    return (report.seoScore[dim] || 0) < (report.seoScore[min] || 0) ? dim : min
+  }, 'technical')
+  
+  const dimLabels = {
+    technical: '品牌实体识别',
+    content: '产品关联度',
+    authority: '情感倾向',
+    performance: '竞品压制'
+  }
+  
+  if (score >= 80) {
+    return '整体表现优秀，在AI搜索环境中具有较强的品牌可见度。建议持续优化内容质量，保持竞争优势。'
+  } else if (score >= 60) {
+    return `${dimLabels[lowestDim]}方面仍有提升空间，建议重点关注该维度的优化，以提升整体AI可见度。`
+  } else {
+    return `在多个维度存在较大优化空间，建议优先提升${dimLabels[lowestDim]}，以改善整体AI搜索引擎表现。`
+  }
+}
+
+// Draw radar chart approximation for PDF
+const drawRadarChart = (doc, x, y, size, scores) => {
+  const centerX = x + size / 2
+  const centerY = y + size / 2
+  const numAxes = 4
+  const angleStep = (2 * Math.PI) / numAxes
+  const maxRadius = size / 2 - 10
+  
+  // Draw concentric circles
+  for (let r = 1; r <= 4; r++) {
+    const radius = (maxRadius / 4) * r
+    doc.setDrawColor(220, 220, 230)
+    doc.setLineWidth(0.3)
+    for (let i = 0; i < numAxes; i++) {
+      const angle = angleStep * i - Math.PI / 2
+      const px = centerX + radius * Math.cos(angle)
+      const py = centerY + radius * Math.sin(angle)
+      if (i === 0) {
+        doc.moveTo(px, py)
+      } else {
+        doc.lineTo(px, py)
+      }
+    }
+    doc.closePath()
+    doc.stroke()
+  }
+  
+  // Draw axes
+  for (let i = 0; i < numAxes; i++) {
+    const angle = angleStep * i - Math.PI / 2
+    const px = centerX + maxRadius * Math.cos(angle)
+    const py = centerY + maxRadius * Math.sin(angle)
+    doc.setDrawColor(180, 180, 200)
+    doc.setLineWidth(0.5)
+    doc.line(centerX, centerY, px, py)
+  }
+  
+  // Draw data polygon
+  if (scores && scores.length === numAxes) {
+    doc.setDrawColor(79, 70, 229)
+    doc.setFillColor(79, 70, 229)
+    doc.setLineWidth(1)
+    
+    scores.forEach((score, i) => {
+      const angle = angleStep * i - Math.PI / 2
+      const radius = (score / 100) * maxRadius
+      const px = centerX + radius * Math.cos(angle)
+      const py = centerY + radius * Math.sin(angle)
+      
+      if (i === 0) {
+        doc.moveTo(px, py)
+      } else {
+        doc.lineTo(px, py)
+      }
+    })
+    doc.closePath()
+    doc.fill()
+  }
+}
+
+// Draw mini trend line chart
+const drawTrendLine = (doc, x, y, width, height, data, color) => {
+  if (!data || data.length < 2) return
+  
+  const minVal = Math.min(...data)
+  const maxVal = Math.max(...data)
+  const range = maxVal - minVal || 1
+  
+  doc.setDrawColor(color[0], color[1], color[2])
+  doc.setLineWidth(1.5)
+  
+  data.forEach((val, i) => {
+    const px = x + (i / (data.length - 1)) * width
+    const py = y + height - ((val - minVal) / range) * height
+    
+    if (i === 0) {
+      doc.moveTo(px, py)
+    } else {
+      doc.lineTo(px, py)
+    }
+  })
+  doc.stroke()
 }
 
 const getIndustryLabel = (industry) => {

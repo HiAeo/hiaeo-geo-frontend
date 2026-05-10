@@ -6,7 +6,7 @@
  */
 
 // Mock 模式：设置为 true 以使用模拟数据（后端未运行时）
-const USE_MOCK = true
+const USE_MOCK = false
 
 import { ref, readonly } from 'vue'
 
@@ -33,33 +33,193 @@ const mockAIEngines = [
   { id: 'zhipu', name: '智谱AI', provider: '智谱AI', logo: '💎', logoUrl: '/ai-logos/zhipu-color.svg', status: 'available', models: ['glm-4', 'glm-4-flash', 'glm-3-turbo'] },
 ]
 
-// Mock AI 诊断结果
+// Mock AI 诊断结果 - 7维度GEO健康分体系
 function mockDiagnoseResult(engineId, brandData) {
   const engine = mockAIEngines.find(e => e.id === engineId) || mockAIEngines[0]
+  
+  // 生成各维度分数 (带权重的综合分数)
+  const d1Score = Math.floor(Math.random() * 35) + 50   // 品牌实体识别 50-85
+  const d2Score = Math.floor(Math.random() * 30) + 55   // 产品关联度 55-85
+  const d3Score = Math.floor(Math.random() * 40) + 45   // 正面情感占比 45-85
+  const d4Score = Math.floor(Math.random() * 35) + 40   // 竞品压制指数 40-75
+  const d5Score = Math.floor(Math.random() * 30) + 50   // 内容覆盖度 50-80
+  const d6Score = Math.floor(Math.random() * 35) + 45   // 官网引流率 45-80
+  const d7Score = Math.floor(Math.random() * 40) + 40   // 更新活跃度 40-80
+  
+  const overallScore = Math.round(
+    d1Score * 0.15 + d2Score * 0.15 + d3Score * 0.10 + 
+    d4Score * 0.15 + d5Score * 0.15 + d6Score * 0.15 + d7Score * 0.15
+  )
+  
   return {
     engineId: engine.id,
     engineName: engine.name,
     engineLogo: engine.logoUrl || engine.logo,
     timestamp: new Date().toISOString(),
-    overallScore: Math.floor(Math.random() * 20) + 70,
+    overallScore,
     dimensions: [
-      { name: '品牌定位', score: Math.floor(Math.random() * 30) + 60, findings: ['品牌定位清晰，核心价值主张明确', '建议强化差异化竞争优势'] },
-      { name: '视觉识别', score: Math.floor(Math.random() * 30) + 65, findings: ['视觉系统一致性良好', '可考虑优化移动端适配'] },
-      { name: '传播策略', score: Math.floor(Math.random() * 30) + 55, findings: ['传播渠道覆盖较全面', '内容策略有提升空间'] },
-      { name: '用户互动', score: Math.floor(Math.random() * 30) + 60, findings: ['用户反馈机制健全', '建议加强社区运营'] },
-      { name: '品牌声誉', score: Math.floor(Math.random() * 30) + 70, findings: ['网络口碑良好', '可进一步建设品牌故事'] },
+      { 
+        id: 'd1', 
+        name: 'D1 品牌实体识别', 
+        score: d1Score, 
+        weight: 15,
+        description: 'AI正确识别品牌名的能力',
+        benchmark: 65,
+        findings: [
+          `AI搜索中品牌名出现频次: ${Math.floor(Math.random() * 20) + 5}次/100问`,
+          `品牌名变体识别率: ${Math.floor(Math.random() * 20) + 60}%`,
+          d1Score >= 70 ? '✓ 品牌核心词在AI中识别良好' : '⚠ 建议在官网增加品牌标准表述'
+        ],
+        suggestions: [
+          { priority: '高', action: '在官网首页和关于我们页面明确标注品牌全称和简称' },
+          { priority: '中', action: '创建品牌百科词条，确保AI能获取准确的品牌信息' },
+          { priority: '低', action: '在官方社媒账号保持统一的品牌名称使用' }
+        ]
+      },
+      { 
+        id: 'd2', 
+        name: 'D2 产品关联度', 
+        score: d2Score, 
+        weight: 15,
+        description: '品牌与核心产品的语义关联强度',
+        benchmark: 62,
+        findings: [
+          `产品关键词在AI回答中出现率: ${Math.floor(Math.random() * 25) + 50}%`,
+          `品牌-产品语义关联得分: ${Math.floor(Math.random() * 20) + 65}分`,
+          d2Score >= 70 ? '✓ 产品信息与品牌关联紧密' : '⚠ 需加强产品核心卖点的AI友好表述'
+        ],
+        suggestions: [
+          { priority: '高', action: '在官网产品页使用结构化数据标记产品信息' },
+          { priority: '高', action: '创建产品对比表格，便于AI理解产品差异' },
+          { priority: '中', action: '围绕核心产品生成10组FAQ问答' }
+        ]
+      },
+      { 
+        id: 'd3', 
+        name: 'D3 正面情感占比', 
+        score: d3Score, 
+        weight: 10,
+        description: '提及品牌时正向评价的占比',
+        benchmark: 60,
+        findings: [
+          `正向情感占比: ${Math.floor(Math.random() * 30) + 50}%`,
+          `中性评价占比: ${Math.floor(Math.random() * 20) + 25}%`,
+          `负向评价占比: ${Math.floor(Math.random() * 15) + 5}%`,
+          d3Score >= 65 ? '✓ 品牌舆情整体正面' : '⚠ 存在一定比例的负面舆情需关注'
+        ],
+        suggestions: [
+          { priority: '高', action: '针对现有负面评价制定舆情应对策略' },
+          { priority: '中', action: '增加品牌正面新闻和用户好评的传播' },
+          { priority: '中', action: '建立客户好评激励机制' }
+        ]
+      },
+      { 
+        id: 'd4', 
+        name: 'D4 竞品压制指数', 
+        score: d4Score, 
+        weight: 15,
+        description: '品牌提及率与竞品提及率的比值',
+        benchmark: 55,
+        findings: [
+          `品牌AI提及率: ${Math.floor(Math.random() * 10) + 8}%`,
+          `主要竞品提及率: ${Math.floor(Math.random() * 15) + 12}%`,
+          `竞品压制比: ${(Math.random() * 0.5 + 0.5).toFixed(2)}`,
+          d4Score >= 60 ? '✓ 在同类品牌中具有一定优势' : '⚠ 竞品在AI中的声量更高'
+        ],
+        suggestions: [
+          { priority: '高', action: '分析竞品的AI友好内容特征' },
+          { priority: '高', action: '生成差异化竞争内容，突出品牌独特优势' },
+          { priority: '中', action: '监控竞品动态，及时调整内容策略' }
+        ]
+      },
+      { 
+        id: 'd5', 
+        name: 'D5 内容覆盖度', 
+        score: d5Score, 
+        weight: 15,
+        description: '已优化内容覆盖的核心问题数占比',
+        benchmark: 58,
+        findings: [
+          `目标问题覆盖数: ${Math.floor(Math.random() * 30) + 40}个`,
+          `用户核心问题覆盖率: ${Math.floor(Math.random() * 25) + 55}%`,
+          `长尾问题覆盖率: ${Math.floor(Math.random() * 20) + 30}%`,
+          d5Score >= 65 ? '✓ 内容覆盖较为全面' : '⚠ 存在较多用户关心但未覆盖的问题'
+        ],
+        suggestions: [
+          { priority: '高', action: '梳理目标用户最常问的20个问题' },
+          { priority: '高', action: '针对未覆盖问题批量生成内容' },
+          { priority: '中', action: '建立问题库，持续跟踪用户新问题' }
+        ]
+      },
+      { 
+        id: 'd6', 
+        name: 'D6 官网引流率', 
+        score: d6Score, 
+        weight: 15,
+        description: 'AI回答中官网被引用次数占比',
+        benchmark: 50,
+        findings: [
+          `官网被AI引用率: ${Math.floor(Math.random() * 20) + 25}%`,
+          `知识库引用率: ${Math.floor(Math.random() * 15) + 10}%`,
+          `第三方平台引用率: ${Math.floor(Math.random() * 25) + 30}%`,
+          d6Score >= 60 ? '✓ 官网内容被AI较好地引用' : '⚠ 官网内容需进一步优化以被AI优先引用'
+        ],
+        suggestions: [
+          { priority: '高', action: '优化官网技术SEO，确保AI能正确抓取' },
+          { priority: '高', action: '在内容中增加官网的内链密度' },
+          { priority: '中', action: '申请入驻AI厂商的知识库' }
+        ]
+      },
+      { 
+        id: 'd7', 
+        name: 'D7 更新活跃度', 
+        score: d7Score, 
+        weight: 15,
+        description: '近30天内容的更新频率和质量',
+        benchmark: 52,
+        findings: [
+          `近30天内容更新: ${Math.floor(Math.random() * 20) + 5}篇`,
+          `更新频率评分: ${Math.floor(Math.random() * 25) + 50}分`,
+          `内容新鲜度: ${d7Score >= 65 ? '良好' : '需加强'}`,
+          d7Score >= 60 ? '✓ 内容更新保持稳定' : '⚠ 内容更新频率偏低'
+        ],
+        suggestions: [
+          { priority: '高', action: '制定月度内容更新计划' },
+          { priority: '中', action: '每周至少发布1-2篇与品牌相关的内容' },
+          { priority: '中', action: '建立内容日历，追踪发布节奏' }
+        ]
+      }
     ],
-    recommendations: [
-      '建议优化品牌核心信息的传达方式',
-      '加强社交媒体内容矩阵建设',
-      '建立品牌健康度监测体系',
-      '考虑与行业KOL进行合作推广',
-    ],
+    competitorAnalysis: {
+      mainCompetitors: [
+        { name: '竞品A', mentionRate: Math.floor(Math.random() * 15) + 15, advantage: ['技术实力强', '品牌历史久'], weakness: ['价格偏高'] },
+        { name: '竞品B', mentionRate: Math.floor(Math.random() * 10) + 10, advantage: ['市场份额大', '渠道广'], weakness: ['创新能力一般'] },
+        { name: '竞品C', mentionRate: Math.floor(Math.random() * 8) + 5, advantage: ['性价比高'], weakness: ['品牌认知度低'] }
+      ],
+      comparisonMatrix: [
+        { aspect: 'AI识别度', brandScore: overallScore, avgCompetitorScore: Math.floor(Math.random() * 15) + 55 },
+        { aspect: '内容质量', brandScore: Math.floor(Math.random() * 20) + 60, avgCompetitorScore: Math.floor(Math.random() * 15) + 55 },
+        { aspect: '用户口碑', brandScore: Math.floor(Math.random() * 20) + 58, avgCompetitorScore: Math.floor(Math.random() * 15) + 52 },
+        { aspect: '更新频率', brandScore: Math.floor(Math.random() * 20) + 50, avgCompetitorScore: Math.floor(Math.random() * 15) + 48 }
+      ]
+    },
+    recommendations: [],
     contentSuggestions: [
-      { type: 'slogan', content: '品牌口号建议：精准传递核心价值' },
-      { type: 'tagline', content: '品牌故事开篇建议：引发情感共鸣' },
+      { type: 'faq', content: '生成目标用户最关心的10组FAQ问答', priority: '高' },
+      { type: 'seo', content: '围绕品牌核心优势生成SEO文章3篇', priority: '高' },
+      { type: 'competitor', content: '生成差异化对比分析报告', priority: '中' },
+      { type: 'json-ld', content: '生成结构化数据Schema标记代码', priority: '中' }
     ],
-    summary: `${brandData.name}品牌诊断完成，综合得分${Math.floor(Math.random() * 20) + 70}分，在品牌定位和视觉识别方面表现良好，建议重点优化传播策略和用户互动环节。`
+    summary: `${brandData.name}在AI可见度诊断中综合得分${overallScore}分（满分100）。\n\n` +
+      `【核心优势】D${d1Score >= 70 ? '1品牌实体识别' : d2Score >= 70 ? '2产品关联度' : d4Score >= 60 ? '4竞品压制' : '7更新活跃度'}表现较好，建议保持。\n\n` +
+      `【亟需优化】D${d3Score < 60 ? '3正面情感占比' : d4Score < 55 ? '4竞品压制指数' : d6Score < 55 ? '6官网引流率' : '5内容覆盖度'}得分偏低，是当前最需改进的维度。\n\n` +
+      `【行动建议】建议优先优化D4和D6维度，这两项对综合得分的杠杆效应最大。`,
+    keyFindings: [
+      `品牌在${engine.name}中的识别率为${Math.floor(Math.random() * 30) + 50}%`,
+      `与主要竞品相比，品牌认知度${overallScore > 60 ? '领先' : '落后'}约${Math.floor(Math.random() * 15) + 5}%`,
+      `官网内容被AI引用率仅为${Math.floor(Math.random() * 20) + 25}%`,
+      `近30天内品牌相关内容${d7Score >= 60 ? '更新正常' : '更新偏少'}`
+    ]
   }
 }
 
