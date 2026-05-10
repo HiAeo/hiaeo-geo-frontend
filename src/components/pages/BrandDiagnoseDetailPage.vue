@@ -12,12 +12,23 @@
           <div>
             <h1 class="page-title">{{ report.brandName || '品牌' }} - 诊断报告</h1>
             <span class="page-subtitle">
-              <span v-if="report.engineName" class="engine-tag">{{ report.engineLogo }} {{ report.engineName }}</span>
+              <span v-if="report.engineName" class="engine-tag">
+                <img v-if="report.engineLogo" :src="report.engineLogo" :alt="report.engineName" class="engine-logo-inline"/>
+                {{ report.engineName }}
+              </span>
               <span>{{ formatDate(report.date) }} · {{ report.type }}</span>
             </span>
           </div>
         </div>
         <div class="header-actions">
+          <!-- 快捷操作：从诊断报告直接生成策略 -->
+          <button class="primary-action-btn" @click="generateStrategyFromReport">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            基于此报告生成策略
+          </button>
+          
           <div class="export-dropdown">
             <button class="secondary-btn" @click="showExportMenu = !showExportMenu">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -230,14 +241,55 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import jsPDF from 'jspdf'
 
 const route = useRoute()
+const router = useRouter()
 
 const loading = ref(true)
 const aiResult = ref(null)
 const showExportMenu = ref(false)
+
+// 从诊断报告跳转到策略生成
+const generateStrategyFromReport = () => {
+  const reportData = {
+    reportId: report.value.id,
+    brandName: report.value.brandName,
+    score: aiResult.value?.overallScore || report.value.score,
+    dimensions: aiResult.value?.dimensions || [],
+    suggestions: aiResult.value?.dimensions?.flatMap(d => d.suggestions || []) || [],
+    keywords: extractKeywordsFromReport(),
+  }
+  
+  // 将报告数据存储到 sessionStorage，供策略页使用
+  sessionStorage.setItem('strategy_from_report', JSON.stringify(reportData))
+  
+  // 跳转到策略生成页
+  router.push('/app/strategy')
+}
+
+// 从报告中提取关键词
+const extractKeywordsFromReport = () => {
+  const keywords = []
+  const dims = aiResult.value?.dimensions || []
+  
+  // 从各维度建议中提取可能的关键词
+  dims.forEach(dim => {
+    if (dim.suggestions) {
+      dim.suggestions.forEach(sug => {
+        // 简单提取包含"关键词"或"关键字"的建议
+        if (sug.action && sug.action.includes('关键词')) {
+          // 尝试提取关键词
+          const match = sug.action.match(/[""'']([^""'']+)[""'']/)
+          if (match) keywords.push(match[1])
+        }
+      })
+    }
+  })
+  
+  return keywords.length > 0 ? keywords : []
+}
 
 const report = ref({
   id: route.params.id,
@@ -306,18 +358,40 @@ const loadReport = () => {
   loading.value = true
 
   const reportId = route.params.id
+  console.log('[诊断详情] 加载报告, ID:', reportId)
 
   // Try to load from localStorage
   const savedReports = localStorage.getItem('diagnose_reports')
   if (savedReports) {
     const reports = JSON.parse(savedReports)
+    console.log('[诊断详情] localStorage 中的报告数:', reports.length)
     const found = reports.find(r => r.id === reportId)
     if (found) {
+      console.log('[诊断详情] 找到报告:', found)
       report.value = found
       if (found.result) {
         aiResult.value = found.result
+        console.log('[诊断详情] aiResult 已设置:', aiResult.value)
+      } else {
+        console.warn('[诊断详情] 报告没有 result 字段，尝试从顶层获取数据')
+        // 兼容：直接从 report 获取数据（某些情况下数据可能直接在 report 顶层）
+        if (found.overallScore || found.score) {
+          aiResult.value = {
+            overallScore: found.overallScore || found.score,
+            dimensions: found.dimensions || [],
+            summary: found.summary || '',
+            keyFindings: found.keyFindings || [],
+            competitorAnalysis: found.competitorAnalysis || null,
+            contentSuggestions: found.contentSuggestions || [],
+          }
+          console.log('[诊断详情] 从顶层构建 aiResult:', aiResult.value)
+        }
       }
+    } else {
+      console.warn('[诊断详情] 未找到报告 ID:', reportId)
     }
+  } else {
+    console.warn('[诊断详情] localStorage 中没有诊断报告')
   }
 
   loading.value = false
@@ -1111,8 +1185,29 @@ onMounted(() => {
 .page-title { font-size: 1.125rem; font-weight: 700; }
 .page-subtitle { font-size: 0.8125rem; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
 .engine-tag { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-elevated); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; }
+.engine-logo-inline { width: 16px; height: 16px; object-fit: contain; }
 .secondary-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: 10px; font-size: 0.8125rem; font-weight: 600; color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
 .secondary-btn:hover { border-color: var(--color-primary); }
+
+.primary-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, var(--color-warning) 0%, #f97316 100%);
+  border: none;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+.primary-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
 
 .export-dropdown { position: relative; }
 .dropdown-menu {

@@ -16,19 +16,6 @@
       </div>
     </div>
 
-    <!-- Tab Navigation -->
-    <div class="tab-navigation">
-      <button 
-        v-for="tab in tabs" 
-        :key="tab.id"
-        :class="['tab-btn', { active: activeTab === tab.id }]"
-        @click="activeTab = tab.id"
-      >
-        <span class="tab-icon">{{ tab.icon }}</span>
-        <span class="tab-label">{{ tab.label }}</span>
-      </button>
-    </div>
-
     <!-- Content Area -->
     <div class="content-area">
       <!-- Strategy Generator -->
@@ -135,24 +122,9 @@
             </div>
           </div>
 
-          <div class="platform-selection">
-            <label>目标平台</label>
-            <div class="platform-grid">
-              <label 
-                v-for="platform in platforms" 
-                :key="platform.id"
-                :class="['platform-item', { selected: form.targetPlatforms.includes(platform.id) }]"
-              >
-                <input 
-                  type="checkbox" 
-                  :value="platform.id"
-                  v-model="form.targetPlatforms"
-                  hidden
-                />
-                <span class="platform-icon">{{ platform.icon }}</span>
-                <span class="platform-name">{{ platform.name }}</span>
-              </label>
-            </div>
+          <div class="form-group">
+            <label>GEO核心信源媒体 <span class="form-hint">（点击logo访问官网，勾选方块选择目标媒体）</span></label>
+            <MediaSelector v-model="selectedMedia" />
           </div>
 
           <button 
@@ -173,8 +145,11 @@
               <button class="action-btn" @click="downloadStrategy">
                 📥 导出策略
               </button>
+              <button class="action-btn publish-btn" @click="goToPublish">
+                🚀 立即发布内容
+              </button>
               <button class="action-btn primary" @click="applyStrategy">
-                🚀 应用策略
+                💾 保存策略
               </button>
             </div>
           </div>
@@ -182,13 +157,13 @@
           <div class="strategy-overview">
             <div class="overview-card">
               <h4>📋 策略概览</h4>
-              <p class="summary">{{ strategyResult.content.summary }}</p>
+              <p class="summary">{{ strategyResult?.content?.summary || '暂无数据' }}</p>
             </div>
 
             <div class="objectives-card">
               <h4>🎯 核心目标</h4>
               <ul>
-                <li v-for="(obj, i) in strategyResult.content.coreObjectives" :key="i">{{ obj }}</li>
+                <li v-for="(obj, i) in (strategyResult?.content?.coreObjectives || [])" :key="i">{{ obj }}</li>
               </ul>
             </div>
 
@@ -203,7 +178,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="kpi in strategyResult.content.kpis" :key="kpi.name">
+                  <tr v-for="kpi in (strategyResult?.content?.kpis || [])" :key="kpi?.name || $index">
                     <td>{{ kpi.name }}</td>
                     <td>{{ kpi.current || '-' }}</td>
                     <td class="target">{{ kpi.target }}</td>
@@ -216,7 +191,7 @@
           <div class="strategy-section">
             <h4>📝 内容策略</h4>
             <div class="content-themes">
-              <div v-for="theme in strategyResult.content.contentThemes" :key="theme.theme" class="theme-item">
+              <div v-for="theme in (strategyResult?.content?.contentThemes || [])" :key="theme?.theme || $index" class="theme-item">
                 <span class="theme-name">{{ theme.theme }}</span>
                 <span class="theme-desc">{{ theme.description }}</span>
                 <span :class="['priority-badge', theme.priority]">{{ theme.priority }}</span>
@@ -230,7 +205,7 @@
               <div class="keywords-group">
                 <h5>核心关键词</h5>
                 <div class="keyword-tags">
-                  <span v-for="kw in strategyResult.content.coreKeywords" :key="kw.keyword" class="keyword-tag">
+                  <span v-for="(kw, idx) in (strategyResult?.content?.coreKeywords || [])" :key="kw?.keyword || idx" class="keyword-tag">
                     {{ kw.keyword }}
                     <span class="difficulty" :class="kw.difficulty.toLowerCase()">{{ kw.difficulty }}</span>
                   </span>
@@ -239,7 +214,7 @@
               <div class="keywords-group">
                 <h5>长尾关键词</h5>
                 <div class="keyword-tags">
-                  <span v-for="kw in strategyResult.content.longTailKeywords" :key="kw.keyword" class="keyword-tag secondary">
+                  <span v-for="(kw, idx) in (strategyResult?.content?.longTailKeywords || [])" :key="kw?.keyword || idx" class="keyword-tag secondary">
                     {{ kw.keyword }}
                     <span class="opportunity">{{ kw.opportunity }}</span>
                   </span>
@@ -251,7 +226,7 @@
           <div class="strategy-section">
             <h4>📱 平台执行计划</h4>
             <div class="platform-plans">
-              <div v-for="plan in strategyResult.content.platformPlan" :key="plan.platform" class="platform-plan">
+              <div v-for="(plan, idx) in (strategyResult?.content?.platformPlan || [])" :key="plan?.platform || idx" class="platform-plan">
                 <div class="platform-header">
                   <span class="platform-name">{{ getPlatformName(plan.platform) }}</span>
                   <span class="budget-tag">{{ plan.budget || '-' }}</span>
@@ -268,19 +243,19 @@
           <div class="strategy-section">
             <h4>📅 执行时间线</h4>
             <div class="timeline">
-              <div v-for="phase in strategyResult.content.timeline" :key="phase.phase" class="timeline-phase">
+              <div v-for="(phase, idx) in (strategyResult?.content?.timeline || [])" :key="phase?.phase || idx" class="timeline-phase">
                 <div class="phase-header">
                   <span class="phase-name">{{ phase.phase }}</span>
                   <span class="phase-duration">{{ phase.duration }} (第{{ phase.startWeek }}-{{ phase.endWeek }}周)</span>
                 </div>
                 <div class="phase-tasks">
-                  <div v-for="task in phase.tasks" :key="task.task" class="task-item">
+                  <div v-for="(task, tIdx) in (phase?.tasks || [])" :key="task?.task || tIdx" class="task-item">
                     <span class="task-name">{{ task.task }}</span>
                     <span class="task-deliverable">{{ task.deliverable }}</span>
                   </div>
                 </div>
                 <div class="phase-milestones">
-                  <span v-for="m in phase.milestones" :key="m" class="milestone">🏁 {{ m }}</span>
+                  <span v-for="(m, mIdx) in (phase?.milestones || [])" :key="m || mIdx" class="milestone">🏁 {{ m }}</span>
                 </div>
               </div>
             </div>
@@ -289,14 +264,14 @@
           <div class="strategy-section">
             <h4>💡 执行建议</h4>
             <ul class="recommendations">
-              <li v-for="rec in strategyResult.content.recommendations" :key="rec">{{ rec }}</li>
+              <li v-for="(rec, rIdx) in (strategyResult?.content?.recommendations || [])" :key="rec || rIdx">{{ rec }}</li>
             </ul>
           </div>
 
           <div class="strategy-section">
             <h4>⚠️ 潜在风险</h4>
             <div class="risks">
-              <div v-for="risk in strategyResult.content.risks" :key="risk.risk" class="risk-item">
+              <div v-for="(risk, rIdx) in (strategyResult?.content?.risks || [])" :key="risk?.risk || rIdx" class="risk-item">
                 <span class="risk-name">{{ risk.risk }}</span>
                 <span :class="['risk-probability', risk.probability]">{{ risk.probability }}</span>
                 <p class="risk-mitigation">{{ risk.mitigation }}</p>
@@ -315,7 +290,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="res in strategyResult.content.resourceRequirements" :key="res.type">
+                <tr v-for="(res, rIdx) in (strategyResult?.content?.resourceRequirements || [])" :key="res?.type || rIdx">
                   <td>{{ res.type }}</td>
                   <td>{{ res.quantity }}</td>
                   <td>{{ res.cost }}</td>
@@ -337,15 +312,22 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onUnmounted, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import MediaSelector from '../MediaSelector.vue'
+import { defaultSelectedMedia } from '../../config/mediaConfig'
 
-const tabs = [
-  { id: 'strategy', label: '策略生成', icon: '🎯' },
-]
+const router = useRouter()
+
+// AbortController for request cancellation
+let abortController = null
+
+const tabs = []
 
 const activeTab = ref('strategy')
 const generating = ref(false)
 const strategyResult = ref(null)
+const fromReport = ref(false) // 是否从诊断报告跳转而来
 
 const toast = reactive({
   show: false,
@@ -361,17 +343,17 @@ const showToast = (message, type = 'success') => {
 }
 
 const platforms = [
-  { id: 'website', name: '官网', icon: '🌐' },
-  { id: 'wechat', name: '微信公众号', icon: '💬' },
-  { id: 'wechat_moments', name: '朋友圈', icon: '👥' },
-  { id: 'weibo', name: '微博', icon: '📱' },
-  { id: 'douyin', name: '抖音', icon: '🎬' },
-  { id: 'xiaohongshu', name: '小红书', icon: '📕' },
-  { id: 'bilibili', name: 'B站', icon: '📺' },
-  { id: 'baidu', name: '百度', icon: '🔍' },
-  { id: 'taobao', name: '淘宝', icon: '🛒' },
-  { id: 'tmall', name: '天猫', icon: '🏪' },
-  { id: 'jd', name: '京东', icon: '📦' },
+  { id: 'website', name: '官网', icon: '🌐', logoUrl: '/platforms-logos/website-color.svg' },
+  { id: 'wechat', name: '微信公众号', icon: '💬', logoUrl: '/platforms-logos/wechat-color.svg' },
+  { id: 'wechat_moments', name: '朋友圈', icon: '👥', logoUrl: '/platforms-logos/wechat-color.svg' },
+  { id: 'weibo', name: '微博', icon: '📱', logoUrl: '/platforms-logos/weibo-color.svg' },
+  { id: 'douyin', name: '抖音', icon: '🎬', logoUrl: '/platforms-logos/douyin-color.svg' },
+  { id: 'xiaohongshu', name: '小红书', icon: '📕', logoUrl: '/platforms-logos/xiaohongshu-color.svg' },
+  { id: 'bilibili', name: 'B站', icon: '📺', logoUrl: '/platforms-logos/bilibili-color.svg' },
+  { id: 'baidu', name: '百度', icon: '🔍', logoUrl: '/platforms-logos/baidu-color.svg' },
+  { id: 'taobao', name: '淘宝', icon: '🛒', logoUrl: '/platforms-logos/taobao-color.svg' },
+  { id: 'tmall', name: '天猫', icon: '🏪', logoUrl: '/platforms-logos/tmall-color.svg' },
+  { id: 'jd', name: '京东', icon: '📦', logoUrl: '/platforms-logos/jd-color.svg' },
 ]
 
 const form = reactive({
@@ -386,19 +368,98 @@ const form = reactive({
   competitors: '',
   brandStrengths: '',
   brandChallenges: '',
-  targetPlatforms: ['website', 'wechat'],
 })
+
+// GEO核心信源媒体选择
+const selectedMedia = ref([...defaultSelectedMedia])
 
 const getPlatformName = (platformId) => {
   const platform = platforms.find(p => p.id === platformId)
   return platform ? platform.name : platformId
 }
 
+// 初始化：从诊断报告跳转时填充表单
+const initFromReport = () => {
+  const reportData = sessionStorage.getItem('strategy_from_report')
+  if (reportData) {
+    try {
+      const data = JSON.parse(reportData)
+      
+      // 填充表单
+      form.brandName = data.brandName || ''
+      
+      // 根据诊断分数建议策略类型
+      if (data.score && data.score < 60) {
+        form.strategyType = 'content' // 低分优先做内容策略
+      } else if (data.score && data.score > 80) {
+        form.strategyType = 'competitor' // 高分做竞品策略
+      }
+      
+      // 从建议中提取优化方向作为挑战
+      if (data.suggestions && data.suggestions.length > 0) {
+        const challenges = data.suggestions
+          .filter(s => s.priority === '高')
+          .map(s => s.action)
+          .slice(0, 2)
+          .join('；')
+        form.brandChallenges = challenges || ''
+      }
+      
+      // 从维度中提取关键词
+      if (data.keywords && data.keywords.length > 0) {
+        form.keywords = data.keywords.join(', ')
+      }
+      
+      fromReport.value = true
+      
+      // 清除sessionStorage
+      sessionStorage.removeItem('strategy_from_report')
+      
+      // 显示提示
+      showToast('已基于诊断报告填充策略信息', 'info')
+    } catch (e) {
+      console.error('解析报告数据失败:', e)
+    }
+  }
+}
+
+// 发布内容快捷入口
+const goToPublish = () => {
+  if (strategyResult.value) {
+    // 将策略结果存储到sessionStorage
+    sessionStorage.setItem('publish_from_strategy', JSON.stringify({
+      strategyId: strategyResult.value.id,
+      strategyName: strategyResult.value.name,
+      content: strategyResult.value.content,
+      brandName: form.brandName,
+    }))
+    router.push('/app/publish')
+  }
+}
+
+// 页面加载时初始化
+onMounted(() => {
+  initFromReport()
+})
+
 const generateStrategy = async () => {
   if (!form.brandName) return
   
+  // Cancel previous request if any
+  if (abortController) {
+    abortController.abort()
+  }
+  abortController = new AbortController()
+  
   generating.value = true
   try {
+    const token = localStorage.getItem('auth_token')
+    
+    if (!token) {
+      showToast('请先登录', 'error')
+      return
+    }
+    
     const payload = {
       ...form,
       keywords: form.keywords ? form.keywords.split(',').map(k => k.trim()) : [],
@@ -406,18 +467,52 @@ const generateStrategy = async () => {
     
     const response = await fetch('/api/strategy/mofa/generate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload),
+      signal: abortController.signal
     })
+    
+    if (response.status === 401) {
+      showToast('登录已过期，请重新登录', 'error')
+      localStorage.removeItem('auth_token')
+      return
+    }
+    
+    if (!response.ok) {
+      throw new Error(`请求失败: ${response.status}`)
+    }
+    
     const data = await response.json()
-    strategyResult.value = data
-    showToast('策略生成成功！')
+    
+    // 添加防御性检查
+    if (data && data.content) {
+      strategyResult.value = data
+      showToast('策略生成成功！')
+    } else {
+      showToast('生成结果格式异常', 'error')
+    }
   } catch (error) {
-    showToast('生成失败，请重试', 'error')
+    if (error.name === 'AbortError') {
+      console.log('Request cancelled')
+    } else {
+      console.error('生成策略失败:', error)
+      showToast('生成失败，请重试', 'error')
+    }
   } finally {
     generating.value = false
+    abortController = null
   }
 }
+
+// 组件卸载时取消请求
+onUnmounted(() => {
+  if (abortController) {
+    abortController.abort()
+  }
+})
 
 const downloadStrategy = () => {
   if (!strategyResult.value) return
@@ -551,8 +646,8 @@ const applyStrategy = () => {
 }
 
 .generator-panel {
-  display: grid;
-  grid-template-columns: 450px 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 24px;
 }
 
@@ -679,6 +774,12 @@ const applyStrategy = () => {
   font-size: 20px;
 }
 
+.platform-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
 .platform-name {
   color: var(--text-secondary);
 }
@@ -703,13 +804,13 @@ const applyStrategy = () => {
 }
 
 .generate-btn.primary {
-  background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-warning) 100%);
+  background: var(--color-primary);
   color: white;
 }
 
 .generate-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 12px rgba(22, 93, 255, 0.4);
 }
 
 .generate-btn:disabled {
@@ -777,6 +878,19 @@ const applyStrategy = () => {
   background: var(--color-warning);
   border-color: var(--color-warning);
   color: white;
+}
+
+.action-btn.publish-btn {
+  background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%);
+  border-color: var(--color-success);
+  color: white;
+}
+
+.action-btn.publish-btn:hover {
+  border-color: var(--color-success);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
 .strategy-overview {

@@ -36,14 +36,20 @@ const routes = [
       {
         path: 'mofa',
         name: 'brand-mofa',
-        component: () => import('../components/pages/MofaPage.vue'),
-        meta: { title: '模法内容生成' }
+        component: () => import('../components/ContentEditorPage.vue'),
+        meta: { title: '模法内容生成 · AI智能创作' }
       },
       {
         path: 'dashboard',
         name: 'brand-dashboard',
         component: () => import('../components/pages/BrandDashboardPage.vue'),
         meta: { title: '品牌监控 · 全维度数据看板' }
+      },
+      {
+        path: 'knowledge',
+        name: 'brand-knowledge',
+        component: () => import('../components/pages/KnowledgePage.vue'),
+        meta: { title: '品牌智库 · 智慧数据中枢' }
       },
       {
         path: 'diagnose',

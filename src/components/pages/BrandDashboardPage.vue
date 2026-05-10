@@ -41,13 +41,6 @@
             </svg>
             新建诊断
           </button>
-          <button class="deploy-btn" @click="openDeployModal" v-if="platforms.length > 0">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 2L11 13"/>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-            一键发布
-          </button>
           <button class="team-btn" @click="$router.push('/app/teams')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -340,36 +333,12 @@
       </button>
     </div>
   </div>
-
-  <!-- 一键发布弹窗 -->
-  <div class="modal-overlay" v-if="showDeployModal" @click.self="showDeployModal = false">
-    <PlatformSelectModal 
-      :platforms="platforms"
-      @close="showDeployModal = false"
-      @deploy="handleDeploy"
-      @quick-deploy="handleQuickDeploy"
-      @add-platform="deployComponent && (deployComponent.showPlatformModal = true)"
-    />
-  </div>
-
-  <!-- 一键发布进度组件 -->
-  <OneClickDeploy 
-    ref="deployComponent"
-    project-path="."
-    build-command="npm run build"
-    output-dir="dist"
-    @success="handleDeploySuccess"
-    @error="handleDeployError"
-  />
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useApi } from '../../composables/useApi'
 import { useTheme } from '../../composables/useTheme'
-import OneClickDeploy from '@/components/OneClickDeploy.vue'
-import PlatformSelectModal from '@/components/PlatformSelectModal.vue'
-import { deployApi, PLATFORM_TEMPLATES } from '@/api/deploy'
 
 const { theme } = useTheme()
 const { getCurrentSubscription } = useApi()
@@ -377,66 +346,95 @@ const { getCurrentSubscription } = useApi()
 const subscription = ref(null)
 const period = ref('30d')
 
-// 一键发布相关
-const platforms = ref([])
-const showDeployModal = ref(false)
-const deployComponent = ref(null)
-
-const loadPlatforms = async () => {
-  try {
-    const res = await deployApi.getPlatforms()
-    platforms.value = res.data || []
-  } catch (err) {
-    console.error('加载平台列表失败:', err)
-  }
-}
-
-const handleDeploy = async (platformIds) => {
-  if (platformIds.length === 1) {
-    await deployComponent.value?.startDeploy(platformIds[0])
-  } else if (platformIds.length > 1) {
-    try {
-      await deployApi.batchDeploy(platformIds)
-      alert('批量发布任务已启动')
-    } catch (err) {
-      alert('批量发布失败: ' + err.message)
-    }
-  }
-  showDeployModal.value = false
-}
-
-const handleQuickDeploy = async (platformIds) => {
-  try {
-    await deployApi.batchDeploy(platformIds)
-    alert('一键发布任务已启动，将同时发布到 ' + platformIds.length + ' 个平台')
-  } catch (err) {
-    alert('发布失败: ' + err.message)
-  }
-  showDeployModal.value = false
-}
-
-const openDeployModal = () => {
-  showDeployModal.value = true
-}
-
-const handleDeploySuccess = (data) => {
-  console.log('发布成功:', data)
-}
-
-const handleDeployError = (err) => {
-  console.error('发布失败:', err)
-}
-
 onMounted(() => {
-  loadPlatforms()
+  loadReportData() // 加载诊断报告数据
 })
 
 const brandName = ref('我的品牌')
-const overallScore = ref(78)
-const seoScore = ref(82)
-const grade = ref('B')
-const trend = ref(5)
-const latestReportDate = ref('2026-05-08')
+const overallScore = ref(0)
+const seoScore = ref(0)
+const grade = ref('-')
+const trend = ref(0)
+const latestReportDate = ref('-')
+
+// 从诊断报告加载数据
+const loadReportData = () => {
+  try {
+    const savedReports = localStorage.getItem('diagnose_reports')
+    if (savedReports) {
+      const reportsList = JSON.parse(savedReports)
+      if (reportsList.length > 0) {
+        // 获取最新报告
+        const latestReport = reportsList[0]
+        
+        // 品牌名称
+        brandName.value = latestReport.brandName || '我的品牌'
+        
+        // 从AI结果中获取分数
+        const aiResult = latestReport.result
+        if (aiResult) {
+          overallScore.value = aiResult.overallScore || 0
+          seoScore.value = Math.round((aiResult.overallScore || 0) * 0.95) // SEO分数近似
+          latestReportDate.value = formatDate(latestReport.date)
+          
+          // 计算评分等级
+          const score = aiResult.overallScore || 0
+          if (score >= 85) {
+            grade.value = 'A'
+          } else if (score >= 70) {
+            grade.value = 'B'
+          } else if (score >= 60) {
+            grade.value = 'C'
+          } else {
+            grade.value = 'D'
+          }
+          
+          // 从报告维度计算趋势
+          if (reportsList.length >= 2 && reportsList[1].result) {
+            const prevScore = reportsList[1].result.overallScore || 0
+            trend.value = Math.round(aiResult.overallScore - prevScore)
+          }
+          
+          // 更新雷达图数据
+          if (aiResult.dimensions) {
+            radarData.value = aiResult.dimensions.map(d => d.score || 0)
+            topDimensions.value = aiResult.dimensions.map(d => ({
+              name: d.name,
+              score: d.score || 0
+            }))
+          }
+        }
+        
+        // 更新报告列表（用于显示）
+        reports.value = reportsList.slice(0, 5).map((r, i) => {
+          const score = r.result?.overallScore || r.score || 0
+          let g = '-'
+          if (score >= 85) g = 'A'
+          else if (score >= 70) g = 'B'
+          else if (score >= 60) g = 'C'
+          else g = 'D'
+          
+          return {
+            id: r.id || i,
+            brandName: r.brandName || '我的品牌',
+            type: r.type || '诊断报告',
+            score,
+            date: formatDate(r.date),
+            grade: g
+          }
+        })
+      }
+    }
+  } catch (e) {
+    console.error('加载诊断报告数据失败:', e)
+  }
+}
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '-'
+  const date = new Date(dateStr)
+  return `${date.getMonth() + 1}月${date.getDate()}日`
+}
 
 const brandMetrics = ref({
   organicTraffic: 12580,

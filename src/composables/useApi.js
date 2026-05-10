@@ -1,8 +1,8 @@
 /**
  * API Service Module
  * HiAeo GEO 前端 API 调用封装
- * 
- * API Base URL: http://localhost:3000/api/v1
+  *
+ * API Base URL: /api (通过 Vite 代理转发到后端)
  */
 
 // Mock 模式：设置为 true 以使用模拟数据（后端未运行时）
@@ -10,7 +10,8 @@ const USE_MOCK = false
 
 import { ref, readonly } from 'vue'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1'
+// 使用相对路径，通过 Vite 代理转发到后端 (http://localhost:3000/api)
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 
 // 存储 token
 let authToken = localStorage.getItem('auth_token')
@@ -210,7 +211,7 @@ function mockDiagnoseResult(engineId, brandData) {
       { type: 'competitor', content: '生成差异化对比分析报告', priority: '中' },
       { type: 'json-ld', content: '生成结构化数据Schema标记代码', priority: '中' }
     ],
-    summary: `${brandData.name}在AI可见度诊断中综合得分${overallScore}分（满分100）。\n\n` +
+    summary: `${brandData.brandName || brandData.name || '该品牌'}在AI可见度诊断中综合得分${overallScore}分（满分100）。\n\n` +
       `【核心优势】D${d1Score >= 70 ? '1品牌实体识别' : d2Score >= 70 ? '2产品关联度' : d4Score >= 60 ? '4竞品压制' : '7更新活跃度'}表现较好，建议保持。\n\n` +
       `【亟需优化】D${d3Score < 60 ? '3正面情感占比' : d4Score < 55 ? '4竞品压制指数' : d6Score < 55 ? '6官网引流率' : '5内容覆盖度'}得分偏低，是当前最需改进的维度。\n\n` +
       `【行动建议】建议优先优化D4和D6维度，这两项对综合得分的杠杆效应最大。`,
@@ -1241,10 +1242,21 @@ export async function diagnoseWithAI(engineId, brandData) {
     await mockDelay(2000) // 模拟更长的 API 调用时间
     return mockDiagnoseResult(engineId, brandData)
   }
-  return request(`/ai/diagnose?engine=${engineId}`, {
+  
+  const response = await request(`/ai/diagnose?engine=${engineId}`, {
     method: 'POST',
     body: JSON.stringify(brandData),
   })
+  
+  // 兼容后端返回的不同数据结构格式
+  if (response.data) {
+    return response.data
+  } else if (response.result) {
+    return response.result
+  } else if (response.diagnoseResult) {
+    return response.diagnoseResult
+  }
+  return response
 }
 
 /**
@@ -1257,10 +1269,21 @@ export async function diagnoseWithMultipleAI(engineIds, brandData) {
     await mockDelay(3000)
     return engineIds.map(engineId => mockDiagnoseResult(engineId, brandData))
   }
-  return request('/ai/diagnose/batch', {
+  
+  const response = await request('/ai/diagnose/batch', {
     method: 'POST',
     body: JSON.stringify({ engines: engineIds, brandData }),
   })
+  
+  // 兼容后端返回的不同数据结构格式
+  if (response.data && Array.isArray(response.data)) {
+    return response.data
+  } else if (response.results && Array.isArray(response.results)) {
+    return response.results
+  } else if (Array.isArray(response)) {
+    return response
+  }
+  return [response]
 }
 
 /**
@@ -1659,7 +1682,7 @@ export async function exportAsFile(contentId, format) {
     await mockDelay(500)
     return {
       success: true,
-      downloadUrl: `/api/v1/publish/export/${contentId}.${format}`,
+      downloadUrl: `/api/publish/export/${contentId}.${format}`,
     }
   }
   return request(`/publish/export/${contentId}?format=${format}`)

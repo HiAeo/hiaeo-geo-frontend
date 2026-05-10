@@ -193,9 +193,21 @@ const MofaIcon = {
   }
 }
 
-// 按照产品使用流程排序：诊断 → 策略 → 执行 → 监控
+const KnowledgeIcon = {
+  render() {
+    return h('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': 2 }, [
+      h('path', { d: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20' }),
+      h('path', { d: 'M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z' }),
+      h('line', { x1: 8, y1: 7, x2: 16, y2: 7 }),
+      h('line', { x1: 8, y1: 11, x2: 14, y2: 11 })
+    ])
+  }
+}
+
+// 按照产品使用流程排序：知识库 → 诊断 → 策略 → 执行 → 监控
 const brandNavItems = [
-  { id: 'diagnose', label: '诊断报告', path: '/app/diagnose', icon: DiagnoseIcon },     // 1. 模镜 - 诊断
+  { id: 'knowledge', label: '品牌智库', path: '/app/knowledge', icon: KnowledgeIcon }, // 1. 品牌智库 - 知识库
+  { id: 'diagnose', label: '诊断报告', path: '/app/diagnose', icon: DiagnoseIcon },     // 2. 模镜 - 诊断
   { id: 'strategy', label: '策略生成', path: '/app/strategy', icon: StrategyIcon },       // 2. 模豆 - 策略
   { id: 'publish', label: '内容发布', path: '/app/publish', icon: PublishIcon },         // 3. 模法 - 执行发布
   { id: 'hub', label: '协同驾驶', path: '/app/hub', icon: HubIcon },                     // 4. 魔鲸Hub - 监控驾驶舱

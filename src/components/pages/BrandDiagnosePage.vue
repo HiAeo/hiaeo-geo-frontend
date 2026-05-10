@@ -215,6 +215,16 @@ const { theme } = useTheme()
 const router = useRouter()
 const { getAIEngines, diagnoseWithAI, diagnoseWithMultipleAI } = useApi()
 
+// AI 引擎默认配置映射（用于后端返回数据缺少 name/logo 时）
+const engineDefaults = {
+  deepseek: { name: 'DeepSeek', logo: '🔮', logoUrl: '/ai-logos/deepseek-color.svg' },
+  doubao: { name: '豆包', logo: '🫛', logoUrl: '/ai-logos/doubao-color.svg' },
+  wenxin: { name: '文心一言', logo: '🟠', logoUrl: '/ai-logos/wenxin-color.svg' },
+  kimi: { name: 'Kimi', logo: '🌙', logoUrl: '/ai-logos/kimi-color.svg' },
+  qwen: { name: '通义千问', logo: '🐎', logoUrl: '/ai-logos/qwen-color.svg' },
+  zhipu: { name: '智谱AI', logo: '💎', logoUrl: '/ai-logos/zhipu-color.svg' },
+}
+
 // State
 const loading = ref(true)
 const creating = ref(false)
@@ -271,12 +281,18 @@ const formatDate = (dateStr) => {
 }
 
 const toggleEngine = (engineId) => {
-  const index = selectedEngines.value.indexOf(engineId)
+  console.log('[诊断] toggleEngine 被调用, engineId:', engineId, '当前选中:', selectedEngines.value)
+  const currentSelected = [...selectedEngines.value]
+  const index = currentSelected.indexOf(engineId)
+  
   if (index === -1) {
-    selectedEngines.value.push(engineId)
-  } else if (selectedEngines.value.length > 1) {
-    selectedEngines.value.splice(index, 1)
+    // 添加到选中列表
+    selectedEngines.value = [...currentSelected, engineId]
+  } else if (currentSelected.length > 1) {
+    // 从选中列表移除
+    selectedEngines.value = currentSelected.filter(id => id !== engineId)
   }
+  console.log('[诊断] 切换后选中:', selectedEngines.value)
 }
 
 const closeModal = () => {
@@ -296,11 +312,21 @@ const createTask = async () => {
   if (!canCreateTask.value) return
 
   creating.value = true
+  
+  // 确保 brandName 是纯字符串，处理可能的空白字符、null、undefined 等
+  const brandName = String(newTask.value.brandName || '').trim()
+  
+  if (!brandName) {
+    alert('请输入有效的品牌名称')
+    creating.value = false
+    return
+  }
+  
   const brandData = {
-    name: newTask.value.brandName,
-    description: newTask.value.description,
-    website: newTask.value.website,
-    type: newTask.value.type,
+    brandName: brandName,
+    description: String(newTask.value.description || '').trim(),
+    website: String(newTask.value.website || '').trim(),
+    type: String(newTask.value.type || 'full'),
   }
 
   try {
@@ -314,18 +340,33 @@ const createTask = async () => {
     }
 
     results.forEach(result => {
+      console.log('[诊断] API 返回的完整结果:', result)
+      
+      // 确保使用正确的 logoUrl
+      const engineId = result.engineId || 'unknown'
+      const defaults = engineDefaults[engineId] || {}
+      const engineLogoUrl = result.engineLogo || defaults.logoUrl || ''
+      
       const newReport = {
-        id: `local_${Date.now()}_${result.engineId}`,
+        id: `local_${Date.now()}_${engineId}`,
         brandName: newTask.value.brandName,
         type: newTask.value.type === 'full' ? '完整诊断' : newTask.value.type === 'quick' ? '快速诊断' : '竞品对比',
-        engineName: result.engineName,
-        engineLogo: result.engineLogo,
-        score: result.overallScore,
+        engineName: result.engineName || defaults.name || '未知引擎',
+        engineLogo: engineLogoUrl,
+        score: result.overallScore || 0,
         status: 'completed',
-        date: result.timestamp,
-        result: result
+        date: result.timestamp || new Date().toISOString(),
+        result: result,
+        // 同时保存到顶层字段，确保 fallback 也能显示
+        overallScore: result.overallScore || 0,
+        dimensions: result.dimensions || [],
+        summary: result.summary || '',
+        keyFindings: result.keyFindings || [],
+        competitorAnalysis: result.competitorAnalysis || null,
+        contentSuggestions: result.contentSuggestions || [],
       }
       reports.value.unshift(newReport)
+      console.log('[诊断] 保存的报告:', newReport)
     })
 
     saveReports()
@@ -363,9 +404,34 @@ const updateStats = () => {
 
 const loadData = async () => {
   loading.value = true
+  console.log('[诊断] loadData 开始执行')
   try {
-    const engines = await getAIEngines()
-    availableEngines.value = engines.filter(e => e.status === 'available')
+    // 直接使用默认引擎列表，优先显示真实 logo
+    availableEngines.value = Object.entries(engineDefaults).map(([id, config]) => ({
+      id,
+      name: config.name,
+      logo: config.logo,
+      logoUrl: config.logoUrl,
+      status: 'available',
+    }))
+    console.log('[诊断] 使用默认引擎列表:', availableEngines.value)
+    
+    // 同时尝试从后端获取，如果后端有额外信息可以合并
+    try {
+      const engines = await getAIEngines()
+      console.log('[诊断] 后端返回的引擎列表:', engines)
+      if (Array.isArray(engines) && engines.length > 0) {
+        // 用后端数据更新默认列表
+        engines.forEach(engine => {
+          const existing = availableEngines.value.find(e => e.id === engine.id)
+          if (existing) {
+            existing.status = engine.status || 'available'
+          }
+        })
+      }
+    } catch (e) {
+      console.log('[诊断] 后端引擎接口不可用，使用默认列表')
+    }
 
     const savedReports = localStorage.getItem('diagnose_reports')
     if (savedReports) {

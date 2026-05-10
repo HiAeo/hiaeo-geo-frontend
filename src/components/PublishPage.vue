@@ -189,19 +189,13 @@
             <input v-model="publishForm.keywords" type="text" placeholder="用逗号分隔" />
           </div>
 
+          <!-- GEO核心信源媒体选择 -->
           <div class="form-section">
-            <label>选择发布平台</label>
-            <div class="platform-selection">
-              <label 
-                v-for="platform in availablePlatforms" 
-                :key="platform.id"
-                :class="['platform-item', { selected: isPlatformSelected(platform.id) }]"
-              >
-                <input type="checkbox" :value="platform.id" v-model="publishForm.targetPlatforms" hidden />
-                <span class="platform-icon">{{ platform.icon }}</span>
-                <span class="platform-name">{{ platform.name }}</span>
-              </label>
-            </div>
+            <label>
+              GEO核心信源媒体 
+              <span class="section-hint">（点击logo访问官网，勾选方块选择发布目标）</span>
+            </label>
+            <MediaSelector v-model="selectedMedia" />
           </div>
 
           <div class="form-actions">
@@ -270,7 +264,8 @@
 
         <div class="platforms-grid">
           <div v-for="platform in platformStatus" :key="platform.platform" class="platform-card">
-            <div class="platform-icon-lg">{{ getPlatformIcon(platform.platform) }}</div>
+            <img v-if="getPlatformIcon(platform.platform).includes('/')" :src="getPlatformIcon(platform.platform)" :alt="platform.name" class="platform-logo-lg" />
+            <div v-else class="platform-icon-lg">{{ getPlatformIcon(platform.platform) }}</div>
             <div class="platform-info">
               <h4>{{ platform.name }}</h4>
               <span :class="['status-indicator', platform.isConnected ? 'connected' : 'disconnected']">
@@ -332,6 +327,8 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useApi } from '../composables/useApi'
 import { useTheme } from '../composables/useTheme'
+import MediaSelector from './MediaSelector.vue'
+import { defaultSelectedMedia } from '../config/mediaConfig'
 
 // 获取主题
 const { theme, initTheme } = useTheme()
@@ -382,18 +379,21 @@ const exportForm = reactive({
 
 const platformStatus = ref([])
 
+// 选中的GEO核心信源媒体
+const selectedMedia = ref([...defaultSelectedMedia])
+
 const availablePlatforms = [
-  { id: 'website', name: '官网', icon: '🌐' },
-  { id: 'wechat', name: '微信公众号', icon: '💬' },
-  { id: 'wechat_moments', name: '朋友圈', icon: '👥' },
-  { id: 'weibo', name: '微博', icon: '📱' },
-  { id: 'douyin', name: '抖音', icon: '🎬' },
-  { id: 'xiaohongshu', name: '小红书', icon: '📕' },
-  { id: 'bilibili', name: 'B站', icon: '📺' },
-  { id: 'baidu', name: '百度', icon: '🔍' },
-  { id: 'taobao', name: '淘宝', icon: '🛒' },
-  { id: 'tmall', name: '天猫', icon: '🏪' },
-  { id: 'jd', name: '京东', icon: '📦' },
+  { id: 'website', name: '官网', icon: '🌐', logoUrl: '/platforms-logos/website-color.svg' },
+  { id: 'wechat', name: '微信公众号', icon: '💬', logoUrl: '/platforms-logos/wechat-color.svg' },
+  { id: 'wechat_moments', name: '朋友圈', icon: '👥', logoUrl: '/platforms-logos/wechat-color.svg' },
+  { id: 'weibo', name: '微博', icon: '📱', logoUrl: '/platforms-logos/weibo-color.svg' },
+  { id: 'douyin', name: '抖音', icon: '🎬', logoUrl: '/platforms-logos/douyin-color.svg' },
+  { id: 'xiaohongshu', name: '小红书', icon: '📕', logoUrl: '/platforms-logos/xiaohongshu-color.svg' },
+  { id: 'bilibili', name: 'B站', icon: '📺', logoUrl: '/platforms-logos/bilibili-color.svg' },
+  { id: 'baidu', name: '百度', icon: '🔍', logoUrl: '/platforms-logos/baidu-color.svg' },
+  { id: 'taobao', name: '淘宝', icon: '🛒', logoUrl: '/platforms-logos/taobao-color.svg' },
+  { id: 'tmall', name: '天猫', icon: '🏪', logoUrl: '/platforms-logos/tmall-color.svg' },
+  { id: 'jd', name: '京东', icon: '📦', logoUrl: '/platforms-logos/jd-color.svg' },
 ]
 
 // 使用 useApi (API函数加 Api 后缀避免命名冲突)
@@ -413,7 +413,7 @@ const showToast = (message, type = 'success') => {
 }
 
 const canPublish = computed(() => {
-  return publishForm.title && publishForm.body && publishForm.targetPlatforms.length > 0
+  return publishForm.title && publishForm.body && selectedMedia.value.length > 0
 })
 
 const getSelectedPlatforms = computed(() => {
@@ -436,7 +436,7 @@ const getPlatformName = (platformId) => {
 
 const getPlatformIcon = (platformId) => {
   const platform = availablePlatforms.find(p => p.id === platformId)
-  return platform ? platform.icon : '📱'
+  return platform ? platform.logoUrl || platform.icon : '📱'
 }
 
 const getStatusName = (status) => {
@@ -488,12 +488,8 @@ const executePublish = async () => {
     const payload = {
       ...publishForm,
       keywords: publishForm.keywords ? publishForm.keywords.split(',').map(k => k.trim()) : [],
-      targetPlatforms: getSelectedPlatforms.value.map(p => ({
-        platform: p.id,
-        enabled: true,
-        isDraft: p.isDraft,
-        scheduledTime: p.hasSchedule ? p.scheduledTime : undefined,
-      })),
+      // GEO核心信源媒体作为发布目标
+      targetMedia: selectedMedia.value,
     }
 
     const data = await publishContentApi(payload)
@@ -507,6 +503,7 @@ const executePublish = async () => {
     publishForm.excerpt = ''
     publishForm.keywords = ''
     publishForm.targetPlatforms = []
+    selectedMedia.value = [...defaultSelectedMedia]
   } catch (error) {
     showToast('发布失败', 'error')
   } finally {
@@ -617,7 +614,82 @@ const fetchPlatformStatus = async () => {
 onMounted(() => {
   fetchPublishList()
   fetchPlatformStatus()
+  
+  // 从策略页跳转时，填充发布表单
+  initFromStrategy()
 })
+
+// 从策略页接收数据
+const initFromStrategy = () => {
+  const strategyData = sessionStorage.getItem('publish_from_strategy')
+  if (strategyData) {
+    try {
+      const data = JSON.parse(strategyData)
+      
+      // 自动填充表单
+      publishForm.title = data.content?.summary?.substring(0, 50) || `${data.brandName} - GEO优化内容`
+      publishForm.body = generateBodyFromStrategy(data.content)
+      publishForm.keywords = data.content?.targetKeywords?.join(', ') || ''
+      publishForm.targetPlatforms = data.content?.platformPlan?.map(p => p.platform) || ['website', 'wechat']
+      
+      // 如果策略包含选中的媒体，则使用它
+      if (data.selectedMedia && data.selectedMedia.length > 0) {
+        selectedMedia.value = data.selectedMedia
+      }
+      
+      // 切换到发布标签
+      activeTab.value = 'publish'
+      
+      // 显示提示
+      showToast('已基于策略填充发布内容', 'info')
+      
+      // 清除sessionStorage
+      sessionStorage.removeItem('publish_from_strategy')
+    } catch (e) {
+      console.error('解析策略数据失败:', e)
+    }
+  }
+}
+
+// 从策略内容生成发布正文
+const generateBodyFromStrategy = (content) => {
+  if (!content) return ''
+  
+  let body = ''
+  
+  // 添加执行摘要
+  if (content.summary) {
+    body += `【执行摘要】\n${content.summary}\n\n`
+  }
+  
+  // 添加核心目标
+  if (content.coreObjectives && content.coreObjectives.length > 0) {
+    body += `【核心目标】\n`
+    content.coreObjectives.forEach((obj, i) => {
+      body += `${i + 1}. ${obj}\n`
+    })
+    body += '\n'
+  }
+  
+  // 添加内容主题
+  if (content.contentThemes && content.contentThemes.length > 0) {
+    body += `【内容主题】\n`
+    content.contentThemes.forEach(theme => {
+      body += `- ${theme.theme}：${theme.description}\n`
+    })
+    body += '\n'
+  }
+  
+  // 添加执行建议
+  if (content.recommendations && content.recommendations.length > 0) {
+    body += `【执行建议】\n`
+    content.recommendations.forEach((rec, i) => {
+      body += `${i + 1}. ${rec}\n`
+    })
+  }
+  
+  return body
+}
 </script>
 
 <style scoped>
@@ -780,6 +852,8 @@ onMounted(() => {
 
 .form-section { margin-top: 8px; }
 .form-section > label { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); display: block; margin-bottom: 12px; }
+.form-section .section-hint { font-weight: 400; font-size: 0.75rem; color: var(--text-tertiary); margin-left: 8px; }
+.media-section { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color); }
 
 .platform-selection { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .platform-item {
@@ -790,6 +864,7 @@ onMounted(() => {
 .platform-item:hover { border-color: var(--color-primary); }
 .platform-item.selected { border-color: var(--color-primary); background: rgba(22, 93, 255, 0.1); }
 .platform-icon { font-size: 1.5rem; }
+.platform-logo { width: 32px; height: 32px; object-fit: contain; }
 .platform-name { font-size: 0.75rem; color: var(--text-secondary); }
 .platform-item.selected .platform-name { color: var(--color-primary); }
 .check-mark {
@@ -814,6 +889,7 @@ onMounted(() => {
   padding: 20px; background: var(--bg-primary); border-radius: 12px;
 }
 .platform-icon-lg { font-size: 2rem; }
+.platform-logo-lg { width: 40px; height: 40px; object-fit: contain; }
 .platform-info { flex: 1; }
 .platform-info h4 { font-size: 0.9375rem; margin: 0 0 4px; }
 .status-indicator { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; }

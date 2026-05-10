@@ -146,6 +146,15 @@
               </button>
             </div>
           </div>
+
+          <!-- GEO核心信源媒体选择 -->
+          <div class="form-group">
+            <label>
+              GEO核心信源媒体
+              <span class="form-hint">（点击logo访问官网，勾选方块选择目标媒体）</span>
+            </label>
+            <MediaSelector v-model="selectedMedia" />
+          </div>
         </div>
         <div class="modal-footer">
           <button class="secondary-btn" @click="showGenerateDialog = false">取消</button>
@@ -180,6 +189,8 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
+import MediaSelector from './MediaSelector.vue'
+import { defaultSelectedMedia } from '../config/mediaConfig'
 
 // 响应式数据
 const loading = ref(false)
@@ -193,6 +204,9 @@ const total = ref(0)
 const showGenerateDialog = ref(false)
 const showDetailDialog = ref(false)
 const currentStrategy = ref<any>(null)
+
+// 选中的媒体
+const selectedMedia = ref([...defaultSelectedMedia])
 
 // 生成表单
 const generateForm = reactive({
@@ -248,10 +262,11 @@ const handleGenerate = async () => {
     const newStrategy = {
       id: Date.now(),
       title: `${generateForm.product} - ${strategyTypes.find(t => t.value === generateForm.type)?.label || '策略'}`,
-      description: '新生成的策略内容，请查看详情',
+      description: `针对 ${generateForm.product} 的 ${strategyTypes.find(t => t.value === generateForm.type)?.label || '策略'}，已选择 ${selectedMedia.value.length} 个目标媒体平台`,
       type: generateForm.type,
       createdAt: new Date().toISOString().split('T')[0],
-      creatorName: 'AI助手'
+      creatorName: 'AI助手',
+      selectedMedia: [...selectedMedia.value]
     }
     strategies.value.unshift(newStrategy)
     total.value++
@@ -259,6 +274,8 @@ const handleGenerate = async () => {
     showGenerateDialog.value = false
     generateForm.product = ''
     generateForm.keywordsStr = ''
+    // 重置为默认媒体
+    selectedMedia.value = [...defaultSelectedMedia]
   } catch (error: any) {
     console.error('策略生成失败', error)
   } finally {
@@ -534,6 +551,7 @@ onMounted(() => {
 .form-group { display: flex; flex-direction: column; gap: 8px; }
 .form-group label { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); }
 .form-group .required { color: var(--color-danger); }
+.form-group .form-hint { font-weight: 400; font-size: 0.75rem; color: var(--text-tertiary); margin-left: 8px; }
 .form-group input, .form-group textarea, .form-group select {
   padding: 10px 14px; background: var(--bg-primary); border: 1px solid var(--border-color);
   border-radius: 10px; font-size: 0.875rem; color: var(--text-primary); outline: none;

@@ -1,4 +1,6 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1'
+// 使用相对路径，通过 Vite 代理转发到后端 (http://localhost:3000/api)
+// 注意：后端全局前缀已设置为 'api'，所以这里不需要再加 '/api'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 const request = async (url, options = {}) => {
   const token = localStorage.getItem('auth_token')

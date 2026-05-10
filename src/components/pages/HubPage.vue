@@ -497,7 +497,89 @@ const hideTooltip = () => {
 
 onMounted(() => {
   refreshData()
+  loadReportData() // 加载诊断报告数据
 })
+
+// 从诊断报告加载数据到Hub驾驶舱
+const loadReportData = () => {
+  try {
+    const savedReports = localStorage.getItem('diagnose_reports')
+    if (savedReports) {
+      const reportsList = JSON.parse(savedReports)
+      if (reportsList.length > 0) {
+        const latestReport = reportsList[0]
+        const aiResult = latestReport.result
+        
+        if (aiResult) {
+          // 更新老板视图的GEO健康分
+          bossStats.value.geoScore = aiResult.overallScore || 72
+          
+          // 从竞品分析中获取提及率
+          if (aiResult.competitorAnalysis) {
+            bossStats.value.mentionRate = Math.round(aiResult.competitorAnalysis.overallMentionRate || 34)
+          }
+          
+          // 从诊断建议中生成运营建议
+          if (aiResult.dimensions) {
+            const suggestionsList = []
+            aiResult.dimensions.forEach(dim => {
+              if (dim.suggestions) {
+                dim.suggestions.forEach(sug => {
+                  if (sug.priority === '高') {
+                    suggestionsList.push({
+                      text: sug.action,
+                      tag: '高优先级',
+                      priority: 'high'
+                    })
+                  }
+                })
+              }
+            })
+            
+            if (suggestionsList.length > 0) {
+              suggestions.value = suggestionsList.slice(0, 5)
+            }
+          }
+          
+          // 更新可见度数据趋势
+          if (reportsList.length >= 2) {
+            const scores = reportsList.map(r => r.result?.overallScore || 0).reverse()
+            visibilityData.value = scores.map((score, i) => ({
+              date: `05-${10 - (scores.length - 1 - i) * 5}`,
+              value: score
+            }))
+          }
+          
+          // 更新品牌排名数据
+          if (aiResult.competitorAnalysis?.mainCompetitors) {
+            const competitors = aiResult.competitorAnalysis.mainCompetitors.map((c, i) => ({
+              id: i + 2,
+              name: c.name,
+              score: Math.round(70 + Math.random() * 20),
+              mentionRate: c.mentionRate || Math.round(Math.random() * 30),
+              trend: Math.round(Math.random() * 10 - 3),
+              isCurrentBrand: false
+            }))
+            
+            brandRanking.value = [
+              { 
+                id: 1, 
+                name: latestReport.brandName || '我的品牌', 
+                score: aiResult.overallScore || 72, 
+                mentionRate: bossStats.value.mentionRate, 
+                trend: 5, 
+                isCurrentBrand: true 
+              },
+              ...competitors.slice(0, 3)
+            ].sort((a, b) => b.score - a.score)
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.error('加载诊断报告数据到Hub失败:', e)
+  }
+}
 </script>
 
 <style scoped>
