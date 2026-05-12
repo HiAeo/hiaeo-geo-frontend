@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="page-header">
       <div class="header-content">
-        <h1 class="page-title">诊断报告</h1>
+        <h1 class="page-title">MiraSeek模镜·AI诊断报告</h1>
         <div class="header-actions">
           <button class="primary-btn" @click="showCreateModal = true">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

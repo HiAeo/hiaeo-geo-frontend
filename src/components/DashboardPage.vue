@@ -4,7 +4,7 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">数据看板</h1>
+          <h1 class="page-title">AI品牌可见性数据看板</h1>
           <div class="time-selector">
             <button :class="{ active: period === '7d' }" @click="period = '7d'">近7天</button>
             <button :class="{ active: period === '30d' }" @click="period = '30d'">近30天</button>

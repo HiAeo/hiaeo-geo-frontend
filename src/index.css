@@ -36,6 +36,13 @@
   --color-danger: #EF4444;
   --color-info: #3B82F6;
   
+  /* Semantic Background Colors (with transparency) */
+  --bg-accent: rgba(22, 93, 255, 0.12);
+  --bg-success: rgba(16, 185, 129, 0.12);
+  --bg-warning: rgba(245, 158, 11, 0.12);
+  --bg-danger: rgba(239, 68, 68, 0.12);
+  --bg-purple: rgba(139, 92, 246, 0.12);
+  
   /* Border Radius */
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -74,6 +81,13 @@
   
   --border-color: rgba(0, 0, 0, 0.1);
   --border-color-hover: rgba(0, 0, 0, 0.2);
+  
+  /* Semantic Background Colors - Light Theme */
+  --bg-accent: rgba(22, 93, 255, 0.1);
+  --bg-success: rgba(16, 185, 129, 0.1);
+  --bg-warning: rgba(245, 158, 11, 0.1);
+  --bg-danger: rgba(239, 68, 68, 0.1);
+  --bg-purple: rgba(139, 92, 246, 0.1);
   
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);

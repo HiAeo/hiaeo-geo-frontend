@@ -4,56 +4,40 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">我的积分</h1>
+          <h1 class="page-title">ModelBuddy·会员积分管理</h1>
           <span class="page-subtitle">查看积分余额、获取方式和交易明细</span>
         </div>
       </div>
     </div>
 
-    <!-- Credits Overview -->
+    <!-- Credits Overview - 紧凑设计 -->
     <div class="credits-overview">
-      <div class="credits-card">
-        <div class="credits-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 6v6l4 2"/>
-          </svg>
+      <div class="credits-row">
+        <div class="balance-mini">
+          <span class="balance-icon">⚡</span>
+          <span class="balance-num">{{ creditsInfo?.balance || 0 }}</span>
+          <span class="balance-label">积分余额</span>
         </div>
-        <div class="credits-info">
-          <span class="credits-label">当前积分</span>
-          <span class="credits-value">{{ creditsInfo?.balance || 0 }}</span>
+        <div class="stats-mini">
+          <div class="stat-item">
+            <span class="stat-value green">+{{ creditsInfo?.totalEarned || 0 }}</span>
+            <span class="stat-label">累计获得</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-value">-{{ creditsInfo?.totalConsumed || 0 }}</span>
+            <span class="stat-label">累计消耗</span>
+          </div>
+        </div>
+        <div class="quick-actions">
+          <button class="action-btn" @click="showEarnModal = true">
+            <span>获取积分</span>
+          </button>
+          <button class="action-btn" @click="scrollToHistory">
+            <span>积分明细</span>
+          </button>
         </div>
       </div>
-
-      <div class="credits-stats">
-        <div class="stat-item">
-          <span class="stat-value">+{{ creditsInfo?.totalEarned || 0 }}</span>
-          <span class="stat-label">累计获得</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-value">-{{ creditsInfo?.totalConsumed || 0 }}</span>
-          <span class="stat-label">累计消耗</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-      <button class="action-btn" @click="showEarnModal = true">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"/>
-          <line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-        <span>获取积分</span>
-      </button>
-      <button class="action-btn" @click="scrollToHistory">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
-        <span>积分明细</span>
-      </button>
     </div>
 
     <!-- How to Earn -->
@@ -402,106 +386,94 @@ onMounted(() => {
   margin-top: 2px;
 }
 
-/* Credits Overview */
+/* Credits Overview - 紧凑横排设计 */
 .credits-overview {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 16px 24px;
 }
 
-.credits-card {
+.credits-row {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 24px;
-  background: linear-gradient(135deg, #165DFF, #8B5CF6);
-  border-radius: 16px;
-  margin-bottom: 16px;
-}
-
-.credits-icon {
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  color: white;
-}
-
-.credits-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.credits-label {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.credits-value {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: white;
-}
-
-.credits-stats {
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  background: var(--bg-card);
+  gap: 24px;
+  padding: 16px 20px;
+  background: var(--bg-elevated);
   border: 1px solid var(--border-color);
   border-radius: 12px;
+  flex-wrap: wrap;
 }
 
-.stat-item {
-  flex: 1;
+.balance-mini {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
-.stat-value {
-  font-size: 1.25rem;
+.balance-icon {
+  font-size: 1.5rem;
+}
+
+.balance-num {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.balance-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.stats-mini {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-left: 20px;
+  border-left: 1px solid var(--border-color);
+}
+
+.stats-mini .stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stats-mini .stat-value {
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.stat-label {
+.stats-mini .stat-value.green {
+  color: #10B981;
+}
+
+.stats-mini .stat-label {
   font-size: 0.75rem;
   color: var(--text-tertiary);
 }
 
-.stat-divider {
+.stats-mini .stat-divider {
   width: 1px;
-  height: 40px;
+  height: 20px;
   background: var(--border-color);
 }
 
-/* Quick Actions */
 .quick-actions {
+  margin-left: auto;
   display: flex;
-  gap: 12px;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 24px 24px;
+  gap: 8px;
 }
 
 .action-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 20px;
-  background: var(--bg-elevated);
+  padding: 8px 16px;
+  background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: 8px;
   color: var(--text-primary);
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
 }

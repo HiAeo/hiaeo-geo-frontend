@@ -4,7 +4,7 @@
     <div class="page-header">
       <div class="header-content">
         <div>
-          <h1 class="page-title">魔鲸Hub · AI协同驾驶舱</h1>
+          <h1 class="page-title">魔鲸Hub·AI协同驾驶仓</h1>
           <p class="page-subtitle">老板看结果，运营管执行，技术看指引 — 三方同舱不打架</p>
         </div>
         <div class="header-actions">

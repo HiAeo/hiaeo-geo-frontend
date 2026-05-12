@@ -4,51 +4,23 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <div class="header-title-row">
-            <h1 class="page-title">品牌数据看板</h1>
-            <div class="time-selector">
-              <button :class="{ active: period === '7d' }" @click="period = '7d'">7天</button>
-              <button :class="{ active: period === '30d' }" @click="period = '30d'">30天</button>
-              <button :class="{ active: period === '90d' }" @click="period = '90d'">90天</button>
-            </div>
-          </div>
+          <h1 class="page-title">AI品牌可见性数据看板</h1>
           <span class="page-subtitle">实时追踪品牌可见度、SEO效果与搜索引流数据</span>
-          <div class="brand-tag">
-            <span class="brand-name">{{ brandName }}</span>
-            <span class="report-count">{{ reports.length }} 份诊断报告</span>
-          </div>
         </div>
         <div class="header-actions">
-          <button class="export-btn" @click="exportReport">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
+          <button class="action-btn" @click="refreshData">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
             </svg>
-            导出报告
+            刷新数据
           </button>
-          <button class="secondary-btn" @click="$router.push('/app/diagnose')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button class="action-btn primary" @click="$router.push('/app/diagnose')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <polyline points="14 2 14 8 20 8"/>
             </svg>
-            历史报告
-          </button>
-          <button class="primary-btn" @click="$router.push('/app/diagnose?new=true')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            新建诊断
-          </button>
-          <button class="team-btn" @click="$router.push('/app/teams')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            团队协作
+            查看诊断报告
           </button>
         </div>
       </div>
@@ -189,9 +161,16 @@
             <h3>SEO 效果趋势</h3>
             <span class="chart-subtitle">关键词排名与流量变化追踪</span>
           </div>
-          <div class="chart-legend">
-            <span class="legend-item"><span class="dot purple"></span>排名指数</span>
-            <span class="legend-item"><span class="dot green"></span>流量指数</span>
+          <div class="chart-controls">
+            <div class="time-selector compact">
+              <button :class="{ active: period === '7d' }" @click="period = '7d'">7天</button>
+              <button :class="{ active: period === '30d' }" @click="period = '30d'">30天</button>
+              <button :class="{ active: period === '90d' }" @click="period = '90d'">90天</button>
+            </div>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="dot purple"></span>排名指数</span>
+              <span class="legend-item"><span class="dot green"></span>流量指数</span>
+            </div>
           </div>
         </div>
         <div class="chart-container">
@@ -213,7 +192,7 @@
             <path :d="trafficLinePath" class="chart-line green"/>
           </svg>
           <div class="chart-labels">
-            <span v-for="(d, i) in seoTrendData" :key="'l'+i">{{ d.date }}</span>
+            <span v-for="(d, i) in filteredSeoTrendData" :key="'l'+i">{{ d.date }}</span>
           </div>
         </div>
       </div>
@@ -477,16 +456,47 @@ const topKeywords = ref([
   { word: '网站SEO诊断', position: 22, trend: 12 }
 ])
 
-const seoTrendData = ref([
-  { date: '05-02', ranking: 42, traffic: 35 },
-  { date: '05-04', ranking: 48, traffic: 42 },
-  { date: '05-06', ranking: 45, traffic: 38 },
+const seoTrendData7d = [
+  { date: '05-06', ranking: 52, traffic: 48 },
   { date: '05-08', ranking: 55, traffic: 52 },
   { date: '05-10', ranking: 52, traffic: 48 },
   { date: '05-12', ranking: 62, traffic: 58 },
   { date: '05-14', ranking: 58, traffic: 55 },
+  { date: '05-16', ranking: 68, traffic: 65 },
+  { date: '05-18', ranking: 72, traffic: 68 }
+]
+
+const seoTrendData30d = [
+  { date: '04-18', ranking: 32, traffic: 28 },
+  { date: '04-22', ranking: 38, traffic: 35 },
+  { date: '04-26', ranking: 42, traffic: 38 },
+  { date: '04-30', ranking: 48, traffic: 42 },
+  { date: '05-04', ranking: 48, traffic: 42 },
+  { date: '05-08', ranking: 55, traffic: 52 },
+  { date: '05-12', ranking: 62, traffic: 58 },
   { date: '05-16', ranking: 68, traffic: 65 }
-])
+]
+
+const seoTrendData90d = [
+  { date: '02-18', ranking: 18, traffic: 15 },
+  { date: '03-01', ranking: 22, traffic: 20 },
+  { date: '03-12', ranking: 28, traffic: 25 },
+  { date: '03-22', ranking: 32, traffic: 30 },
+  { date: '04-01', ranking: 35, traffic: 32 },
+  { date: '04-12', ranking: 38, traffic: 35 },
+  { date: '04-22', ranking: 42, traffic: 40 },
+  { date: '05-02', ranking: 52, traffic: 48 },
+  { date: '05-12', ranking: 62, traffic: 58 },
+  { date: '05-16', ranking: 68, traffic: 65 }
+]
+
+const filteredSeoTrendData = computed(() => {
+  switch (period.value) {
+    case '7d': return seoTrendData7d
+    case '90d': return seoTrendData90d
+    default: return seoTrendData30d
+  }
+})
 
 // Radar chart
 const radarLabels = ['品牌认知', '内容质量', '用户互动', '视觉一致', '技术SEO', '社交媒体']
@@ -523,21 +533,21 @@ const radarPoints = computed(() => {
 })
 
 // SEO Trend chart
-const maxRanking = computed(() => Math.max(...seoTrendData.value.map(d => d.ranking), 1))
-const maxTraffic = computed(() => Math.max(...seoTrendData.value.map(d => d.traffic), 1))
+const maxRanking = computed(() => Math.max(...filteredSeoTrendData.value.map(d => d.ranking), 1))
+const maxTraffic = computed(() => Math.max(...filteredSeoTrendData.value.map(d => d.traffic), 1))
 
 const rankingPoints = computed(() => {
   const w = 440, h = 130
-  return seoTrendData.value.map((d, i) => ({
-    x: 40 + (w / (seoTrendData.value.length - 1)) * i,
+  return filteredSeoTrendData.value.map((d, i) => ({
+    x: 40 + (w / (filteredSeoTrendData.value.length - 1)) * i,
     y: 20 + h - (d.ranking / maxRanking.value) * h
   }))
 })
 
 const trafficPoints = computed(() => {
   const w = 440, h = 130
-  return seoTrendData.value.map((d, i) => ({
-    x: 40 + (w / (seoTrendData.value.length - 1)) * i,
+  return filteredSeoTrendData.value.map((d, i) => ({
+    x: 40 + (w / (filteredSeoTrendData.value.length - 1)) * i,
     y: 20 + h - (d.traffic / maxTraffic.value) * h
   }))
 })
@@ -656,6 +666,21 @@ const exportReport = () => {
   URL.revokeObjectURL(url)
 }
 
+const refreshData = () => {
+  loadReportData()
+  // 重新计算统计数据
+  brandMetrics.value = {
+    organicTraffic: Math.floor(Math.random() * 20000) + 10000,
+    organicGrowth: Math.floor(Math.random() * 30) + 10,
+    keywordsTracked: Math.floor(Math.random() * 100) + 100,
+    keywordsGrowth: Math.floor(Math.random() * 20) + 5,
+    mentions: Math.floor(Math.random() * 5000) + 2000,
+    mentionsGrowth: Math.floor(Math.random() * 30) - 10,
+    visibility: Math.floor(Math.random() * 30) + 50,
+    visibilityGrowth: Math.floor(Math.random() * 15) + 3
+  }
+}
+
 onMounted(async () => {
   try {
     const subData = await getCurrentSubscription()
@@ -689,187 +714,99 @@ onMounted(async () => {
   justify-content: space-between;
   max-width: 1600px;
   margin: 0 auto;
-  gap: 20px;
+  gap: 24px;
 }
 
 .header-left {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-
-.header-title-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  gap: 4px;
 }
 
 .page-title {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.time-selector {
-  display: flex;
-  gap: 4px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  padding: 4px;
-  border-radius: 10px;
-}
-
-.time-selector button {
-  padding: 6px 14px;
-  font-size: 0.8125rem;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.time-selector button.active {
-  background: var(--color-primary);
-  color: white;
-}
-
 .page-subtitle {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.brand-tag {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.brand-name {
   font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-.report-count {
-  font-size: 0.75rem;
-  color: var(--color-primary);
-  background: rgba(99, 102, 241, 0.12);
-  padding: 2px 8px;
-  border-radius: 4px;
+  color: var(--text-tertiary);
 }
 
 .header-actions {
   display: flex;
   gap: 8px;
+  align-items: center;
 }
 
-.export-btn {
+.action-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 16px;
+  padding: 8px 14px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  border-radius: 10px;
-  font-size: 0.875rem;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  font-size: 0.8125rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.export-btn:hover {
+.action-btn:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
 }
 
-.primary-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
+.action-btn.primary {
   background: var(--color-primary);
+  border-color: var(--color-primary);
   color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 0.875rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
 }
 
-.primary-btn:hover {
+.action-btn.primary:hover {
   opacity: 0.9;
-  transform: translateY(-1px);
+  border-color: var(--color-primary);
+  color: white;
 }
 
-.primary-btn.small {
-  padding: 8px 12px;
-  font-size: 0.8125rem;
+.action-btn.small {
+  padding: 6px 10px;
+  font-size: 0.75rem;
 }
 
 .deploy-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 16px;
+  padding: 8px 14px;
   background: linear-gradient(135deg, #4f46e5, #6366f1);
   color: white;
   border: none;
-  border-radius: 10px;
-  font-size: 0.875rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
 }
 
 .deploy-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
 }
 
+/* Legacy button styles for compatibility */
+.export-btn,
+.secondary-btn,
 .team-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  composes: action-btn;
 }
 
-.team-btn:hover {
-  border-color: #10b981;
-  color: #10b981;
-}
-
-.secondary-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-.secondary-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+.primary-btn {
+  composes: action-btn primary;
 }
 
 /* Health Section */
@@ -1152,6 +1089,37 @@ onMounted(async () => {
 .chart-legend {
   display: flex;
   gap: 16px;
+}
+
+.chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.time-selector.compact {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  padding: 2px;
+  border-radius: 6px;
+}
+
+.time-selector.compact button {
+  padding: 4px 8px;
+  font-size: 0.6875rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-selector.compact button.active {
+  background: var(--color-primary);
+  color: white;
 }
 
 .legend-item {

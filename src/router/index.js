@@ -25,7 +25,7 @@ const routes = [
       },
       {
         path: '',
-        redirect: '/app/diagnose'
+        redirect: '/app/knowledge'
       },
       {
         path: 'hub',

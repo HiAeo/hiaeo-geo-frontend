@@ -184,6 +184,43 @@
           </div>
         </div>
 
+        <!-- 智能优化建议 -->
+        <div class="section-card dark-adapted">
+          <div class="section-card-header">
+            <h2 class="section-title">
+              <span class="title-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </span>
+              智能优化建议
+            </h2>
+            <button 
+              @click="generateOptimizationFromReport"
+              class="section-action-btn"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              从诊断生成建议
+            </button>
+          </div>
+          <OptimizationPanel :brand-id="report.brandName" />
+        </div>
+
+        <!-- 竞品追踪 -->
+        <div class="section-card dark-adapted">
+          <h2 class="section-title">
+            <span class="title-icon danger">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </span>
+            竞品追踪与压制
+          </h2>
+          <CompetitorTrackingPanel :brand-id="report.brandName" :brand-name="report.brandName" />
+        </div>
+
         <!-- Content Suggestions -->
         <div v-if="aiResult.contentSuggestions && aiResult.contentSuggestions.length > 0" class="content-section">
           <h2 class="section-title">内容建议</h2>
@@ -243,6 +280,8 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import jsPDF from 'jspdf'
+import OptimizationPanel from '@/components/optimization/OptimizationPanel.vue'
+import CompetitorTrackingPanel from '@/components/optimization/CompetitorTrackingPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -347,6 +386,22 @@ const getFindingIcon = (finding) => {
   if (finding.includes('领先') || finding.includes('良好') || finding.includes('正常')) return '✓'
   if (finding.includes('落后') || finding.includes('偏低')) return '↑'
   return '●'
+}
+
+// 从诊断报告生成优化建议
+const generateOptimizationFromReport = async () => {
+  if (!report.value.id) return
+  
+  try {
+    const { generateSuggestionsFromReport } = await import('@/api/optimization')
+    const res = await generateSuggestionsFromReport(report.value.id, report.value.brandName)
+    if (res.data?.success) {
+      console.log('优化建议生成成功:', res.data.data)
+      // 可以显示提示或刷新优化面板
+    }
+  } catch (error) {
+    console.error('生成优化建议失败:', error)
+  }
 }
 
 const formatSummary = (summary) => {
@@ -1269,7 +1324,59 @@ onMounted(() => {
 .dim-benchmark { position: absolute; top: -2px; width: 2px; height: 10px; background: var(--text-secondary); border-radius: 1px; }
 .dim-desc { font-size: 0.6875rem; color: var(--text-secondary); margin-top: 2px; }
 
-.summary-section, .insights-section, .competitor-section, .issues-section, .findings-section, .recommendations-section, .content-section { background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; }
+.summary-section, .insights-section, .competitor-section, .issues-section, .findings-section, .recommendations-section, .content-section, .section-card { background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; }
+
+/* 适配深色主题的 section-card */
+.section-card.dark-adapted {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+}
+
+.section-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-card-header .section-title {
+  margin-bottom: 0;
+}
+
+.title-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--color-primary);
+}
+
+.title-icon.danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-danger);
+}
+
+.section-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.section-action-btn:hover {
+  opacity: 0.9;
+}
 .section-title { font-size: 0.9375rem; font-weight: 700; margin-bottom: 16px; color: var(--text-primary); }
 .summary-content { font-size: 0.9375rem; line-height: 1.8; color: var(--text-secondary); }
 .summary-content strong { color: var(--text-primary); font-weight: 600; }

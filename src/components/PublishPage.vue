@@ -4,7 +4,7 @@
     <header class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">模法 MiraMag · GEO Agent自动执行优化</h1>
+          <h1 class="page-title">MiraMag模法·AI生成式引擎优化</h1>
           <span class="page-subtitle">复制粘贴即落地，执行记录全程可见，不碰服务器，不自动机发，安全合规</span>
         </div>
         <div class="header-actions">
@@ -617,6 +617,9 @@ onMounted(() => {
   
   // 从策略页跳转时，填充发布表单
   initFromStrategy()
+  
+  // 从模法页跳转时，填充发布表单
+  initFromMofa()
 })
 
 // 从策略页接收数据
@@ -647,6 +650,41 @@ const initFromStrategy = () => {
       sessionStorage.removeItem('publish_from_strategy')
     } catch (e) {
       console.error('解析策略数据失败:', e)
+    }
+  }
+}
+
+// 从模法页接收数据
+const initFromMofa = () => {
+  const mofaData = sessionStorage.getItem('publish_from_mofa')
+  if (mofaData) {
+    try {
+      const data = JSON.parse(mofaData)
+      
+      // 自动填充表单
+      publishForm.title = data.title || `${data.brandName} - GEO内容`
+      publishForm.body = data.content || ''
+      publishForm.keywords = data.keywords?.join(', ') || ''
+      
+      // 根据内容类型设置目标平台
+      if (data.type === 'faq') {
+        publishForm.targetPlatforms = ['website']
+      } else if (data.type === 'jsonld') {
+        publishForm.targetPlatforms = ['website']
+      } else {
+        publishForm.targetPlatforms = ['website', 'wechat', 'zhihu']
+      }
+      
+      // 切换到发布标签
+      activeTab.value = 'publish'
+      
+      // 显示提示
+      showToast('已基于模法生成内容填充发布信息', 'info')
+      
+      // 清除sessionStorage
+      sessionStorage.removeItem('publish_from_mofa')
+    } catch (e) {
+      console.error('解析模法数据失败:', e)
     }
   }
 }

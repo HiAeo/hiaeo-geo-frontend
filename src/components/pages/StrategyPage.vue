@@ -4,7 +4,7 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">MiraMod模豆 · GEO智能策略生成</h1>
+          <h1 class="page-title">MiraMod模豆·GEO策略生成</h1>
           <span class="page-subtitle">内置6类语义实体库，AI替你写好文章、代码、关键词库，各引擎风格一键适配，拿到就能发</span>
         </div>
         <div class="header-actions">

@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="page-header">
       <div class="header-content">
-        <h1 class="page-title">系统设置</h1>
+        <h1 class="page-title">ModelBuddy·会员账户管理</h1>
       </div>
     </div>
 

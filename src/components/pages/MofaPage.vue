@@ -109,6 +109,9 @@
               <button class="action-btn" @click="downloadContent(seoResult.content, 'seo-article')">
                 📥 下载文档
               </button>
+              <button class="action-btn publish-btn" @click="publishContent(seoResult.content, 'seo')">
+                🚀 一键发布
+              </button>
             </div>
           </div>
           
@@ -190,6 +193,9 @@
               </button>
               <button class="action-btn" @click="downloadContent(faqResult.jsonLd, 'faq-jsonld')">
                 📥 下载JSON-LD
+              </button>
+              <button class="action-btn publish-btn" @click="publishContent(faqResult.faqs.map(f => f.question + '\n' + f.answer).join('\n\n'), 'faq')">
+                🚀 一键发布
               </button>
             </div>
           </div>
@@ -294,6 +300,9 @@
               <button class="action-btn" @click="copyToClipboard(jsonLdResult.script)">
                 📋 复制代码
               </button>
+              <button class="action-btn publish-btn" @click="publishContent(jsonLdResult.script, 'jsonld')">
+                🚀 一键发布
+              </button>
             </div>
           </div>
 
@@ -380,6 +389,9 @@
               <button class="action-btn" @click="copyToClipboard(formatProductDescription(productResult))">
                 📋 复制全部
               </button>
+              <button class="action-btn publish-btn" @click="publishContent(formatProductDescription(productResult), 'product')">
+                🚀 一键发布
+              </button>
             </div>
           </div>
 
@@ -439,6 +451,9 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const tabs = [
   { id: 'seo', label: 'SEO文章', icon: '📝' },
@@ -602,6 +617,27 @@ const downloadContent = (content, filename) => {
   a.click()
   URL.revokeObjectURL(url)
   showToast('下载成功')
+}
+
+// 一键发布：将内容传递到发布页面
+const publishContent = (content, type) => {
+  // 提取标题（第一个 # 开头的行）
+  const titleMatch = content.match(/^#\s+(.+)$/m)
+  const title = titleMatch ? titleMatch[1] : seoForm.brandName + ' - SEO文章'
+  
+  // 存储到sessionStorage供发布页使用
+  sessionStorage.setItem('publish_from_mofa', JSON.stringify({
+    type,
+    title,
+    content,
+    brandName: seoForm.brandName || faqForm.name,
+    keywords: seoForm.keyword ? [seoForm.keyword, ...(seoForm.longTailKeywords || '').split(',').filter(k => k.trim())] : [],
+    generatedAt: new Date().toISOString(),
+  }))
+  
+  // 跳转到发布页面
+  router.push('/app/publish')
+  showToast('已跳转到发布页面，请选择发布平台', 'info')
 }
 
 const formatMarkdown = (content) => {
@@ -897,6 +933,19 @@ ${result.specifications.map(s => `| ${s.name} | ${s.value} |`).join('\n')}
 .action-btn:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
+}
+
+.action-btn.publish-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+  color: white;
+  font-weight: 600;
+}
+
+.action-btn.publish-btn:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .result-meta {

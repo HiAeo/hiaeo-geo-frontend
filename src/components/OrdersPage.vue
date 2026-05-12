@@ -4,36 +4,35 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">我的订单</h1>
+          <h1 class="page-title">ModelBuddy·会员订单管理</h1>
           <span class="page-subtitle">管理订阅套餐购买记录和退款申请</span>
         </div>
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button 
-        v-for="tab in tabs" 
-        :key="tab.value"
-        class="tab-btn"
-        :class="{ active: activeTab === tab.value }"
-        @click="activeTab = tab.value"
-      >
-        {{ tab.label }}
-        <span v-if="tab.count" class="tab-count">{{ tab.count }}</span>
-      </button>
-    </div>
-
-    <!-- Order Stats -->
-    <div class="stats-bar">
-      <div class="stat-item">
-        <span class="stat-value">{{ stats.totalOrders }}</span>
-        <span class="stat-label">总订单</span>
+    <!-- Tabs & Stats Row -->
+    <div class="tabs-stats-row">
+      <div class="tabs">
+        <button 
+          v-for="tab in tabs" 
+          :key="tab.value"
+          class="tab-btn"
+          :class="{ active: activeTab === tab.value }"
+          @click="activeTab = tab.value"
+        >
+          {{ tab.label }}
+          <span v-if="tab.count" class="tab-count">{{ tab.count }}</span>
+        </button>
       </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <span class="stat-value">¥{{ stats.totalSpent }}</span>
-        <span class="stat-label">累计消费</span>
+      <div class="stats-inline">
+        <div class="stat-mini">
+          <span class="stat-num">{{ stats.totalOrders || 0 }}</span>
+          <span class="stat-lbl">总订单</span>
+        </div>
+        <div class="stat-mini">
+          <span class="stat-num">¥{{ stats.totalSpent || 0 }}</span>
+          <span class="stat-lbl">累计消费</span>
+        </div>
       </div>
     </div>
 
@@ -341,13 +340,21 @@ onMounted(() => {
   margin-top: 2px;
 }
 
-/* Tabs */
+/* Tabs & Stats Row - 横向紧凑布局 */
+.tabs-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .tabs {
   display: flex;
   gap: 8px;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px 24px 0;
   overflow-x: auto;
 }
 
@@ -379,41 +386,27 @@ onMounted(() => {
   font-size: 0.75rem;
 }
 
-/* Stats */
-.stats-bar {
+/* Stats Inline */
+.stats-inline {
   display: flex;
-  align-items: center;
-  max-width: 1400px;
-  margin: 0 auto 16px;
-  padding: 20px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
+  gap: 20px;
 }
 
-.stat-item {
-  flex: 1;
+.stat-mini {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
-.stat-value {
-  font-size: 1.25rem;
+.stat-num {
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.stat-label {
+.stat-lbl {
   font-size: 0.75rem;
   color: var(--text-tertiary);
-}
-
-.stat-divider {
-  width: 1px;
-  height: 40px;
-  background: var(--border-color);
 }
 
 /* Orders List */

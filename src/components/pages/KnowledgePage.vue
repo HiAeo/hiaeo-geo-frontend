@@ -1,1226 +1,906 @@
 <template>
   <div class="knowledge-page" :data-theme="theme">
-    <!-- Header -->
+    <!-- Page Header -->
     <div class="page-header">
       <div class="header-content">
-        <div class="header-left">
-          <h1 class="page-title">{{ $t('knowledge.title') }}</h1>
-          <span class="page-subtitle">{{ $t('knowledge.subtitle') }}</span>
-          <div class="brand-tag" v-if="knowledgeData?.version">
-            <span class="report-count">{{ $t('knowledge.version') }} {{ knowledgeData.version }}</span>
-            <span class="last-update">{{ $t('knowledge.lastUpdate') }}: {{ formatDate(knowledgeData.updatedAt) }}</span>
-          </div>
-        </div>
-        <div class="header-actions">
-          <!-- 语言切换 -->
-          <el-dropdown @command="handleLocaleChange" trigger="click">
-            <button class="secondary-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="2" y1="12" x2="22" y2="12"/>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-              </svg>
-              {{ currentLocaleName }}
-            </button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="zh-CN">简体中文</el-dropdown-item>
-                <el-dropdown-item command="en-US">English</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <button class="secondary-btn" @click="showHistory = true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            {{ $t('knowledge.versionHistory') }}
-          </button>
-          <button class="primary-btn" @click="saveKnowledge" :disabled="saving">
-            <svg v-if="!saving" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-              <polyline points="17 21 17 13 7 13 7 21"/>
-              <polyline points="7 3 7 8 15 8"/>
-            </svg>
-            <span v-if="saving" class="spinner"></span>
-            {{ saving ? $t('knowledge.saving') : $t('knowledge.saveKnowledge') }}
-          </button>
+        <div>
+          <h1 class="page-title">MiraBox模盒·AI品牌智库</h1>
+          <p class="page-subtitle">输入公司名称，AI 自动抓取并填充品牌信息</p>
         </div>
       </div>
     </div>
 
-    <!-- AI智能填写区域 -->
-    <div class="ai-fill-section">
-      <div class="ai-fill-card">
-        <div class="ai-fill-header">
-          <div class="ai-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-              <path d="M2 17l10 5 10-5"/>
-              <path d="M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <div class="ai-fill-title">
-            <h3>AI智能填写</h3>
-            <p>输入您的企业官网，一键自动填充品牌信息</p>
-          </div>
-        </div>
-        <div class="ai-fill-form">
-          <div class="url-input-group">
-            <input 
-              v-model="aiUrl" 
-              type="url" 
-              placeholder="请输入企业官网地址，如：https://www.example.com"
-              @keyup.enter="startAiFill"
-            />
-            <button class="ai-fill-btn" @click="startAiFill" :disabled="aiFilling || !aiUrl">
-              <span v-if="aiFilling" class="spinner"></span>
-              <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="5 3 19 12 5 21 5 3"/>
-              </svg>
-              {{ aiFilling ? '智能分析中...' : '开始AI填写' }}
-            </button>
-          </div>
-          <div class="ai-fill-progress" v-if="aiFilling">
-            <div class="progress-steps">
-              <div class="step" :class="{ active: aiFillStep >= 1, completed: aiFillStep > 1 }">
-                <span class="step-dot"></span>
-                <span class="step-text">正在访问网站</span>
-              </div>
-              <div class="step" :class="{ active: aiFillStep >= 2, completed: aiFillStep > 2 }">
-                <span class="step-dot"></span>
-                <span class="step-text">提取企业信息</span>
-              </div>
-              <div class="step" :class="{ active: aiFillStep >= 3, completed: aiFillStep > 3 }">
-                <span class="step-dot"></span>
-                <span class="step-text">匹配附件资料</span>
-              </div>
-              <div class="step" :class="{ active: aiFillStep >= 4, completed: aiFillStep > 4 }">
-                <span class="step-dot"></span>
-                <span class="step-text">填充表单内容</span>
-              </div>
-            </div>
-          </div>
-          <div class="ai-fill-result" v-if="aiFillResult">
-            <div class="result-badge" :class="aiFillResult.status">
-              <svg v-if="aiFillResult.status === 'success'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="8" x2="12" y2="12"/>
-                <line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-              {{ aiFillResult.message }}
-            </div>
-            <div class="result-stats" v-if="aiFillResult.stats">
-              <span>已填充 {{ aiFillResult.stats.fields }} 个字段</span>
-              <span>已匹配 {{ aiFillResult.stats.files }} 个附件</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 知识库表单 -->
-    <div class="knowledge-content">
-      <!-- 模块一：企业基础信息 -->
-      <div class="section-card" :class="{ completed: isSectionCompleted('basicInfo') }">
-        <div class="section-header" @click="toggleSection('basicInfo')">
-          <div class="section-title-row">
-            <span class="section-number">一</span>
-            <h3 class="section-title">{{ $t('knowledge.modules.basicInfo.title') }}</h3>
-            <span class="required-tag">{{ $t('knowledge.modules.basicInfo.required') }}</span>
-          </div>
-          <svg class="expand-icon" :class="{ expanded: expandedSections.basicInfo }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"/>
+    <!-- AI 智能填写区域 -->
+    <div class="ai-fetch-section">
+      <div class="company-search-box">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
           </svg>
+          <input
+            v-model="companyNameInput"
+            type="text"
+            placeholder="请输入公司名称，如：腾讯科技（深圳）有限公司"
+            class="search-input"
+            :disabled="searching"
+            @keyup.enter="handleSearchCompany"
+          />
         </div>
-        <div class="section-body" v-show="expandedSections.basicInfo">
-          <div class="form-grid">
+        <button
+          class="ai-fill-btn"
+          :disabled="!companyNameInput.trim() || searching"
+          @click="handleSearchCompany"
+        >
+          <svg v-if="searching" class="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+          </svg>
+          <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2"/>
+            <path d="M12 8v4l3 3"/>
+          </svg>
+          {{ searching ? 'AI 抓取中...' : 'AI 智能填写' }}
+        </button>
+      </div>
+      <p class="search-hint">
+        企业基础信息通过工商数据库获取，其他信息通过 AI 全网抓取
+      </p>
+      <!-- 加载进度 -->
+      <div v-if="searching" class="loading-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
+        </div>
+        <span class="progress-text">{{ progressText }}</span>
+      </div>
+    </div>
+
+    <!-- 错误提示 -->
+    <div v-if="fetchError" class="error-message">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </svg>
+      {{ fetchError }}
+    </div>
+
+    <!-- 成功提示 -->
+    <div v-if="fetchSuccess" class="success-message">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      AI 已自动填充数据，请检查并修改后保存
+    </div>
+
+    <!-- 7个模块表单 -->
+    <div class="modules-container">
+      
+      <!-- 模块一：企业基础信息 -->
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-title">
+            <span class="module-num">1</span>
+            <span>企业基础信息</span>
+            <span class="required-tag">必填</span>
+          </div>
+        </div>
+        <div class="module-content">
+          <div class="form-grid-2">
             <div class="form-group">
-              <label>{{ $t('knowledge.modules.basicInfo.companyName') }} <span class="required">*</span></label>
-              <input v-model="form.basicInfo.companyName" type="text" :placeholder="$t('knowledge.placeholders.enterCompanyName')" />
+              <label>公司/品牌名称</label>
+              <input v-model="form.module1.companyName" type="text" placeholder="请输入公司或品牌全称" />
             </div>
             <div class="form-group">
-              <label>{{ $t('knowledge.modules.basicInfo.companyShortName') }} <span class="required">*</span></label>
-              <input v-model="form.basicInfo.companyShortName" type="text" :placeholder="$t('knowledge.placeholders.enterBrandName')" />
+              <label>所属行业</label>
+              <select v-model="form.module1.industry">
+                <option value="">请选择行业</option>
+                <option value="technology">科技/技术</option>
+                <option value="ecommerce">电商/零售</option>
+                <option value="education">教育/培训</option>
+                <option value="healthcare">医疗/健康</option>
+                <option value="finance">金融/银行</option>
+                <option value="food">餐饮/食品</option>
+                <option value="manufacture">制造业</option>
+                <option value="service">服务业</option>
+                <option value="real_estate">房地产/装修</option>
+                <option value="media">媒体/广告</option>
+                <option value="other">其他</option>
+              </select>
             </div>
             <div class="form-group">
-              <label>{{ $t('knowledge.modules.basicInfo.industry') }} <span class="required">*</span></label>
-              <input v-model="form.basicInfo.industry" type="text" :placeholder="$t('knowledge.placeholders.enterIndustry')" />
+              <label>公司规模</label>
+              <select v-model="form.module1.companySize">
+                <option value="">请选择规模</option>
+                <option value="1-10">1-10人</option>
+                <option value="11-50">11-50人</option>
+                <option value="51-200">51-200人</option>
+                <option value="201-500">201-500人</option>
+                <option value="501-1000">501-1000人</option>
+                <option value="1000+">1000人以上</option>
+              </select>
             </div>
             <div class="form-group">
-              <label>{{ $t('knowledge.modules.basicInfo.companyRegion') }} <span class="required">*</span></label>
-              <input v-model="form.basicInfo.companyRegion" type="text" :placeholder="$t('knowledge.placeholders.enterRegion')" />
+              <label>所在地区</label>
+              <input v-model="form.module1.region" type="text" placeholder="如：北京市朝阳区" />
             </div>
             <div class="form-group">
-              <label>{{ $t('knowledge.modules.basicInfo.mainBizArea') }} <span class="required">*</span></label>
-              <input v-model="form.basicInfo.mainBizArea" type="text" :placeholder="$t('knowledge.placeholders.enterBizArea')" />
+              <label>官方网址</label>
+              <input v-model="form.module1.website" type="text" placeholder="如：www.example.com" />
             </div>
             <div class="form-group">
-              <label>{{ $t('knowledge.modules.basicInfo.bizModel') }} <span class="required">*</span></label>
-              <div class="checkbox-group">
-                <label v-for="opt in bizModelOptions" :key="opt">
-                  <input type="checkbox" :value="opt" v-model="form.basicInfo.bizModel" />
-                  {{ getBizModelLabel(opt) }}
-                </label>
-              </div>
+              <label>品牌slogan</label>
+              <input v-model="form.module1.slogan" type="text" placeholder="一句话描述品牌定位" />
             </div>
-            <div class="form-group">
-              <label>{{ $t('knowledge.modules.basicInfo.companyScale') }}</label>
-              <input v-model="form.basicInfo.companyScale" type="text" :placeholder="$t('knowledge.placeholders.enterScale')" />
-            </div>
-            <div class="form-group">
-              <label>{{ $t('knowledge.modules.basicInfo.website') }} <span class="required">*</span></label>
-              <input v-model="form.basicInfo.website" type="url" :placeholder="$t('knowledge.placeholders.enterWebsite')" />
-            </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.basicInfo.socialMedia') }}</label>
-              <textarea v-model="form.basicInfo.socialMedia" rows="2" :placeholder="$t('knowledge.placeholders.enterSocialMedia')"></textarea>
-            </div>
-            <div class="form-group">
-              <label>{{ $t('knowledge.modules.basicInfo.contactName') }} <span class="required">*</span></label>
-              <input v-model="form.basicInfo.contactName" type="text" :placeholder="$t('knowledge.placeholders.enterContactName')" />
-            </div>
-            <div class="form-group">
-              <label>{{ $t('knowledge.modules.basicInfo.contactPhone') }} <span class="required">*</span></label>
-              <input v-model="form.basicInfo.contactPhone" type="tel" :placeholder="$t('knowledge.placeholders.enterContactPhone')" />
-            </div>
-            <div class="form-group">
-              <label>{{ $t('knowledge.modules.basicInfo.contactEmail') }}</label>
-              <input v-model="form.basicInfo.contactEmail" type="email" :placeholder="$t('knowledge.placeholders.enterContactEmail')" />
-            </div>
+          </div>
+          <div class="form-group full-width">
+            <label>公司简介</label>
+            <textarea v-model="form.module1.intro" rows="4" placeholder="请输入公司/品牌简介"></textarea>
+          </div>
+          <div class="module-actions">
+            <button class="btn btn-primary" @click="saveModule1" :disabled="saving1">
+              {{ saving1 ? '保存中...' : '保存' }}
+            </button>
           </div>
         </div>
       </div>
 
       <!-- 模块二：核心业务与定位 -->
-      <div class="section-card" :class="{ completed: isSectionCompleted('bizPositioning') }">
-        <div class="section-header" @click="toggleSection('bizPositioning')">
-          <div class="section-title-row">
-            <span class="section-number">二</span>
-            <h3 class="section-title">{{ $t('knowledge.modules.bizPositioning.title') }}</h3>
-            <span class="required-tag">{{ $t('knowledge.modules.bizPositioning.required') }}</span>
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-title">
+            <span class="module-num">2</span>
+            <span>核心业务与定位</span>
+            <span class="required-tag">必填</span>
           </div>
-          <svg class="expand-icon" :class="{ expanded: expandedSections.bizPositioning }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
         </div>
-        <div class="section-body" v-show="expandedSections.bizPositioning">
-          <div class="form-grid">
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.bizPositioning.coreBizIntro') }} <span class="required">*</span></label>
-              <input v-model="form.bizPositioning.coreBizIntro" type="text" :placeholder="$t('knowledge.placeholders.enterCoreBiz')" />
+        <div class="module-content">
+          <div class="form-group">
+            <label>核心业务介绍</label>
+            <textarea v-model="form.module2.coreBusiness" rows="4" placeholder="请详细描述公司的核心业务是什么，为客户提供什么价值"></textarea>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>品牌定位</label>
+              <input v-model="form.module2.positioning" type="text" placeholder="如：高端定制、专业服务" />
             </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.bizPositioning.targetCustomer') }} <span class="required">*</span></label>
-              <textarea v-model="form.bizPositioning.targetCustomer" rows="2" :placeholder="$t('knowledge.placeholders.enterTargetCustomer')"></textarea>
+            <div class="form-group">
+              <label>目标客户群体</label>
+              <input v-model="form.module2.targetCustomers" type="text" placeholder="如：B端企业主、25-40岁女性" />
             </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.bizPositioning.customerPainPoint') }} <span class="required">*</span></label>
-              <textarea v-model="form.bizPositioning.customerPainPoint" rows="3" :placeholder="$t('knowledge.placeholders.enterPainPoint')"></textarea>
-            </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.bizPositioning.differentialAdvantage') }} <span class="required">*</span></label>
-              <textarea v-model="form.bizPositioning.differentialAdvantage" rows="3" :placeholder="$t('knowledge.placeholders.enterAdvantage')"></textarea>
-            </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.bizPositioning.forbiddenBiz') }}</label>
-              <textarea v-model="form.bizPositioning.forbiddenBiz" rows="2" :placeholder="$t('knowledge.placeholders.enterForbidden')"></textarea>
-            </div>
+          </div>
+          <div class="form-group">
+            <label>差异化竞争优势</label>
+            <textarea v-model="form.module2.differentiation" rows="3" placeholder="与竞品相比，贵公司的核心优势是什么？"></textarea>
+          </div>
+          <div class="form-group">
+            <label>品牌故事（选填）</label>
+            <textarea v-model="form.module2.brandStory" rows="3" placeholder="品牌创立故事、发展历程等"></textarea>
+          </div>
+          <div class="module-actions">
+            <button class="btn btn-primary" @click="saveModule2" :disabled="saving2">
+              {{ saving2 ? '保存中...' : '保存' }}
+            </button>
           </div>
         </div>
       </div>
 
       <!-- 模块三：产品与服务详情 -->
-      <div class="section-card" :class="{ completed: isSectionCompleted('productService') }">
-        <div class="section-header" @click="toggleSection('productService')">
-          <div class="section-title-row">
-            <span class="section-number">三</span>
-            <h3 class="section-title">{{ $t('knowledge.modules.productService.title') }}</h3>
-            <span class="required-tag">{{ $t('knowledge.modules.productService.required') }}</span>
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-title">
+            <span class="module-num">3</span>
+            <span>产品与服务详情</span>
+            <span class="required-tag">必填</span>
           </div>
-          <svg class="expand-icon" :class="{ expanded: expandedSections.productService }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
         </div>
-        <div class="section-body" v-show="expandedSections.productService">
-          <div class="form-grid">
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.productService.productServiceList') }} <span class="required">*</span></label>
-              <div class="table-input">
-                <div class="table-header">
-                  <span>{{ $t('knowledge.modules.productService.productName') }}</span>
-                  <span>{{ $t('knowledge.modules.productService.productDesc') }}</span>
-                  <span>{{ $t('common.buttons.delete') }}</span>
-                </div>
-                <div v-for="(item, idx) in form.productService.productServiceList" :key="idx" class="table-row">
-                  <input v-model="item.productName" type="text" :placeholder="$t('knowledge.placeholders.enterProductName')" />
-                  <input v-model="item.productDesc" type="text" :placeholder="$t('knowledge.placeholders.enterProductDesc')" />
-                  <button class="remove-btn" @click="removeProduct(idx)">{{ $t('knowledge.fileUpload.remove') }}</button>
-                </div>
-                <button class="add-row-btn" @click="addProduct">+ {{ $t('knowledge.modules.productService.addProduct') }}</button>
-              </div>
+        <div class="module-content">
+          <div class="form-group">
+            <label>主要产品/服务</label>
+            <textarea v-model="form.module3.mainProducts" rows="4" placeholder="列出主要产品或服务类别，详细说明"></textarea>
+          </div>
+          <div class="form-group">
+            <label>产品核心卖点</label>
+            <textarea v-model="form.module3.sellPoints" rows="3" placeholder="产品的核心卖点是什么？解决了客户什么痛点？"></textarea>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>价格区间</label>
+              <input v-model="form.module3.priceRange" type="text" placeholder="如：¥1000-5000" />
             </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.productService.productSellPoint') }} <span class="required">*</span></label>
-              <textarea v-model="form.productService.productSellPoint" rows="4" :placeholder="$t('knowledge.placeholders.enterSellPoint')"></textarea>
+            <div class="form-group">
+              <label>核心关键词（SEO用）</label>
+              <input v-model="form.module3.seoKeywords" type="text" placeholder="用逗号分隔，如：SEO优化,网站诊断" />
             </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.productService.serviceDetails') }} <span class="required">*</span></label>
-              <textarea v-model="form.productService.serviceDetails" rows="3" :placeholder="$t('knowledge.placeholders.enterServiceDetails')"></textarea>
-            </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.productService.coreKeywords') }}</label>
-              <div class="tag-input">
-                <span v-for="(tag, idx) in form.productService.coreKeywords" :key="idx" class="tag">
-                  {{ tag }}
-                  <span class="tag-remove" @click="removeKeyword(idx)">&times;</span>
-                </span>
-                <input 
-                  v-model="newKeyword" 
-                  type="text" 
-                  :placeholder="$t('knowledge.placeholders.enterKeyword')" 
-                  @keydown.enter.prevent="addKeyword"
-                />
-              </div>
-            </div>
+          </div>
+          <div class="form-group">
+            <label>服务流程/周期</label>
+            <textarea v-model="form.module3.serviceProcess" rows="3" placeholder="描述服务流程或产品交付周期"></textarea>
+          </div>
+          <div class="module-actions">
+            <button class="btn btn-primary" @click="saveModule3" :disabled="saving3">
+              {{ saving3 ? '保存中...' : '保存' }}
+            </button>
           </div>
         </div>
       </div>
 
       <!-- 模块四：竞品与市场信息 -->
-      <div class="section-card optional" :class="{ completed: isSectionCompleted('competitorMarket') }">
-        <div class="section-header" @click="toggleSection('competitorMarket')">
-          <div class="section-title-row">
-            <span class="section-number">四</span>
-            <h3 class="section-title">{{ $t('knowledge.modules.competitorMarket.title') }}</h3>
-            <span class="optional-tag">{{ $t('knowledge.modules.competitorMarket.optional') }}</span>
+      <div class="module-card optional">
+        <div class="module-header">
+          <div class="module-title">
+            <span class="module-num">4</span>
+            <span>竞品与市场信息</span>
+            <span class="optional-tag">选填</span>
           </div>
-          <svg class="expand-icon" :class="{ expanded: expandedSections.competitorMarket }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
         </div>
-        <div class="section-body" v-show="expandedSections.competitorMarket">
-          <div class="form-grid">
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.competitorMarket.competitors') }}</label>
-              <div class="table-input">
-                <div class="table-header">
-                  <span>{{ $t('knowledge.modules.competitorMarket.competitorName') }}</span>
-                  <span>{{ $t('knowledge.modules.competitorMarket.competitorWebsite') }}</span>
-                  <span>{{ $t('common.buttons.delete') }}</span>
-                </div>
-                <div v-for="(comp, idx) in form.competitorMarket.competitors" :key="idx" class="table-row">
-                  <input v-model="comp.competitorName" type="text" :placeholder="$t('knowledge.placeholders.enterCompetitorName')" />
-                  <input v-model="comp.competitorWebsite" type="url" :placeholder="$t('knowledge.placeholders.enterCompetitorUrl')" />
-                  <button class="remove-btn" @click="removeCompetitor(idx)">{{ $t('knowledge.fileUpload.remove') }}</button>
-                </div>
-                <button class="add-row-btn" @click="addCompetitor">+ {{ $t('knowledge.modules.competitorMarket.addCompetitor') }}</button>
-              </div>
-            </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.competitorMarket.competitorAdvDisadv') }}</label>
-              <textarea v-model="form.competitorMarket.competitorAdvDisadv" rows="3" :placeholder="$t('knowledge.placeholders.enterCompetitorAnalysis')"></textarea>
-            </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.competitorMarket.marketGap') }}</label>
-              <textarea v-model="form.competitorMarket.marketGap" rows="3" :placeholder="$t('knowledge.placeholders.enterMarketGap')"></textarea>
-            </div>
+        <div class="module-content">
+          <div class="form-group">
+            <label>主要竞争对手</label>
+            <textarea v-model="form.module4.competitors" rows="4" placeholder="列出主要竞争对手（名称 + 网址），每行一个"></textarea>
+          </div>
+          <div class="form-group">
+            <label>市场竞争环境</label>
+            <textarea v-model="form.module4.marketEnv" rows="3" placeholder="描述市场环境、行业发展趋势等"></textarea>
+          </div>
+          <div class="form-group">
+            <label>与竞品对比优势</label>
+            <textarea v-model="form.module4.comparisonAdvantage" rows="3" placeholder="相比竞品，贵公司的独特优势"></textarea>
+          </div>
+          <div class="module-actions">
+            <button class="btn btn-primary" @click="saveModule4" :disabled="saving4">
+              {{ saving4 ? '保存中...' : '保存' }}
+            </button>
           </div>
         </div>
       </div>
 
       <!-- 模块五：GEO推广目标 -->
-      <div class="section-card" :class="{ completed: isSectionCompleted('geoGoals') }">
-        <div class="section-header" @click="toggleSection('geoGoals')">
-          <div class="section-title-row">
-            <span class="section-number">五</span>
-            <h3 class="section-title">{{ $t('knowledge.modules.geoGoals.title') }}</h3>
-            <span class="required-tag">{{ $t('knowledge.modules.geoGoals.required') }}</span>
+      <div class="module-card">
+        <div class="module-header">
+          <div class="module-title">
+            <span class="module-num">5</span>
+            <span>GEO推广目标</span>
+            <span class="required-tag">必填</span>
           </div>
-          <svg class="expand-icon" :class="{ expanded: expandedSections.geoGoals }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
         </div>
-        <div class="section-body" v-show="expandedSections.geoGoals">
-          <div class="form-grid">
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.geoGoals.promotionGoals') }} <span class="required">*</span></label>
-              <div class="checkbox-group">
-                <label v-for="opt in promotionGoalOptions" :key="opt">
-                  <input type="checkbox" :value="opt" v-model="form.geoGoals.promotionGoals" />
-                  {{ getPromotionGoalLabel(opt) }}
-                </label>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>{{ $t('knowledge.modules.geoGoals.keyPromotionArea') }} <span class="required">*</span></label>
-              <input v-model="form.geoGoals.keyPromotionArea" type="text" :placeholder="$t('knowledge.placeholders.enterPromotionArea')" />
-            </div>
-            <div class="form-group">
-              <label>{{ $t('knowledge.modules.geoGoals.forbiddenPromotionArea') }}</label>
-              <input v-model="form.geoGoals.forbiddenPromotionArea" type="text" :placeholder="$t('knowledge.placeholders.enterForbiddenArea')" />
-            </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.geoGoals.keywordDirection') }} <span class="required">*</span></label>
-              <div class="checkbox-group">
-                <label v-for="opt in keywordDirectionOptions" :key="opt">
-                  <input type="checkbox" :value="opt" v-model="form.geoGoals.keywordDirection" />
-                  {{ getKeywordDirectionLabel(opt) }}
-                </label>
-              </div>
-            </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.geoGoals.budgetAndRhythm') }}</label>
-              <textarea v-model="form.geoGoals.budgetAndRhythm" rows="2" :placeholder="$t('knowledge.placeholders.enterBudget')"></textarea>
-            </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.geoGoals.expectedEffect') }}</label>
-              <textarea v-model="form.geoGoals.expectedEffect" rows="2" :placeholder="$t('knowledge.placeholders.enterExpectedEffect')"></textarea>
-            </div>
+        <div class="module-content">
+          <div class="form-group">
+            <label>核心 GEO 关键词</label>
+            <textarea v-model="form.module5.geoKeywords" rows="3" placeholder="希望用户在搜索引擎中搜什么词能找到你？每行一个"></textarea>
+          </div>
+          <div class="form-group">
+            <label>目标覆盖地区</label>
+            <input v-model="form.module5.targetRegions" type="text" placeholder="如：全国、北京/上海/广州、一线城市" />
+          </div>
+          <div class="form-group">
+            <label>内容营销目标</label>
+            <textarea v-model="form.module5.contentGoals" rows="3" placeholder="希望通过GEO获得什么？如：提升品牌曝光、获取潜在客户等"></textarea>
+          </div>
+          <div class="form-group">
+            <label>内容风格偏好</label>
+            <select v-model="form.module5.contentStyle">
+              <option value="">请选择</option>
+              <option value="professional">专业严谨</option>
+              <option value="friendly">亲切友好</option>
+              <option value="authoritative">权威专家</option>
+              <option value="casual">轻松活泼</option>
+            </select>
+          </div>
+          <div class="module-actions">
+            <button class="btn btn-primary" @click="saveModule5" :disabled="saving5">
+              {{ saving5 ? '保存中...' : '保存' }}
+            </button>
           </div>
         </div>
       </div>
 
       <!-- 模块六：资料上传区 -->
-      <div class="section-card optional" :class="{ completed: isSectionCompleted('fileIndex') }">
-        <div class="section-header" @click="toggleSection('fileIndex')">
-          <div class="section-title-row">
-            <span class="section-number">六</span>
-            <h3 class="section-title">{{ $t('knowledge.modules.fileIndex.title') }}</h3>
-            <span class="optional-tag">{{ $t('knowledge.modules.fileIndex.optional') }}</span>
+      <div class="module-card optional">
+        <div class="module-header">
+          <div class="module-title">
+            <span class="module-num">6</span>
+            <span>资料上传区</span>
+            <span class="optional-tag">选填（AI深度分析素材）</span>
           </div>
-          <svg class="expand-icon" :class="{ expanded: expandedSections.fileIndex }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
         </div>
-        <div class="section-body" v-show="expandedSections.fileIndex">
-          <p class="section-tip">{{ $t('knowledge.modules.fileIndex.tip') }}</p>
-          <div class="file-upload-grid">
-            <div class="file-upload-item">
-              <h4>{{ $t('knowledge.modules.fileIndex.certFiles') }}</h4>
-              <p class="file-desc">{{ $t('knowledge.modules.fileIndex.certFilesDesc') }}</p>
-              <div class="file-upload-area" @click="openFilePicker('certFiles')" @dragover.prevent @drop.prevent="handleFileDrop($event, 'certFiles')">
-                <input type="file" ref="certFilesInput" @change="handleFileSelect($event, 'certFiles')" accept=".pdf,.doc,.docx,.jpg,.png" multiple hidden />
-                <div class="upload-placeholder">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                  <span>{{ $t('knowledge.fileUpload.clickOrDrag') }}</span>
-                </div>
-              </div>
-              <div class="file-list" v-if="uploadedFiles.certFiles?.length">
-                <div v-for="(file, idx) in uploadedFiles.certFiles" :key="idx" class="file-item">
-                  <span class="file-name">{{ file.name }}</span>
-                  <button class="file-remove" @click="removeFile('certFiles', idx)">&times;</button>
-                </div>
-              </div>
-            </div>
-            <div class="file-upload-item">
-              <h4>{{ $t('knowledge.modules.fileIndex.productFiles') }}</h4>
-              <p class="file-desc">{{ $t('knowledge.modules.fileIndex.productFilesDesc') }}</p>
-              <div class="file-upload-area" @click="openFilePicker('productFiles')">
-                <input type="file" ref="productFilesInput" @change="handleFileSelect($event, 'productFiles')" accept=".pdf,.doc,.docx" multiple hidden />
-                <div class="upload-placeholder">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                  <span>{{ $t('knowledge.fileUpload.clickOrDrag') }}</span>
-                </div>
-              </div>
-            </div>
-            <div class="file-upload-item">
-              <h4>{{ $t('knowledge.modules.fileIndex.serviceFiles') }}</h4>
-              <p class="file-desc">{{ $t('knowledge.modules.fileIndex.serviceFilesDesc') }}</p>
-              <div class="file-upload-area" @click="openFilePicker('serviceFiles')">
-                <input type="file" ref="serviceFilesInput" @change="handleFileSelect($event, 'serviceFiles')" accept=".pdf,.doc,.docx" multiple hidden />
-                <div class="upload-placeholder">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                  <span>{{ $t('knowledge.fileUpload.clickOrDrag') }}</span>
-                </div>
-              </div>
-            </div>
-            <div class="file-upload-item">
-              <h4>{{ $t('knowledge.modules.fileIndex.caseFiles') }}</h4>
-              <p class="file-desc">{{ $t('knowledge.modules.fileIndex.caseFilesDesc') }}</p>
-              <div class="file-upload-area" @click="openFilePicker('caseFiles')">
-                <input type="file" ref="caseFilesInput" @change="handleFileSelect($event, 'caseFiles')" accept=".pdf,.doc,.docx,.jpg,.png,.mp4" multiple hidden />
-                <div class="upload-placeholder">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                  <span>{{ $t('knowledge.fileUpload.clickOrDrag') }}</span>
-                </div>
-              </div>
+        <div class="module-content">
+          <p class="module-tip">上传品牌相关资料，帮助AI更深入地了解品牌，用于生成更精准的内容</p>
+          <div class="upload-area">
+            <div class="upload-placeholder">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <p>拖拽文件到此处，或点击上传</p>
+              <span>支持 PDF、Word、图片等格式</span>
             </div>
           </div>
-          <div class="form-group full-width" style="margin-top: 20px;">
-            <label>{{ $t('knowledge.modules.fileIndex.fileRemark') }}</label>
-            <textarea v-model="form.fileIndex.fileRemark" rows="2" :placeholder="$t('knowledge.placeholders.enterFileRemark')"></textarea>
+          <div class="uploaded-files" v-if="form.module6.uploadedFiles.length">
+            <div v-for="(file, idx) in form.module6.uploadedFiles" :key="idx" class="uploaded-file">
+              <span>{{ file.name }}</span>
+              <button class="remove-btn" @click="removeFile(idx)">×</button>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 16px;">
+            <label>资料补充说明</label>
+            <textarea v-model="form.module6.notes" rows="3" placeholder="补充说明这些资料的特点或重点关注内容"></textarea>
+          </div>
+          <div class="module-actions">
+            <button class="btn btn-primary" @click="saveModule6" :disabled="saving6">
+              {{ saving6 ? '保存中...' : '保存' }}
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- 模块七：补充信息 -->
-      <div class="section-card optional" :class="{ completed: isSectionCompleted('supplement') }">
-        <div class="section-header" @click="toggleSection('supplement')">
-          <div class="section-title-row">
-            <span class="section-number">七</span>
-            <h3 class="section-title">{{ $t('knowledge.modules.supplement.title') }}</h3>
-            <span class="optional-tag">{{ $t('knowledge.modules.supplement.optional') }}</span>
+      <!-- 模块七：补充信息与特殊要求 -->
+      <div class="module-card optional">
+        <div class="module-header">
+          <div class="module-title">
+            <span class="module-num">7</span>
+            <span>补充信息与特殊要求</span>
+            <span class="optional-tag">选填</span>
           </div>
-          <svg class="expand-icon" :class="{ expanded: expandedSections.supplement }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
         </div>
-        <div class="section-body" v-show="expandedSections.supplement">
-          <div class="form-grid">
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.supplement.brandForbiddenWords') }}</label>
-              <textarea v-model="form.supplement.brandForbiddenWords" rows="2" :placeholder="$t('knowledge.placeholders.enterForbiddenWords')"></textarea>
+        <div class="module-content">
+          <div class="form-group">
+            <label>联系方式</label>
+            <div class="form-grid-2">
+              <input v-model="form.module7.contactPhone" type="text" placeholder="联系电话" />
+              <input v-model="form.module7.contactEmail" type="text" placeholder="电子邮箱" />
             </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.supplement.complianceRequirements') }}</label>
-              <textarea v-model="form.supplement.complianceRequirements" rows="2" :placeholder="$t('knowledge.placeholders.enterCompliance')"></textarea>
+          </div>
+          <div class="form-group">
+            <label>社交媒体账号</label>
+            <div class="form-grid-2">
+              <input v-model="form.module7.socialWechat" type="text" placeholder="微信公众号" />
+              <input v-model="form.module7.socialWeibo" type="text" placeholder="微博" />
             </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.supplement.previousPromotion') }}</label>
-              <textarea v-model="form.supplement.previousPromotion" rows="3" :placeholder="$t('knowledge.placeholders.enterPromotionHistory')"></textarea>
+            <div class="form-grid-2" style="margin-top: 8px;">
+              <input v-model="form.module7.socialZhihu" type="text" placeholder="知乎" />
+              <input v-model="form.module7.socialDouyin" type="text" placeholder="抖音" />
             </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.supplement.specialRequirements') }}</label>
-              <textarea v-model="form.supplement.specialRequirements" rows="3" :placeholder="$t('knowledge.placeholders.enterSpecialRequirements')"></textarea>
-            </div>
-            <div class="form-group full-width">
-              <label>{{ $t('knowledge.modules.supplement.versionRemark') }}</label>
-              <input v-model="form.supplement.versionRemark" type="text" :placeholder="$t('knowledge.placeholders.enterVersionRemark')" />
-            </div>
+          </div>
+          <div class="form-group">
+            <label>特殊要求或注意事项</label>
+            <textarea v-model="form.module7.specialRequirements" rows="4" placeholder="任何特殊要求、禁用词、品牌调性说明等"></textarea>
+          </div>
+          <div class="module-actions">
+            <button class="btn btn-primary" @click="saveModule7" :disabled="saving7">
+              {{ saving7 ? '保存中...' : '保存' }}
+            </button>
           </div>
         </div>
       </div>
+
     </div>
 
-    <!-- 底部保存按钮 -->
-    <div class="bottom-actions">
-      <button class="primary-btn large" @click="saveKnowledge" :disabled="saving">
-        <svg v-if="!saving" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-          <polyline points="17 21 17 13 7 13 7 21"/>
-          <polyline points="7 3 7 8 15 8"/>
-        </svg>
-        <span v-if="saving" class="spinner"></span>
-        {{ saving ? $t('knowledge.saving') : $t('knowledge.saveKnowledge') }}
-      </button>
-    </div>
-
-    <!-- Toast 提示 -->
-    <div class="toast" :class="{ show: toast.show }">
+    <!-- Toast -->
+    <div v-if="toast.show" class="toast" :class="toast.type">
       {{ toast.message }}
-    </div>
-
-    <!-- 版本历史弹窗 -->
-    <div class="modal-overlay" v-if="showHistory" @click.self="showHistory = false">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h3>{{ $t('knowledge.versionHistory') }}</h3>
-          <button class="close-btn" @click="showHistory = false">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="history-list">
-            <div v-if="knowledgeData?.version" class="history-item">
-              <div class="history-version">{{ $t('knowledge.version') }} {{ knowledgeData.version }}</div>
-              <div class="history-time">{{ formatDate(knowledgeData.updatedAt) }}</div>
-              <div class="history-remark">{{ knowledgeData.supplement?.versionRemark || $t('knowledge.history.noRemark') }}</div>
-            </div>
-            <div v-else class="empty-state">{{ $t('knowledge.history.noRecords') }}</div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+<script>
+import { ref, reactive, onMounted } from 'vue'
 import { useTheme } from '../../composables/useTheme'
-import { getKnowledgeBase, updateKnowledgeBase, uploadFile, getEnhancedFieldSuggestion, extractFromUrl } from '@/api/knowledge'
-import { setLocale, getLocale, supportedLocales } from '@/i18n'
+import {
+  getKnowledgeBase,
+  createKnowledgeBase,
+  updateKnowledgeBase,
+} from '@/api/knowledge'
+import { getAISuggestion, searchCompany } from '@/api/workflow'
 
-
-const { t } = useI18n()
-const { theme } = useTheme()
-
-// 表单数据
-const form = reactive({
-  basicInfo: {
-    companyName: '',
-    companyShortName: '',
-    industry: '',
-    companyRegion: '',
-    mainBizArea: '',
-    bizModel: [],
-    companyScale: '',
-    website: '',
-    socialMedia: '',
-    contactName: '',
-    contactPhone: '',
-    contactEmail: '',
-  },
-  bizPositioning: {
-    coreBizIntro: '',
-    targetCustomer: '',
-    customerPainPoint: '',
-    differentialAdvantage: '',
-    forbiddenBiz: '',
-  },
-  productService: {
-    productServiceList: [],
-    productSellPoint: '',
-    serviceDetails: '',
-    coreKeywords: [],
-  },
-  competitorMarket: {
-    competitors: [],
-    competitorAdvDisadv: '',
-    marketGap: '',
-  },
-  geoGoals: {
-    promotionGoals: [],
-    keyPromotionArea: '',
-    forbiddenPromotionArea: '',
-    keywordDirection: [],
-    budgetAndRhythm: '',
-    expectedEffect: '',
-  },
-  fileIndex: {
-    fileRemark: '',
-  },
-  supplement: {
-    brandForbiddenWords: '',
-    complianceRequirements: '',
-    previousPromotion: '',
-    specialRequirements: '',
-    versionRemark: '',
-  },
-})
-
-// 已上传文件列表
-const uploadedFiles = reactive({
-  certFiles: [],
-  productFiles: [],
-  serviceFiles: [],
-  caseFiles: [],
-  marketingFiles: [],
-})
-
-// 选项配置
-const bizModelOptions = ['B2B', 'B2C', 'localService', 'franchise']
-const promotionGoalOptions = ['leads', 'exposure', 'inquiry', 'franchise', 'recruit']
-const keywordDirectionOptions = ['local', 'regional', 'longTail']
-
-
-function getBizModelLabel(opt) {
-  return t('knowledge.bizModels.' + opt) || opt
-}
-
-function getPromotionGoalLabel(opt) {
-  return t('knowledge.promotionGoals.' + opt) || opt
-}
-
-function getKeywordDirectionLabel(opt) {
-  return t('knowledge.keywordDirections.' + opt) || opt
-}
-
-// AI填写相关状态
-const aiFilling = ref(false)
-const aiFillStep = ref(0)
-const aiUrl = ref('')
-const aiFillResult = ref(null)
-
-// 其他状态
-const saving = ref(false)
-const aiLoading = ref(false)
-const newKeyword = ref('')
-const showHistory = ref(false)
-const knowledgeData = ref(null)
-const currentLocale = ref(getLocale())
-
-const currentLocaleName = computed(() => {
-  const locale = supportedLocales.find(l => l.code === currentLocale.value)
-  return locale ? locale.name : '简体中文'
-})
-
-function handleLocaleChange(locale) {
-  setLocale(locale)
-  currentLocale.value = locale
-}
-
-const toast = reactive({
-  show: false,
-  message: '',
-})
-
-// 展开状态
-const expandedSections = reactive({
-  basicInfo: true,
-  bizPositioning: false,
-  productService: false,
-  competitorMarket: false,
-  geoGoals: false,
-  fileIndex: false,
-  supplement: false,
-})
-
-// 计算进度
-const completedSections = computed(() => {
-  let count = 0
-  if (isSectionCompleted('basicInfo')) count++
-  if (isSectionCompleted('bizPositioning')) count++
-  if (isSectionCompleted('productService')) count++
-  if (isSectionCompleted('competitorMarket')) count++
-  if (isSectionCompleted('geoGoals')) count++
-  if (isSectionCompleted('fileIndex')) count++
-  if (isSectionCompleted('supplement')) count++
-  return count
-})
-
-const progressPercent = computed(() => Math.round((completedSections.value / 7) * 100))
-
-// 检查模块是否已完成
-function isSectionCompleted(section) {
-  switch (section) {
-    case 'basicInfo':
-      return form.basicInfo.companyName && form.basicInfo.website
-    case 'bizPositioning':
-      return form.bizPositioning.coreBizIntro && form.bizPositioning.targetCustomer
-    case 'productService':
-      return form.productService.productSellPoint
-    case 'competitorMarket':
-      return form.competitorMarket.competitors?.length > 0 || form.competitorMarket.competitorAdvDisadv
-    case 'geoGoals':
-      return form.geoGoals.promotionGoals?.length > 0 && form.geoGoals.keyPromotionArea
-    case 'fileIndex':
-      return uploadedFiles.certFiles?.length > 0 || uploadedFiles.productFiles?.length > 0
-    case 'supplement':
-      return form.supplement.brandForbiddenWords || form.supplement.specialRequirements
-    default:
-      return false
-  }
-}
-
-// 展开/收起模块
-function toggleSection(section) {
-  expandedSections[section] = !expandedSections[section]
-}
-
-// 产品列表操作
-function addProduct() {
-  form.productService.productServiceList.push({ productName: '', productDesc: '' })
-}
-
-function removeProduct(idx) {
-  form.productService.productServiceList.splice(idx, 1)
-}
-
-// 竞品列表操作
-function addCompetitor() {
-  form.competitorMarket.competitors.push({ competitorName: '', competitorWebsite: '' })
-}
-
-function removeCompetitor(idx) {
-  form.competitorMarket.competitors.splice(idx, 1)
-}
-
-// 关键词操作
-function addKeyword() {
-  if (newKeyword.value && !form.productService.coreKeywords.includes(newKeyword.value)) {
-    form.productService.coreKeywords.push(newKeyword.value)
-    newKeyword.value = ''
-  }
-}
-
-function removeKeyword(idx) {
-  form.productService.coreKeywords.splice(idx, 1)
-}
-
-// 文件上传
-function openFilePicker(module) {
-  const inputMap = {
-    certFiles: 'certFilesInput',
-    productFiles: 'productFilesInput',
-    serviceFiles: 'serviceFilesInput',
-    caseFiles: 'caseFilesInput',
-    marketingFiles: 'marketingFilesInput',
-  }
-  const ref = inputMap[module]
-  if (ref) {
-    const input = document.querySelector(`[ref="${ref}"]`)
-    if (input) input.click()
-  }
-}
-
-function handleFileSelect(event, module) {
-  const files = Array.from(event.target.files)
-  if (!uploadedFiles[module]) {
-    uploadedFiles[module] = []
-  }
-  files.forEach(file => {
-    uploadedFiles[module].push({
-      name: file.name,
-      size: file.size,
-      file: file,
-    })
-  })
-}
-
-function handleFileDrop(event, module) {
-  const files = Array.from(event.dataTransfer.files)
-  if (!uploadedFiles[module]) {
-    uploadedFiles[module] = []
-  }
-  files.forEach(file => {
-    uploadedFiles[module].push({
-      name: file.name,
-      size: file.size,
-      file: file,
-    })
-  })
-}
-
-function removeFile(module, idx) {
-  uploadedFiles[module].splice(idx, 1)
-}
-
-// AI智能建议
-async function triggerAiSuggest(field, url) {
-  if (!url) {
-    showToast(t('knowledge.ai.urlRequired'), 'warning')
-    return
-  }
-  aiLoading.value = true
-  try {
-    // Phase 4: 调用增强的AI建议接口
-    const result = await getEnhancedFieldSuggestion(field, { website: url })
-    if (result?.data) {
-      showToast(t('knowledge.ai.suggestionGenerated'), 'success')
-      if (result.data.suggestion) {
-        console.log('AI建议:', result.data)
-      }
-    }
-  } catch (error) {
-    console.error('AI建议获取失败:', error)
-    showToast(t('knowledge.ai.suggestionFailed'), 'error')
-  } finally {
-    aiLoading.value = false
-  }
-}
-
-// AI智能填写主函数 - 一键填充所有可用信息
-async function startAiFill() {
-  if (!aiUrl.value) {
-    showToast(t('knowledge.ai.urlRequired'), 'warning')
-    return
-  }
-
-  // 确保URL格式正确
-  let url = aiUrl.value
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    url = 'https://' + url
-    aiUrl.value = url
-  }
-
-  aiFilling.value = true
-  aiFillStep.value = 1
-  aiFillResult.value = null
-
-  let fieldsFilled = 0
-  let filesMatched = 0
-
-  try {
-    // 步骤1: 访问网站并提取信息
-    aiFillStep.value = 1
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    const extractResult = await extractFromUrl(url, 'all')
-
-    if (extractResult?.data) {
-      const extracted = extractResult.data
-
-      // 步骤2: 提取企业基本信息
-      aiFillStep.value = 2
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      // 自动填充表单字段
-      if (extracted.companyName) {
-        form.basicInfo.companyName = extracted.companyName
-        fieldsFilled++
-      }
-      if (extracted.companyShortName) {
-        form.basicInfo.companyShortName = extracted.companyShortName
-        fieldsFilled++
-      }
-      if (extracted.industry) {
-        form.basicInfo.industry = extracted.industry
-        fieldsFilled++
-      }
-      if (extracted.companyRegion) {
-        form.basicInfo.companyRegion = extracted.companyRegion
-        fieldsFilled++
-      }
-      if (extracted.mainBizArea) {
-        form.basicInfo.mainBizArea = extracted.mainBizArea
-        fieldsFilled++
-      }
-      if (extracted.companyScale) {
-        form.basicInfo.companyScale = extracted.companyScale
-        fieldsFilled++
-      }
-      if (extracted.website) {
-        form.basicInfo.website = extracted.website
-      }
-      if (extracted.socialMedia) {
-        form.basicInfo.socialMedia = extracted.socialMedia
-        fieldsFilled++
-      }
-      if (extracted.contactName) {
-        form.basicInfo.contactName = extracted.contactName
-        fieldsFilled++
-      }
-      if (extracted.contactPhone) {
-        form.basicInfo.contactPhone = extracted.contactPhone
-        fieldsFilled++
-      }
-      if (extracted.contactEmail) {
-        form.basicInfo.contactEmail = extracted.contactEmail
-        fieldsFilled++
-      }
-
-      // 填充核心业务与定位
-      if (extracted.coreBizIntro) {
-        form.bizPositioning.coreBizIntro = extracted.coreBizIntro
-        fieldsFilled++
-      }
-      if (extracted.targetCustomer) {
-        form.bizPositioning.targetCustomer = extracted.targetCustomer
-        fieldsFilled++
-      }
-      if (extracted.customerPainPoint) {
-        form.bizPositioning.customerPainPoint = extracted.customerPainPoint
-        fieldsFilled++
-      }
-      if (extracted.differentialAdvantage) {
-        form.bizPositioning.differentialAdvantage = extracted.differentialAdvantage
-        fieldsFilled++
-      }
-      if (extracted.forbiddenBiz) {
-        form.bizPositioning.forbiddenBiz = extracted.forbiddenBiz
-        fieldsFilled++
-      }
-
-      // 填充产品与服务
-      if (extracted.productServiceList && extracted.productServiceList.length > 0) {
-        form.productService.productServiceList = extracted.productServiceList
-        fieldsFilled++
-      }
-      if (extracted.productSellPoint) {
-        form.productService.productSellPoint = extracted.productSellPoint
-        fieldsFilled++
-      }
-      if (extracted.serviceDetails) {
-        form.productService.serviceDetails = extracted.serviceDetails
-        fieldsFilled++
-      }
-      if (extracted.coreKeywords && extracted.coreKeywords.length > 0) {
-        form.productService.coreKeywords = extracted.coreKeywords
-        fieldsFilled++
-      }
-
-      // 填充竞品信息
-      if (extracted.competitors && extracted.competitors.length > 0) {
-        form.competitorMarket.competitors = extracted.competitors
-        fieldsFilled++
-      }
-      if (extracted.competitorAdvDisadv) {
-        form.competitorMarket.competitorAdvDisadv = extracted.competitorAdvDisadv
-        fieldsFilled++
-      }
-      if (extracted.marketGap) {
-        form.competitorMarket.marketGap = extracted.marketGap
-        fieldsFilled++
-      }
-
-      // 填充GEO目标
-      if (extracted.promotionGoals && extracted.promotionGoals.length > 0) {
-        form.geoGoals.promotionGoals = extracted.promotionGoals
-        fieldsFilled++
-      }
-      if (extracted.keyPromotionArea) {
-        form.geoGoals.keyPromotionArea = extracted.keyPromotionArea
-        fieldsFilled++
-      }
-      if (extracted.forbiddenPromotionArea) {
-        form.geoGoals.forbiddenPromotionArea = extracted.forbiddenPromotionArea
-        fieldsFilled++
-      }
-      if (extracted.keywordDirection && extracted.keywordDirection.length > 0) {
-        form.geoGoals.keywordDirection = extracted.keywordDirection
-        fieldsFilled++
-      }
-      if (extracted.budgetAndRhythm) {
-        form.geoGoals.budgetAndRhythm = extracted.budgetAndRhythm
-        fieldsFilled++
-      }
-      if (extracted.expectedEffect) {
-        form.geoGoals.expectedEffect = extracted.expectedEffect
-        fieldsFilled++
-      }
-
-      // 步骤3: 匹配附件
-      aiFillStep.value = 3
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      if (extracted.files && extracted.files.length > 0) {
-        for (const file of extracted.files) {
-          if (file.type === 'cert') {
-            uploadedFiles.certFiles.push({ name: file.name, url: file.url })
-            filesMatched++
-          } else if (file.type === 'product') {
-            uploadedFiles.productFiles.push({ name: file.name, url: file.url })
-            filesMatched++
-          } else if (file.type === 'service') {
-            uploadedFiles.serviceFiles.push({ name: file.name, url: file.url })
-            filesMatched++
-          } else if (file.type === 'case') {
-            uploadedFiles.caseFiles.push({ name: file.name, url: file.url })
-            filesMatched++
-          }
-        }
-      }
-
-      // 填充附件备注
-      if (extracted.fileRemark) {
-        form.fileIndex.fileRemark = extracted.fileRemark
-      }
-
-      // 填充补充信息
-      if (extracted.brandForbiddenWords) {
-        form.supplement.brandForbiddenWords = extracted.brandForbiddenWords
-        fieldsFilled++
-      }
-      if (extracted.complianceRequirements) {
-        form.supplement.complianceRequirements = extracted.complianceRequirements
-        fieldsFilled++
-      }
-      if (extracted.previousPromotion) {
-        form.supplement.previousPromotion = extracted.previousPromotion
-        fieldsFilled++
-      }
-      if (extracted.specialRequirements) {
-        form.supplement.specialRequirements = extracted.specialRequirements
-        fieldsFilled++
-      }
-
-      // 步骤4: 完成
-      aiFillStep.value = 4
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      aiFillResult.value = {
-        status: 'success',
-        message: fieldsFilled > 0 ? 'AI填写完成，请检查并修正内容' : '未找到更多可填充信息，请手动填写',
-        stats: {
-          fields: fieldsFilled,
-          files: filesMatched
-        }
-      }
-
-      showToast('AI智能填写完成，已填充 ' + fieldsFilled + ' 个字段', 'success')
-
-      // 展开所有模块让用户检查
-      Object.keys(expandedSections).forEach(key => {
-        expandedSections[key] = true
-      })
-
-    } else {
-      aiFillResult.value = {
-        status: 'warning',
-        message: '未能从网站提取到信息，请手动填写',
-        stats: null
-      }
-      showToast(t('knowledge.ai.suggestionFailed'), 'warning')
-    }
-
-  } catch (error) {
-    console.error('AI填写失败:', error)
-    aiFillResult.value = {
-      status: 'error',
-      message: 'AI填写失败：' + (error.message || '网络错误'),
-      stats: null
-    }
-    showToast('AI填写失败，请稍后重试或手动填写', 'error')
-  } finally {
-    aiFilling.value = false
-    aiFillStep.value = 0
-  }
-}
-
-// 从URL提取信息并智能填充
-async function extractFromUrlAndFill(field, url) {
-  if (!url) {
-    showToast(t('knowledge.ai.urlRequired'), 'warning')
-    return
-  }
-  aiLoading.value = true
-  try {
-    const result = await extractFromUrl(url, field)
-    if (result?.data) {
-      const { extracted, confidence } = result.data
-      if (confidence > 0.7 && extracted) {
-        // 高置信度时自动填充
-        applyFieldValue(field, extracted)
-        showToast(`已自动填充${field}，置信度${(confidence * 100).toFixed(0)}%`, 'success')
-      } else {
-        // 低置信度时提示用户确认
-        showToast(t('knowledge.ai.suggestionGenerated'), 'info')
-        console.log('提取结果:', result.data)
-      }
-    }
-  } catch (error) {
-    console.error('URL信息提取失败:', error)
-    showToast(t('knowledge.ai.suggestionFailed'), 'error')
-  } finally {
-    aiLoading.value = false
-  }
-}
-
-// 应用字段值到表单
-function applyFieldValue(field, value) {
-  const fieldMapping = {
-    companyName: 'basicInfo.companyName',
-    companyShortName: 'basicInfo.companyShortName',
-    industry: 'basicInfo.industry',
-    coreBizIntro: 'bizPositioning.coreBizIntro',
-    targetCustomer: 'bizPositioning.targetCustomer',
-  }
-  
-  const formPath = fieldMapping[field]
-  if (formPath) {
-    const parts = formPath.split('.')
-    if (parts.length === 2) {
-      form[parts[0]][parts[1]] = value
-    }
-  }
-}
-
-// 保存知识库
-async function saveKnowledge() {
-  saving.value = true
-  try {
-    // 上传文件
-    for (const [module, files] of Object.entries(uploadedFiles)) {
-      if (files && files.length > 0) {
-        for (const fileItem of files) {
-          if (fileItem.file) {
-            await uploadFile(fileItem.file, module)
-          }
-        }
-      }
-    }
-
-    // 保存表单数据
-    await updateKnowledgeBase(form)
-    showToast(t('knowledge.toast.saveSuccess'))
+export default {
+  name: 'KnowledgePage',
+  setup() {
+    const { theme } = useTheme()
     
-    // 刷新数据
-    await loadKnowledge()
-  } catch (error) {
-    showToast(t('knowledge.toast.saveFailed'), 'error')
-  } finally {
-    saving.value = false
-  }
-}
+    // URL 抓取相关
+    // 企查查公司查询
+    const companyNameInput = ref('')
+    const searching = ref(false)
+    const fetchError = ref('')
+    const fetchSuccess = ref(false)
+    
+    // 进度显示
+    const progressPercent = ref(0)
+    const progressText = ref('准备中...')
 
-// 加载知识库数据
-async function loadKnowledge() {
-  try {
-    const res = await getKnowledgeBase()
-    if (res.data) {
-      knowledgeData.value = res.data
-      const data = res.data
-      
-      // 填充表单
-      if (data.basicInfo) Object.assign(form.basicInfo, data.basicInfo)
-      if (data.bizPositioning) Object.assign(form.bizPositioning, data.bizPositioning)
-      if (data.productService) Object.assign(form.productService, data.productService)
-      if (data.competitorMarket) Object.assign(form.competitorMarket, data.competitorMarket)
-      if (data.geoGoals) Object.assign(form.geoGoals, data.geoGoals)
-      if (data.fileIndex) Object.assign(form.fileIndex, data.fileIndex)
-      if (data.supplement) Object.assign(form.supplement, data.supplement)
-      
-      // 填充已上传文件
-      if (data.fileIndex) {
-        for (const [module, files] of Object.entries(data.fileIndex)) {
-          if (module !== 'fileRemark' && Array.isArray(files)) {
-            uploadedFiles[module] = files.map(f => ({ name: f.name, url: f.url }))
+    // 各模块保存状态
+    const saving1 = ref(false)
+    const saving2 = ref(false)
+    const saving3 = ref(false)
+    const saving4 = ref(false)
+    const saving5 = ref(false)
+    const saving6 = ref(false)
+    const saving7 = ref(false)
+
+    const toast = reactive({
+      show: false,
+      message: '',
+      type: 'info',
+    })
+
+    // 7个模块的表单数据
+    const form = reactive({
+      module1: {
+        companyName: '',
+        industry: '',
+        companySize: '',
+        region: '',
+        website: '',
+        slogan: '',
+        intro: '',
+      },
+      module2: {
+        coreBusiness: '',
+        positioning: '',
+        targetCustomers: '',
+        differentiation: '',
+        brandStory: '',
+      },
+      module3: {
+        mainProducts: '',
+        sellPoints: '',
+        priceRange: '',
+        seoKeywords: '',
+        serviceProcess: '',
+      },
+      module4: {
+        competitors: '',
+        marketEnv: '',
+        comparisonAdvantage: '',
+      },
+      module5: {
+        geoKeywords: '',
+        targetRegions: '',
+        contentGoals: '',
+        contentStyle: '',
+      },
+      module6: {
+        uploadedFiles: [],
+        notes: '',
+      },
+      module7: {
+        contactPhone: '',
+        contactEmail: '',
+        socialWechat: '',
+        socialWeibo: '',
+        socialZhihu: '',
+        socialDouyin: '',
+        specialRequirements: '',
+      },
+    })
+
+    const showToast = (message, type = 'info') => {
+      toast.message = message
+      toast.type = type
+      toast.show = true
+      setTimeout(() => {
+        toast.show = false
+      }, 3000)
+    }
+
+    // 加载智库数据
+    const loadProfile = async () => {
+      try {
+        const res = await getKnowledgeBase()
+        if (res?.data) {
+          const data = res.data
+          // 模块一
+          if (data.basicInfo) {
+            Object.assign(form.module1, {
+              companyName: data.basicInfo.companyName || '',
+              industry: data.basicInfo.industry || '',
+              companySize: data.basicInfo.companySize || '',
+              region: data.basicInfo.region || '',
+              website: data.basicInfo.website || '',
+              slogan: data.basicInfo.slogan || '',
+              intro: data.basicInfo.intro || '',
+            })
+          }
+          // 模块二
+          if (data.bizPositioning) {
+            Object.assign(form.module2, {
+              coreBusiness: data.bizPositioning.coreBusiness || '',
+              positioning: data.bizPositioning.positioning || '',
+              targetCustomers: data.bizPositioning.targetCustomers || '',
+              differentiation: data.bizPositioning.differentiation || '',
+              brandStory: data.bizPositioning.brandStory || '',
+            })
+          }
+          // 模块三
+          if (data.productService) {
+            Object.assign(form.module3, {
+              mainProducts: data.productService.mainProducts || '',
+              sellPoints: data.productService.sellPoints || '',
+              priceRange: data.productService.priceRange || '',
+              seoKeywords: data.productService.seoKeywords || '',
+              serviceProcess: data.productService.serviceProcess || '',
+            })
+          }
+          // 模块四
+          if (data.competitorMarket) {
+            Object.assign(form.module4, {
+              competitors: data.competitorMarket.competitors || '',
+              marketEnv: data.competitorMarket.marketEnv || '',
+              comparisonAdvantage: data.competitorMarket.comparisonAdvantage || '',
+            })
+          }
+          // 模块五
+          if (data.geoGoals) {
+            Object.assign(form.module5, {
+              geoKeywords: data.geoGoals.geoKeywords || '',
+              targetRegions: data.geoGoals.targetRegions || '',
+              contentGoals: data.geoGoals.contentGoals || '',
+              contentStyle: data.geoGoals.contentStyle || '',
+            })
+          }
+          // 模块七
+          if (data.contact) {
+            Object.assign(form.module7, {
+              contactPhone: data.contact.phone || '',
+              contactEmail: data.contact.email || '',
+              socialWechat: data.contact.wechat || '',
+              socialWeibo: data.contact.weibo || '',
+              socialZhihu: data.contact.zhihu || '',
+              socialDouyin: data.contact.douyin || '',
+            })
+          }
+          if (data.specialRequirements) {
+            form.module7.specialRequirements = data.specialRequirements
           }
         }
+      } catch (err) {
+        console.error('加载智库失败:', err)
       }
     }
-  } catch (error) {
-    console.error(t('knowledge.toast.loadFailed'), error)
-  }
-}
 
-// Toast提示
-function showToast(message, type = 'success') {
-  toast.message = message
-  toast.show = true
-  setTimeout(() => { toast.show = false }, 3000)
-}
+    // AI URL 抓取 - 直接填充表单
+    const handleFetchWebsite = async () => {
+      if (!urlInput.value.trim()) return
 
-// 格式化日期
-function formatDate(date) {
-  if (!date) return '-'
-  return new Date(date).toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
+      fetching.value = true
+      fetchError.value = ''
+      fetchSuccess.value = false
 
-// 初始化
-onMounted(() => {
-  loadKnowledge()
-})
+      try {
+        const result = await getAISuggestion(urlInput.value)
+        
+        if (result.code === 0 && result.data) {
+          const s = result.data
+          
+          // 填充模块一：基础信息
+          if (s.basicInfo) {
+            if (s.basicInfo.companyName) form.module1.companyName = s.basicInfo.companyName
+            if (s.basicInfo.industry) form.module1.industry = s.basicInfo.industry
+            if (s.basicInfo.companyRegion) form.module1.region = s.basicInfo.companyRegion
+            if (s.basicInfo.website) form.module1.website = s.basicInfo.website
+            if (s.basicInfo.slogan) form.module1.slogan = s.basicInfo.slogan
+            if (s.basicInfo.intro) form.module1.intro = s.basicInfo.intro
+            if (s.basicInfo.companySize) form.module1.companySize = s.basicInfo.companySize
+          }
+          
+          // 填充模块二：业务定位
+          if (s.bizPositioning) {
+            if (s.bizPositioning.coreBizIntro) form.module2.coreBusiness = s.bizPositioning.coreBizIntro
+            if (s.bizPositioning.targetCustomer) form.module2.targetCustomers = s.bizPositioning.targetCustomer
+            if (s.bizPositioning.differentialAdvantage) form.module2.differentiation = s.bizPositioning.differentialAdvantage
+            if (s.bizPositioning.positioning) form.module2.positioning = s.bizPositioning.positioning
+            if (s.bizPositioning.brandStory) form.module2.brandStory = s.bizPositioning.brandStory
+          }
+          
+          // 填充模块三：产品服务
+          if (s.productService) {
+            if (s.productService.mainProducts) form.module3.mainProducts = s.productService.mainProducts
+            if (s.productService.sellPoints) form.module3.sellPoints = s.productService.sellPoints
+            if (s.productService.serviceProcess) form.module3.serviceProcess = s.productService.serviceProcess
+            if (s.productService.seoKeywords?.length) form.module3.seoKeywords = s.productService.seoKeywords.join(', ')
+          }
+          
+          // 填充模块七：联系方式
+          if (s.contact) {
+            if (s.contact.phone) form.module7.contactPhone = s.contact.phone
+            if (s.contact.email) form.module7.contactEmail = s.contact.email
+            if (s.contact.wechat) form.module7.socialWechat = s.contact.wechat
+            if (s.contact.weibo) form.module7.socialWeibo = s.contact.weibo
+            if (s.contact.zhihu) form.module7.socialZhihu = s.contact.zhihu
+            if (s.contact.douyin) form.module7.socialDouyin = s.contact.douyin
+          }
+          
+          fetchSuccess.value = true
+          showToast('AI 已填充数据，请检查并修改后保存', 'success')
+        } else {
+          fetchError.value = result.message || 'AI 分析失败'
+        }
+      } catch (err) {
+        console.error('URL 抓取失败:', err)
+        fetchError.value = err.message || '网络错误，请稍后重试'
+      } finally {
+        fetching.value = false
+      }
+    }
+
+    // 企查查公司查询
+    // AI 智能填写 - 整合企查查和大模型
+    const handleSearchCompany = async () => {
+      if (!companyNameInput.value.trim()) return
+
+      searching.value = true
+      fetchError.value = ''
+      fetchSuccess.value = false
+      progressPercent.value = 0
+      progressText.value = '准备中...'
+
+      try {
+        // 调用统一的 AI 智能填写接口
+        const result = await searchCompany(companyNameInput.value)
+        
+        if (result.code === 0 && result.data) {
+          const data = result.data
+          
+          // 模块一：基础信息（来自企查查）
+          progressText.value = '填充企业基础信息...'
+          progressPercent.value = 15
+          if (data.basicInfo) {
+            if (data.basicInfo.companyName) form.module1.companyName = data.basicInfo.companyName
+            if (data.basicInfo.industry) form.module1.industry = data.basicInfo.industry
+            if (data.basicInfo.companySize) form.module1.companySize = data.basicInfo.companySize
+            if (data.basicInfo.region) form.module1.region = data.basicInfo.region
+            if (data.basicInfo.website) form.module1.website = data.basicInfo.website
+            if (data.basicInfo.slogan) form.module1.slogan = data.basicInfo.slogan
+            if (data.basicInfo.intro) form.module1.intro = data.basicInfo.intro
+          }
+          
+          // 模块二：核心业务与定位（来自大模型）
+          progressText.value = '抓取核心业务与定位...'
+          progressPercent.value = 30
+          if (data.bizPositioning) {
+            if (data.bizPositioning.coreBusiness) form.module2.coreBusiness = data.bizPositioning.coreBusiness
+            if (data.bizPositioning.targetCustomers) form.module2.targetCustomers = data.bizPositioning.targetCustomers
+            if (data.bizPositioning.positioning) form.module2.positioning = data.bizPositioning.positioning
+            if (data.bizPositioning.differentiation) form.module2.differentiation = data.bizPositioning.differentiation
+            if (data.bizPositioning.brandStory) form.module2.brandStory = data.bizPositioning.brandStory
+          }
+          
+          // 模块三：产品与服务详情（来自大模型）
+          progressText.value = '抓取产品与服务详情...'
+          progressPercent.value = 45
+          if (data.productService) {
+            if (data.productService.mainProducts) form.module3.mainProducts = data.productService.mainProducts
+            if (data.productService.sellPoints) form.module3.sellPoints = data.productService.sellPoints
+            if (data.productService.serviceProcess) form.module3.serviceProcess = data.productService.serviceProcess
+            if (data.productService.priceRange) form.module3.priceRange = data.productService.priceRange
+            if (data.productService.seoKeywords) form.module3.seoKeywords = data.productService.seoKeywords
+          }
+          
+          // 模块四：竞品与市场信息（来自大模型）
+          progressText.value = '分析竞品与市场格局...'
+          progressPercent.value = 60
+          if (data.competitorMarket) {
+            if (data.competitorMarket.competitors) form.module4.competitors = data.competitorMarket.competitors
+            if (data.competitorMarket.marketEnv) form.module4.marketEnv = data.competitorMarket.marketEnv
+            if (data.competitorMarket.comparisonAdvantage) form.module4.comparisonAdvantage = data.competitorMarket.comparisonAdvantage
+          }
+          
+          // 模块五：GEO推广目标（来自大模型）
+          progressText.value = '生成GEO推广策略...'
+          progressPercent.value = 75
+          if (data.geoGoals) {
+            if (data.geoGoals.geoKeywords) form.module5.geoKeywords = data.geoGoals.geoKeywords
+            if (data.geoGoals.targetRegions) form.module5.targetRegions = data.geoGoals.targetRegions
+            if (data.geoGoals.contentGoals) form.module5.contentGoals = data.geoGoals.contentGoals
+            if (data.geoGoals.contentStyle) form.module5.contentStyle = data.geoGoals.contentStyle
+          }
+          
+          // 模块七：联系方式（来自企查查）
+          progressText.value = '获取联系方式...'
+          progressPercent.value = 90
+          if (data.contact) {
+            if (data.contact.phone) form.module7.contactPhone = data.contact.phone
+            if (data.contact.email) form.module7.contactEmail = data.contact.email
+            if (data.contact.wechat) form.module7.socialWechat = data.contact.wechat
+            if (data.contact.weibo) form.module7.socialWeibo = data.contact.weibo
+            if (data.contact.zhihu) form.module7.socialZhihu = data.contact.zhihu
+            if (data.contact.douyin) form.module7.socialDouyin = data.contact.douyin
+          }
+          
+          progressPercent.value = 100
+          progressText.value = '填写完成！'
+          fetchSuccess.value = true
+          showToast('AI 智能填写完成，请检查并修改后保存', 'success')
+        } else {
+          fetchError.value = result.message || 'AI 填写失败'
+        }
+      } catch (err) {
+        console.error('AI 填写失败:', err)
+        fetchError.value = err.message || '网络错误，请稍后重试'
+      } finally {
+        setTimeout(() => {
+          searching.value = false
+          progressPercent.value = 0
+          progressText.value = ''
+        }, 500)
+      }
+    }
+
+    // 各模块保存函数
+    const saveModule1 = async () => {
+      saving1.value = true
+      try {
+        const data = {
+          basicInfo: form.module1,
+        }
+        await updateKnowledgeBase(data)
+        showToast('模块一保存成功', 'success')
+      } catch (err) {
+        console.error('保存失败:', err)
+        showToast('保存失败', 'error')
+      } finally {
+        saving1.value = false
+      }
+    }
+
+    const saveModule2 = async () => {
+      saving2.value = true
+      try {
+        const data = {
+          bizPositioning: form.module2,
+        }
+        await updateKnowledgeBase(data)
+        showToast('模块二保存成功', 'success')
+      } catch (err) {
+        console.error('保存失败:', err)
+        showToast('保存失败', 'error')
+      } finally {
+        saving2.value = false
+      }
+    }
+
+    const saveModule3 = async () => {
+      saving3.value = true
+      try {
+        const data = {
+          productService: {
+            ...form.module3,
+            seoKeywords: form.module3.seoKeywords.split(',').map(k => k.trim()).filter(Boolean),
+          },
+        }
+        await updateKnowledgeBase(data)
+        showToast('模块三保存成功', 'success')
+      } catch (err) {
+        console.error('保存失败:', err)
+        showToast('保存失败', 'error')
+      } finally {
+        saving3.value = false
+      }
+    }
+
+    const saveModule4 = async () => {
+      saving4.value = true
+      try {
+        const data = {
+          competitorMarket: form.module4,
+        }
+        await updateKnowledgeBase(data)
+        showToast('模块四保存成功', 'success')
+      } catch (err) {
+        console.error('保存失败:', err)
+        showToast('保存失败', 'error')
+      } finally {
+        saving4.value = false
+      }
+    }
+
+    const saveModule5 = async () => {
+      saving5.value = true
+      try {
+        const data = {
+          geoGoals: form.module5,
+        }
+        await updateKnowledgeBase(data)
+        showToast('模块五保存成功', 'success')
+      } catch (err) {
+        console.error('保存失败:', err)
+        showToast('保存失败', 'error')
+      } finally {
+        saving5.value = false
+      }
+    }
+
+    const saveModule6 = async () => {
+      saving6.value = true
+      try {
+        const data = {
+          uploadedFiles: form.module6.uploadedFiles,
+          materialNotes: form.module6.notes,
+        }
+        await updateKnowledgeBase(data)
+        showToast('模块六保存成功', 'success')
+      } catch (err) {
+        console.error('保存失败:', err)
+        showToast('保存失败', 'error')
+      } finally {
+        saving6.value = false
+      }
+    }
+
+    const saveModule7 = async () => {
+      saving7.value = true
+      try {
+        const data = {
+          contact: {
+            phone: form.module7.contactPhone,
+            email: form.module7.contactEmail,
+            wechat: form.module7.socialWechat,
+            weibo: form.module7.socialWeibo,
+            zhihu: form.module7.socialZhihu,
+            douyin: form.module7.socialDouyin,
+          },
+          specialRequirements: form.module7.specialRequirements,
+        }
+        await updateKnowledgeBase(data)
+        showToast('模块七保存成功', 'success')
+      } catch (err) {
+        console.error('保存失败:', err)
+        showToast('保存失败', 'error')
+      } finally {
+        saving7.value = false
+      }
+    }
+
+    const removeFile = (idx) => {
+      form.module6.uploadedFiles.splice(idx, 1)
+    }
+
+    onMounted(() => {
+      loadProfile()
+    })
+
+    return {
+      theme,
+      companyNameInput,
+      searching,
+      fetchError,
+      fetchSuccess,
+      progressPercent,
+      progressText,
+      form,
+      saving1,
+      saving2,
+      saving3,
+      saving4,
+      saving5,
+      saving6,
+      saving7,
+      toast,
+      handleSearchCompany,
+      saveModule1,
+      saveModule2,
+      saveModule3,
+      saveModule4,
+      saveModule5,
+      saveModule6,
+      saveModule7,
+      removeFile,
+    }
+  },
+}
 </script>
 
 <style scoped>
 .knowledge-page {
   min-height: 100vh;
-  background: var(--bg-primary);
   padding-bottom: 40px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
-/* Header */
 .page-header {
   position: sticky;
   top: 0;
@@ -1231,440 +911,326 @@ onMounted(() => {
 }
 
 .header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1600px;
+  max-width: 1200px;
   margin: 0 auto;
-  gap: 20px;
-}
-
-.header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
 }
 
 .page-title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
+  margin: 0 0 4px 0;
 }
 
 .page-subtitle {
   font-size: 0.875rem;
   color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.brand-tag {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.report-count {
-  font-size: 0.75rem;
-  color: var(--color-primary);
-  background: rgba(99, 102, 241, 0.12);
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-.last-update {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-.header-actions {
-  display: flex;
-  gap: 8px;
-}
-
-/* Buttons */
-.primary-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-.primary-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.primary-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.primary-btn.large {
-  padding: 14px 48px;
-  font-size: 16px;
-}
-
-.secondary-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-.secondary-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-/* AI智能填写区域 */
-.ai-fill-section {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
-.ai-fill-card {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.08));
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 20px;
-  padding: 28px;
-}
-
-.ai-fill-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.ai-icon {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-  border-radius: 14px;
-  color: white;
-  flex-shrink: 0;
-}
-
-.ai-fill-title h3 {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 4px;
-}
-
-.ai-fill-title p {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
   margin: 0;
 }
 
-.ai-fill-form {
-  background: var(--bg-elevated);
-  border-radius: 16px;
+.ai-fetch-section {
+  max-width: 1200px;
+  margin: 24px auto;
   padding: 24px;
+  background: linear-gradient(135deg, rgba(22, 93, 255, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border: 1px solid var(--color-primary);
+  border-radius: 16px;
 }
 
-.url-input-group {
+.url-input-wrapper {
   display: flex;
   gap: 12px;
 }
 
-.url-input-group input {
+.url-input-box {
   flex: 1;
-  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-elevated);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  font-size: 1rem;
-  background: var(--bg-primary);
+  transition: border-color 0.2s;
+}
+
+.url-input-box:focus-within {
+  border-color: var(--color-primary);
+}
+
+.url-icon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.url-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.9375rem;
   color: var(--text-primary);
+  outline: none;
+}
+
+.url-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.url-input:disabled {
+  opacity: 0.6;
+}
+
+.url-hint {
+  margin-top: 12px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* 企查查公司搜索 */
+.company-search-box {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.search-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0 14px;
   transition: all 0.2s;
 }
 
-.url-input-group input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+.search-input-wrapper:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.url-input-group input::placeholder {
+.search-icon {
   color: var(--text-secondary);
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 12px 0;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
 }
 
 .ai-fill-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 28px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   color: white;
   border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+  transition: all 0.2s;
   white-space: nowrap;
 }
 
 .ai-fill-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.ai-fill-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .ai-fill-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
 }
 
-/* AI填写进度 */
-.ai-fill-progress {
-  margin-top: 24px;
-  padding: 20px;
-  background: var(--bg-secondary);
-  border-radius: 12px;
-}
-
-.progress-steps {
-  display: flex;
-  justify-content: space-between;
-  position: relative;
-}
-
-.progress-steps::before {
-  content: '';
-  position: absolute;
-  top: 12px;
-  left: 24px;
-  right: 24px;
-  height: 2px;
-  background: var(--border-color);
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-  z-index: 1;
-}
-
-.step-dot {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--bg-elevated);
-  border: 2px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-}
-
-.step.active .step-dot {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  animation: pulse 1.5s infinite;
-}
-
-.step.completed .step-dot {
-  background: var(--color-success);
-  border-color: var(--color-success);
-}
-
-.step.completed .step-dot::after {
-  content: '';
-  width: 8px;
-  height: 8px;
-  background: white;
-  border-radius: 50%;
-}
-
-.step-text {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  transition: color 0.3s;
-}
-
-.step.active .step-text,
-.step.completed .step-text {
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
-}
-
-/* AI填写结果 */
-.ai-fill-result {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.result-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.result-badge.success {
-  background: rgba(34, 197, 94, 0.12);
-  color: var(--color-success);
-}
-
-.result-badge.warning {
-  background: rgba(234, 179, 8, 0.12);
-  color: #ca8a04;
-}
-
-.result-badge.error {
-  background: rgba(239, 68, 68, 0.12);
-  color: var(--color-danger);
-}
-
-.result-stats {
-  display: flex;
-  gap: 16px;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.result-stats span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.result-stats span::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: var(--color-primary);
-  border-radius: 50%;
-}
-
-/* 进度指示器 */
-.progress-indicator {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 0 24px 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.progress-card {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
+/* 加载进度条 */
+.loading-progress {
+  margin-top: 16px;
 }
 
 .progress-bar {
-  flex: 1;
-  height: 8px;
+  height: 6px;
   background: var(--bg-secondary);
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-  border-radius: 4px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 3px;
   transition: width 0.3s ease;
 }
 
 .progress-text {
-  font-size: 0.875rem;
+  display: block;
+  margin-top: 8px;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
+  text-align: center;
+}
+
+.company-search-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.company-search-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.company-search-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.search-hint {
+  font-size: 0.8125rem;
+  color: #10b981;
+  margin-bottom: 8px;
+}
+
+.divider-text {
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+}
+
+.divider-text::before,
+.divider-text::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(50% - 40px);
+  height: 1px;
+  background: var(--border-color);
+}
+
+.divider-text::before {
+  left: 0;
+}
+
+.divider-text::after {
+  right: 0;
+}
+
+.divider-text span {
+  display: inline-block;
+  padding: 0 16px;
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  position: relative;
+}
+
+.ai-fetch-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
   white-space: nowrap;
-  min-width: 100px;
 }
 
-/* 知识库内容区域 */
-.knowledge-content {
-  max-width: 1600px;
+.ai-fetch-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(22, 93, 255, 0.3);
+}
+
+.ai-fetch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.error-message, .success-message {
+  max-width: 1200px;
+  margin: 0 auto 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-message {
+  background: rgba(245, 63, 63, 0.1);
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.success-message {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid var(--color-success);
+  color: var(--color-success);
+}
+
+.modules-container {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-/* 区块卡片 */
-.section-card {
+.module-card {
   background: var(--bg-elevated);
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  margin-bottom: 16px;
   overflow: hidden;
-  transition: all 0.3s ease;
 }
 
-.section-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-card-hover);
+.module-card.optional {
+  border-style: dashed;
 }
 
-.section-card.completed {
-  border-left: 3px solid var(--color-success);
+.module-header {
+  padding: 16px 24px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
 }
 
-.section-card.optional {
-  border-left: 3px solid var(--border-color);
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.section-title-row {
+.module-title {
   display: flex;
   align-items: center;
   gap: 12px;
+  font-size: 1.0625rem;
+  font-weight: 600;
 }
 
-.section-number {
+.module-num {
   width: 28px;
   height: 28px;
   display: flex;
@@ -1673,66 +1239,49 @@ onMounted(() => {
   background: var(--color-primary);
   color: white;
   border-radius: 50%;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.section-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
 }
 
 .required-tag {
-  font-size: 12px;
-  color: var(--color-danger);
-  background: rgba(239, 68, 68, 0.1);
   padding: 2px 8px;
-  border-radius: 10px;
+  background: rgba(22, 93, 255, 0.1);
+  color: var(--color-primary);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .optional-tag {
-  font-size: 12px;
-  color: var(--text-secondary);
-  background: var(--bg-secondary);
   padding: 2px 8px;
-  border-radius: 10px;
+  background: rgba(156, 163, 175, 0.1);
+  color: var(--text-tertiary);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
-.expand-icon {
-  color: var(--text-secondary);
-  transition: transform 0.2s ease;
+.module-content {
+  padding: 24px;
 }
 
-.expand-icon.expanded {
-  transform: rotate(180deg);
-}
-
-.section-body {
-  padding: 0 24px 24px;
-}
-
-.section-tip {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
+.module-tip {
+  margin: 0 0 16px;
   padding: 12px 16px;
-  background: var(--bg-secondary);
+  background: rgba(22, 93, 255, 0.05);
   border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
 }
 
-/* 表单网格 */
-.form-grid {
+.form-grid-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 16px;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  margin-bottom: 16px;
 }
 
 .form-group.full-width {
@@ -1740,491 +1289,157 @@ onMounted(() => {
 }
 
 .form-group label {
-  font-size: 14px;
+  display: block;
+  font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-primary);
-}
-
-.form-group .required {
-  color: var(--color-danger);
+  color: var(--text-secondary);
+  margin-bottom: 6px;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
-  padding: 10px 14px;
+  width: 100%;
+  padding: 10px 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-size: 14px;
-  background: var(--bg-primary);
+  font-size: 0.9375rem;
+  background: var(--bg-elevated);
   color: var(--text-primary);
   transition: border-color 0.2s;
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-/* 复选框组 */
-.checkbox-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-tertiary);
 }
 
-.checkbox-group label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.form-group select {
   cursor: pointer;
-  font-weight: normal;
-  font-size: 14px;
-  color: var(--text-primary);
 }
 
-.checkbox-group input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--color-primary);
-}
-
-/* 输入+按钮组合 */
-.input-with-action {
+.module-actions {
   display: flex;
-  gap: 8px;
-}
-
-.input-with-action input {
-  flex: 1;
-}
-
-.ai-btn {
-  padding: 10px 16px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-}
-
-.ai-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
-}
-
-.ai-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* 表格输入 */
-.table-input {
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.table-header {
-  display: grid;
-  grid-template-columns: 1fr 1fr 80px;
-  gap: 8px;
-  padding: 10px 12px;
-  background: var(--bg-secondary);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.table-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 80px;
-  gap: 8px;
-  padding: 8px 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid var(--border-color);
-  align-items: center;
 }
 
-.table-row input {
-  padding: 8px 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 13px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-}
-
-.table-row input:focus {
-  border-color: var(--color-primary);
-  outline: none;
-}
-
-.remove-btn {
-  padding: 6px 12px;
-  background: none;
-  border: 1px solid var(--color-danger);
-  color: var(--color-danger);
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.remove-btn:hover {
-  background: var(--color-danger);
-  color: white;
-}
-
-.add-row-btn {
-  width: 100%;
-  padding: 10px;
-  background: none;
-  border: none;
-  border-top: 1px solid var(--border-color);
-  color: var(--color-primary);
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.add-row-btn:hover {
-  background: var(--bg-secondary);
-}
-
-/* 标签输入 */
-.tag-input {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 8px 12px;
-  border: 1px solid var(--border-color);
+.btn {
+  padding: 10px 24px;
   border-radius: 8px;
-  min-height: 44px;
-  background: var(--bg-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
 }
 
-.tag-input .tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
+.btn-primary {
   background: var(--color-primary);
   color: white;
-  border-radius: 16px;
-  font-size: 13px;
 }
 
-.tag-input .tag-remove {
-  cursor: pointer;
-  opacity: 0.7;
-  font-size: 14px;
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
-.tag-input .tag-remove:hover {
-  opacity: 1;
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.tag-input input {
-  flex: 1;
-  min-width: 120px;
-  border: none;
-  padding: 4px;
-  font-size: 14px;
-  background: transparent;
-  color: var(--text-primary);
-}
-
-.tag-input input:focus {
-  outline: none;
-}
-
-/* 文件上传 */
-.file-upload-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-.file-upload-item h4 {
-  font-size: 15px;
-  font-weight: 600;
-  margin: 0 0 4px;
-  color: var(--text-primary);
-}
-
-.file-desc {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin: 0 0 12px;
-}
-
-.file-upload-area {
-  padding: 24px;
+.upload-area {
   border: 2px dashed var(--border-color);
   border-radius: 12px;
+  padding: 40px;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.file-upload-area:hover {
+.upload-area:hover {
   border-color: var(--color-primary);
-  background: var(--bg-secondary);
+  background: rgba(22, 93, 255, 0.02);
 }
 
 .upload-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
 }
 
 .upload-placeholder svg {
-  opacity: 0.5;
-}
-
-.file-list {
-  margin-top: 8px;
-}
-
-.file-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 10px;
-  background: var(--bg-secondary);
-  border-radius: 6px;
-  margin-bottom: 4px;
-  font-size: 13px;
-}
-
-.file-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--text-primary);
-}
-
-.file-remove {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-size: 16px;
-  transition: color 0.2s;
-}
-
-.file-remove:hover {
-  color: var(--color-danger);
-}
-
-/* 底部保存按钮 */
-.bottom-actions {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 0 24px 24px;
-  text-align: center;
-  margin-top: 24px;
-}
-
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  padding: 12px 24px;
-  background: var(--text-primary);
-  color: var(--bg-primary);
-  border-radius: 8px;
-  font-size: 14px;
-  opacity: 0;
-  transition: all 0.3s ease;
-  z-index: 1000;
-}
-
-.toast.show {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-}
-
-/* 弹窗 */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
-}
-
-.modal-container {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.close-btn:hover {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-}
-
-.modal-body {
-  padding: 20px 24px;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
-.history-item {
-  padding: 16px;
-  background: var(--bg-secondary);
-  border-radius: 8px;
   margin-bottom: 12px;
 }
 
-.history-version {
-  font-weight: 600;
-  color: var(--color-primary);
-  margin-bottom: 4px;
-}
-
-.history-time {
-  font-size: 13px;
+.upload-placeholder p {
+  margin: 0 0 4px;
+  font-size: 0.9375rem;
   color: var(--text-secondary);
 }
 
-.history-remark {
-  margin-top: 8px;
-  font-size: 14px;
-  color: var(--text-primary);
+.upload-placeholder span {
+  font-size: 0.8125rem;
 }
 
-.empty-state {
+.uploaded-files {
+  margin-top: 16px;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.uploaded-file {
+  display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 40px;
-  color: var(--text-secondary);
-  text-align: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.875rem;
 }
 
-/* Loading spinner */
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+.remove-btn {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-danger);
+  color: white;
+  border: none;
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  font-size: 14px;
+  cursor: pointer;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: white;
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
 }
 
-/* 响应式 */
-@media (max-width: 1024px) {
-  .file-upload-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .ai-diagnosis-panel {
-    position: static;
-    float: none;
-    width: 100%;
-    margin-bottom: 24px;
-  }
-}
+.toast.success { background: var(--color-success); }
+.toast.error { background: var(--color-danger); }
+.toast.info { background: var(--color-primary); }
 
-@media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .header-actions {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-  
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .file-upload-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .progress-card {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .progress-text {
-    text-align: center;
-  }
-}
-
-/* Light theme specific styles */
-[data-theme="light"] .section-card {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="light"] .progress-card {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="light"] .modal-container {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-}
-
-[data-theme="light"] .ai-btn {
-  box-shadow: 0 4px 12px rgba(22, 93, 255, 0.25);
-}
-
-[data-theme="light"] .ai-btn:hover {
-  box-shadow: 0 6px 16px rgba(22, 93, 255, 0.35);
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>

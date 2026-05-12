@@ -3,7 +3,7 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">账户设置</h1>
+          <h1 class="page-title">ModelBuddy·会员账户管理</h1>
           <span class="page-subtitle">管理个人信息、品牌资料、通知偏好和安全设置</span>
         </div>
       </div>
@@ -61,8 +61,8 @@
               <input v-model="user.website" type="url" placeholder="https://www.example.com" />
             </div>
           </div>
-          <button class="primary-btn" @click="saveProfile" :disabled="saving">
-            {{ saving ? '保存中...' : '保存更改' }}
+          <button class="btn-save" @click="saveProfile" :disabled="saving">
+            {{ saving ? '保存中...' : '保存' }}
           </button>
         </div>
 
@@ -84,8 +84,8 @@
               <input v-model="brand.website" type="url" placeholder="https://www.yourbrand.com" />
             </div>
           </div>
-          <button class="primary-btn" @click="saveBrand" :disabled="saving">
-            {{ saving ? '保存中...' : '保存品牌信息' }}
+          <button class="btn-save" @click="saveBrand" :disabled="saving">
+            {{ saving ? '保存中...' : '保存' }}
           </button>
         </div>
 
@@ -159,8 +159,10 @@
           </div>
           <div class="danger-zone">
             <h3>危险区域</h3>
-            <button class="danger-btn">导出账户数据</button>
-            <button class="danger-btn outline">注销账户</button>
+            <div class="btn-row">
+              <button class="danger-btn">导出账户数据</button>
+              <button class="danger-btn outline">注销账户</button>
+            </div>
           </div>
         </div>
       </div>
@@ -397,33 +399,31 @@ onMounted(() => {
   margin-top: 2px;
 }
 
-/* Settings Content */
+/* Settings Content - 上下布局 */
 .settings-content {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 24px;
-}
-
-@media (max-width: 768px) {
-  .settings-content {
-    grid-template-columns: 1fr;
-  }
-}
-
-.settings-nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0;
+}
+
+/* 顶部标签导航 */
+.settings-nav {
+  display: flex;
+  gap: 8px;
+  padding: 0 0 20px 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0;
+  flex-wrap: wrap;
 }
 
 .settings-nav button {
-  padding: 10px 14px;
-  text-align: left;
-  background: transparent;
-  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 0.875rem;
   color: var(--text-secondary);
@@ -432,20 +432,22 @@ onMounted(() => {
 }
 
 .settings-nav button:hover {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .settings-nav button.active {
   background: var(--color-primary);
+  border-color: var(--color-primary);
   color: white;
 }
 
 .settings-panel {
   background: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
+  border-radius: 0 0 16px 16px;
   padding: 28px;
+  border-top: none;
 }
 
 .section {
@@ -559,45 +561,68 @@ onMounted(() => {
 }
 
 /* Buttons */
+.btn-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 20px;
+  min-width: 80px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-save:hover {
+  opacity: 0.9;
+}
+
+.btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .primary-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 20px;
+  padding: 8px 16px;
   background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .primary-btn:hover {
   opacity: 0.9;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(22, 93, 255, 0.3);
 }
 
 .primary-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
 }
 
 .secondary-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 18px;
+  padding: 8px 16px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
   color: var(--text-primary);
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
@@ -686,10 +711,11 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 12px 16px;
   background: var(--bg-primary);
-  border-radius: 12px;
+  border-radius: 10px;
   transition: all 0.2s ease;
+  margin-bottom: 8px;
 }
 
 .security-item:hover {
@@ -700,7 +726,7 @@ onMounted(() => {
   margin-top: 16px;
   padding: 16px;
   border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 16px;
+  border-radius: 12px;
 }
 
 .danger-zone h3 {
@@ -710,16 +736,21 @@ onMounted(() => {
   margin-bottom: 12px;
 }
 
+.danger-zone .btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .danger-btn {
-  padding: 10px 18px;
+  padding: 8px 16px;
   background: rgba(239, 68, 68, 0.15);
   color: var(--color-danger);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
-  margin-right: 8px;
   transition: all 0.2s ease;
 }
 

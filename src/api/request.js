@@ -42,10 +42,19 @@ const request = async (url, options = {}) => {
       body: options.body
     })
     
-    const data = await response.json()
+    const text = await response.text()
+    
+    if (!text || text.trim() === '') {
+      if (!response.ok) {
+        throw new Error(`请求失败: ${response.status} ${response.statusText}`)
+      }
+      return {}
+    }
+    
+    const data = JSON.parse(text)
     
     if (!response.ok) {
-      throw new Error(data.message || 'Request failed')
+      throw new Error(data.message || `请求失败: ${response.status}`)
     }
     
     return data

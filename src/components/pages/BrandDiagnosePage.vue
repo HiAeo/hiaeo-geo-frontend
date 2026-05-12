@@ -4,7 +4,7 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">模镜 MiraSeek · AI可见度诊断</h1>
+          <h1 class="page-title">MiraSeek模镜·AI诊断报告</h1>
           <span class="page-subtitle">实时抓取 DeepSeek、豆包、Kimi 等主流大模型的回答数据，精准量化实体独占率与替代风险指数</span>
         </div>
         <div class="header-actions">
@@ -82,16 +82,34 @@
     <div class="reports-section">
       <div class="reports-header">
         <h2 class="section-title">诊断历史</h2>
-        <div class="filter-tabs">
-          <button :class="{ active: filter === 'all' }" @click="filter = 'all'">全部</button>
-          <button :class="{ active: filter === 'completed' }" @click="filter = 'completed'">已完成</button>
-          <button :class="{ active: filter === 'running' }" @click="filter = 'running'">进行中</button>
+        <div class="header-right">
+          <div class="filter-tabs">
+            <button :class="{ active: filter === 'all' }" @click="filter = 'all'">全部</button>
+            <button :class="{ active: filter === 'completed' }" @click="filter = 'completed'">已完成</button>
+            <button :class="{ active: filter === 'running' }" @click="filter = 'running'">进行中</button>
+          </div>
+          <button v-if="selectedReports.length > 0" class="delete-btn" @click="deleteSelected">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            删除 ({{ selectedReports.length }})
+          </button>
         </div>
       </div>
 
       <div class="reports-list">
-        <div v-for="report in filteredReports" :key="report.id" class="report-card" @click="viewReport(report)">
-          <div class="report-main">
+        <div class="list-header" v-if="filteredReports.length > 0">
+          <label class="checkbox-wrapper">
+            <input type="checkbox" :checked="isAllSelected" @change="toggleSelectAll" />
+            <span>全选</span>
+          </label>
+        </div>
+        <div v-for="report in filteredReports" :key="report.id" class="report-card" :class="{ selected: selectedReports.includes(report.id) }">
+          <div class="report-checkbox" @click.stop="toggleSelect(report.id)">
+            <input type="checkbox" :checked="selectedReports.includes(report.id)" />
+          </div>
+          <div class="report-main" @click="viewReport(report)">
             <div class="report-score-circle" :class="'score-' + getScoreClass(report.score)">
               <span class="score-num">{{ report.score || '-' }}</span>
               <span class="score-label">分</span>
@@ -233,6 +251,7 @@ const filter = ref('all')
 const latestScore = ref(null)
 const availableEngines = ref([])
 const selectedEngines = ref(['deepseek'])
+const selectedReports = ref([])
 
 const stats = ref({
   total: 0,
@@ -261,6 +280,11 @@ const filteredReports = computed(() => {
   return reports.value
 })
 
+const isAllSelected = computed(() => {
+  return filteredReports.value.length > 0 && 
+    filteredReports.value.every(r => selectedReports.value.includes(r.id))
+})
+
 // Methods
 const getScoreClass = (score) => {
   if (!score) return 'none'
@@ -278,6 +302,35 @@ const formatDate = (dateStr) => {
   if (!dateStr) return ''
   const date = new Date(dateStr)
   return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
+}
+
+const toggleSelect = (reportId) => {
+  const index = selectedReports.value.indexOf(reportId)
+  if (index === -1) {
+    selectedReports.value.push(reportId)
+  } else {
+    selectedReports.value.splice(index, 1)
+  }
+}
+
+const toggleSelectAll = () => {
+  if (isAllSelected.value) {
+    selectedReports.value = []
+  } else {
+    selectedReports.value = filteredReports.value.map(r => r.id)
+  }
+}
+
+const deleteSelected = async () => {
+  if (selectedReports.value.length === 0) return
+  
+  const confirmed = confirm(`确定要删除选中的 ${selectedReports.value.length} 个报告吗？此操作不可恢复。`)
+  if (!confirmed) return
+  
+  reports.value = reports.value.filter(r => !selectedReports.value.includes(r.id))
+  selectedReports.value = []
+  saveReports()
+  updateStats()
 }
 
 const toggleEngine = (engineId) => {
@@ -528,22 +581,52 @@ onMounted(() => {
 .stat-label { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 2px; }
 
 .reports-section { max-width: 1400px; margin: 0 auto; padding: 0 24px 24px; }
-.reports-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.reports-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
 .section-title { font-size: 1rem; font-weight: 700; }
 
 .filter-tabs { display: flex; gap: 4px; background: var(--bg-elevated); border: 1px solid var(--border-color); padding: 4px; border-radius: 10px; }
 .filter-tabs button { padding: 6px 14px; font-size: 0.8125rem; border: none; background: transparent; color: var(--text-secondary); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
 .filter-tabs button.active { background: var(--color-primary); color: white; }
 
+.delete-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; background: rgba(239, 68, 68, 0.1); color: var(--color-danger);
+  border: 1px solid var(--color-danger); border-radius: 10px; font-size: 0.875rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s ease;
+}
+.delete-btn:hover { background: var(--color-danger); color: white; }
+
 .reports-list { display: flex; flex-direction: column; gap: 12px; }
+
+.list-header {
+  display: flex; align-items: center; padding: 8px 12px;
+  background: var(--bg-elevated); border-radius: 10px; margin-bottom: 8px;
+}
+.checkbox-wrapper {
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; font-size: 0.875rem; color: var(--text-secondary);
+}
+.checkbox-wrapper input[type="checkbox"] {
+  width: 16px; height: 16px; cursor: pointer; accent-color: var(--color-primary);
+}
 
 .report-card {
   background: var(--bg-elevated); border: 1px solid var(--border-color);
-  border-radius: 16px; padding: 20px; cursor: pointer;
+  border-radius: 16px; padding: 20px;
   display: flex; align-items: center; justify-content: space-between;
   transition: all 0.2s;
 }
 .report-card:hover { border-color: var(--color-primary); transform: translateY(-1px); }
+.report-card.selected { border-color: var(--color-primary); background: rgba(99, 102, 241, 0.05); }
+
+.report-checkbox {
+  display: flex; align-items: center; justify-content: center;
+  margin-right: 16px; flex-shrink: 0;
+}
+.report-checkbox input[type="checkbox"] {
+  width: 18px; height: 18px; cursor: pointer; accent-color: var(--color-primary);
+}
 
 .report-main { display: flex; align-items: center; gap: 20px; flex: 1; }
 
