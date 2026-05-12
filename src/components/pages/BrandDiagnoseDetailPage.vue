@@ -409,47 +409,68 @@ const formatSummary = (summary) => {
   return summary.replace(/\n/g, '<br>').replace(/【(.*?)】/g, '<strong>【$1】</strong>')
 }
 
-const loadReport = () => {
+const loadReport = async () => {
   loading.value = true
-
+  error.value = null
+  
   const reportId = route.params.id
   console.log('[诊断详情] 加载报告, ID:', reportId)
-
-  // Try to load from localStorage
-  const savedReports = localStorage.getItem('diagnose_reports')
-  if (savedReports) {
-    const reports = JSON.parse(savedReports)
-    console.log('[诊断详情] localStorage 中的报告数:', reports.length)
-    const found = reports.find(r => r.id === reportId)
-    if (found) {
-      console.log('[诊断详情] 找到报告:', found)
-      report.value = found
-      if (found.result) {
-        aiResult.value = found.result
-        console.log('[诊断详情] aiResult 已设置:', aiResult.value)
-      } else {
-        console.warn('[诊断详情] 报告没有 result 字段，尝试从顶层获取数据')
-        // 兼容：直接从 report 获取数据（某些情况下数据可能直接在 report 顶层）
-        if (found.overallScore || found.score) {
-          aiResult.value = {
-            overallScore: found.overallScore || found.score,
-            dimensions: found.dimensions || [],
-            summary: found.summary || '',
-            keyFindings: found.keyFindings || [],
-            competitorAnalysis: found.competitorAnalysis || null,
-            contentSuggestions: found.contentSuggestions || [],
-          }
-          console.log('[诊断详情] 从顶层构建 aiResult:', aiResult.value)
-        }
+  
+  try {
+    const res = await diagnosisApi.getReportById(reportId)
+    
+    if (res?.success && res.data) {
+      const data = res.data
+      console.log('[诊断详情] API 返回数据:', data)
+      
+      // 映射报告基本信息
+      report.value = {
+        id: data.id,
+        brandName: data.brandName,
+        type: '完整诊断',
+        date: data.createdAt,
+        score: data.overallScore,
+        grade: data.grade,
+        engineName: data.enginesUsed?.[0] || '通用引擎'
       }
+      
+      // 映射 AI 诊断结果
+      aiResult.value = {
+        overallScore: data.overallScore,
+        summary: data.executiveSummary,
+        keyFindings: data.aiInsights ? data.aiInsights.split('\n').filter(Boolean) : [],
+        dimensions: (data.dimensionScores || []).map((dim, index) => ({
+          id: dim.id || `D${index + 1}`,
+          name: dim.name || `维度${index + 1}`,
+          score: dim.score || 0,
+          weight: dim.weight || 10,
+          benchmark: dim.benchmark || 60,
+          description: dim.description || '',
+          findings: dim.findings || [],
+          suggestions: (dim.suggestions || []).map(s => ({
+            priority: s.priority || '中',
+            action: s.action || s.text || ''
+          }))
+        })),
+        competitorAnalysis: data.competitorAnalysis,
+        contentSuggestions: (data.suggestions || []).map(s => ({
+          priority: s.priority || '中',
+          type: s.type || 'seo',
+          content: s.action || s.text || ''
+        }))
+      }
+      
+      console.log('[诊断详情] aiResult 已设置:', aiResult.value)
     } else {
       console.warn('[诊断详情] 未找到报告 ID:', reportId)
+      error.value = '报告未找到或已过期'
     }
-  } else {
-    console.warn('[诊断详情] localStorage 中没有诊断报告')
+  } catch (e) {
+    console.error('[诊断详情] 加载报告失败:', e)
+    error.value = e.message || '加载报告失败，请稍后重试'
+  } finally {
+    loading.value = false
   }
-
-  loading.value = false
 }
 
 // PDF Color palette
@@ -1237,7 +1258,7 @@ onMounted(() => {
 .header-left { display: flex; align-items: center; gap: 12px; }
 .back-btn { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--bg-elevated); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
 .back-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
-.page-title { font-size: 1.125rem; font-weight: 700; }
+.page-title { font-size: 1.25rem; font-weight: 700; }
 .page-subtitle { font-size: 0.8125rem; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
 .engine-tag { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-elevated); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; }
 .engine-logo-inline { width: 16px; height: 16px; object-fit: contain; }

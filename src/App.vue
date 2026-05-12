@@ -158,8 +158,8 @@ const handleLogin = async (data) => {
     if (userRole === 'admin') {
       router.push('/manage/overview')
     } else {
-      // 品牌用户默认跳转到诊断报告页
-      router.push('/app/diagnose')
+      // 品牌用户默认跳转到品牌智库页
+      router.push('/app/knowledge')
     }
   } catch (error) {
     console.error('[App] 登录失败:', error)
@@ -193,7 +193,7 @@ const handleSignup = async (data) => {
     localStorage.setItem('user_role', 'brand')
 
     showLogin.value = false
-    router.push('/app/diagnose')
+    router.push('/app/knowledge')
   } catch (error) {
     console.error('[App] 注册失败:', error)
     alert('注册失败: ' + error.message)

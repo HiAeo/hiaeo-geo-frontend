@@ -4,7 +4,7 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="page-title">AI品牌可见性数据看板</h1>
+          <h1 class="page-title">魔鲸GEO·AI品牌可见性数据看板</h1>
           <span class="page-subtitle">实时追踪品牌可见度、SEO效果与搜索引流数据</span>
         </div>
         <div class="header-actions">
@@ -724,7 +724,7 @@ onMounted(async () => {
 }
 
 .page-title {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary);
 }

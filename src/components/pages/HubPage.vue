@@ -316,7 +316,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useApi } from '../../composables/useApi'
 import { useTheme } from '../../composables/useTheme'
 
@@ -329,6 +329,7 @@ const props = defineProps({
 
 const { get } = useApi()
 const loading = ref(false)
+const error = ref(null)
 const activeRole = ref('boss')
 const selectedBrandId = ref('')
 const bossPeriod = ref('30d')
@@ -339,7 +340,7 @@ const roles = [
   { id: 'tech', label: '技术视图', icon: '🔧', desc: '系统指引' }
 ]
 
-// Mock data - would come from API
+// API 数据源
 const brands = ref([
   { id: 1, name: '示例品牌' }
 ])
@@ -438,21 +439,180 @@ const visibilityAreaPath = computed(() => {
 })
 
 // Methods
-const refreshData = async () => {
-  loading.value = true
+const loadBossView = async () => {
   try {
-    // Fetch from API
-    // const data = await get('/hub/stats')
-  } catch (error) {
-    console.error('Failed to refresh:', error)
+    const res = await get(`/hub/boss-view?brandId=${selectedBrandId.value}`)
+    if (res?.success && res.data?.stats) {
+      const stats = res.data.stats
+      bossStats.value = {
+        geoScore: stats.geoScore ?? 72,
+        industryAvg: stats.industryAvg ?? 65,
+        mentionRate: stats.mentionRate ?? 34,
+        mentionTarget: stats.mentionTarget ?? 50,
+        competitorSuppression: stats.competitorSuppression ?? 12,
+        competitorCount: stats.competitorCount ?? 3,
+        roi: stats.roi ?? 23
+      }
+    }
+  } catch (e) {
+    console.error('加载老板视图数据失败:', e)
+    // 使用默认值，保持页面可展示
+  }
+}
+
+const loadBrandRanking = async () => {
+  try {
+    const res = await get('/hub/brand-ranking')
+    if (res?.success && Array.isArray(res.data) && res.data.length > 0) {
+      brandRanking.value = res.data.map((item, index) => ({
+        id: item.id || index + 1,
+        name: item.name || `品牌${index + 1}`,
+        score: item.score ?? 72,
+        mentionRate: item.mentionRate ?? 34,
+        trend: item.trend ?? 0,
+        isCurrentBrand: item.isCurrentBrand ?? (index === 0)
+      }))
+    }
+  } catch (e) {
+    console.error('加载品牌排名失败:', e)
+  }
+}
+
+const loadVisibilityTrend = async () => {
+  try {
+    const res = await get(`/hub/visibility-trend?period=${bossPeriod.value}`)
+    if (res?.success && Array.isArray(res.data) && res.data.length > 0) {
+      visibilityData.value = res.data.map(item => ({
+        date: item.date || item.label || '',
+        value: item.value || item.score || 0
+      }))
+    }
+  } catch (e) {
+    console.error('加载可见度趋势失败:', e)
+  }
+}
+
+const loadOpsView = async () => {
+  try {
+    const res = await get(`/hub/ops-view?brandId=${selectedBrandId.value}`)
+    if (res?.success && res.data) {
+      // 运营统计数据
+      if (res.data.stats) {
+        opsStats.value = {
+          pendingCount: res.data.stats.pendingCount ?? 3,
+          totalContent: res.data.stats.totalContent ?? 24,
+          publishedContent: res.data.stats.publishedContent ?? 18,
+          pendingContent: res.data.stats.pendingContent ?? 6,
+          avgEngagement: res.data.stats.avgEngagement ?? 12.5
+        }
+      }
+      // 待审核任务
+      if (Array.isArray(res.data.pendingTasks) && res.data.pendingTasks.length > 0) {
+        pendingTasks.value = res.data.pendingTasks.map(task => ({
+          id: task.id || Date.now(),
+          title: task.title || task.name || '未命名任务',
+          style: task.style || task.platform || '待定',
+          platform: task.platform || '待定',
+          impact: task.impact || task.score || 0,
+          status: task.status || 'pending'
+        }))
+      }
+      // 运营建议
+      if (Array.isArray(res.data.suggestions) && res.data.suggestions.length > 0) {
+        suggestions.value = res.data.suggestions.map(sug => ({
+          text: sug.text || sug.content || sug.action || '',
+          tag: sug.tag || sug.priority || '建议',
+          priority: sug.priority === '高' || sug.priority === 'high' ? 'high' : 
+                     sug.priority === '中' || sug.priority === 'medium' ? 'medium' : 'low'
+        }))
+      }
+    }
+  } catch (e) {
+    console.error('加载运营视图数据失败:', e)
+  }
+}
+
+const loadTechView = async () => {
+  try {
+    const res = await get(`/hub/tech-view?brandId=${selectedBrandId.value}`)
+    if (res?.success && res.data) {
+      // 技术统计数据
+      if (res.data.stats) {
+        techStats.value = {
+          pendingTasks: res.data.stats.pendingTasks ?? 2,
+          apiHealth: res.data.stats.apiHealth ?? 95,
+          crawlerScore: res.data.stats.crawlerScore ?? 88,
+          schemaScore: res.data.stats.schemaScore ?? 75,
+          performance: res.data.stats.performance ?? 92
+        }
+      }
+      // 技术任务
+      if (Array.isArray(res.data.tasks) && res.data.tasks.length > 0) {
+        techTasks.value = res.data.tasks.map(task => ({
+          id: task.id || Date.now(),
+          title: task.title || task.name || '未命名任务',
+          description: task.description || task.desc || '',
+          status: task.status || 'pending'
+        }))
+      }
+      // 技术参考
+      if (Array.isArray(res.data.references) && res.data.references.length > 0) {
+        techReferences.value = res.data.references.map(ref => ({
+          type: ref.type || 'default',
+          icon: ref.icon || '📋',
+          title: ref.title || ref.name || '参考',
+          description: ref.description || ref.desc || ''
+        }))
+      }
+    }
+  } catch (e) {
+    console.error('加载技术视图数据失败:', e)
+  }
+}
+
+const loadAllData = async () => {
+  loading.value = true
+  error.value = null
+  try {
+    // 根据角色加载对应视图数据
+    switch (activeRole.value) {
+      case 'boss':
+        await Promise.all([loadBossView(), loadBrandRanking(), loadVisibilityTrend()])
+        break
+      case 'ops':
+        await loadOpsView()
+        break
+      case 'tech':
+        await loadTechView()
+        break
+    }
+  } catch (e) {
+    console.error('加载数据失败:', e)
+    error.value = e.message || '加载数据失败，请稍后重试'
   } finally {
     loading.value = false
   }
 }
 
+const refreshData = async () => {
+  await loadAllData()
+}
+
 const onBrandChange = () => {
   refreshData()
 }
+
+// 监听角色切换，重新加载对应视图数据
+watch(activeRole, () => {
+  loadAllData()
+})
+
+// 监听时间周期变化，重新加载可见度趋势
+watch(bossPeriod, () => {
+  if (activeRole.value === 'boss') {
+    loadVisibilityTrend()
+  }
+})
 
 const getRankClass = (index) => {
   if (index === 0) return 'gold'
@@ -496,90 +656,8 @@ const hideTooltip = () => {
 }
 
 onMounted(() => {
-  refreshData()
-  loadReportData() // 加载诊断报告数据
+  loadAllData()
 })
-
-// 从诊断报告加载数据到Hub驾驶舱
-const loadReportData = () => {
-  try {
-    const savedReports = localStorage.getItem('diagnose_reports')
-    if (savedReports) {
-      const reportsList = JSON.parse(savedReports)
-      if (reportsList.length > 0) {
-        const latestReport = reportsList[0]
-        const aiResult = latestReport.result
-        
-        if (aiResult) {
-          // 更新老板视图的GEO健康分
-          bossStats.value.geoScore = aiResult.overallScore || 72
-          
-          // 从竞品分析中获取提及率
-          if (aiResult.competitorAnalysis) {
-            bossStats.value.mentionRate = Math.round(aiResult.competitorAnalysis.overallMentionRate || 34)
-          }
-          
-          // 从诊断建议中生成运营建议
-          if (aiResult.dimensions) {
-            const suggestionsList = []
-            aiResult.dimensions.forEach(dim => {
-              if (dim.suggestions) {
-                dim.suggestions.forEach(sug => {
-                  if (sug.priority === '高') {
-                    suggestionsList.push({
-                      text: sug.action,
-                      tag: '高优先级',
-                      priority: 'high'
-                    })
-                  }
-                })
-              }
-            })
-            
-            if (suggestionsList.length > 0) {
-              suggestions.value = suggestionsList.slice(0, 5)
-            }
-          }
-          
-          // 更新可见度数据趋势
-          if (reportsList.length >= 2) {
-            const scores = reportsList.map(r => r.result?.overallScore || 0).reverse()
-            visibilityData.value = scores.map((score, i) => ({
-              date: `05-${10 - (scores.length - 1 - i) * 5}`,
-              value: score
-            }))
-          }
-          
-          // 更新品牌排名数据
-          if (aiResult.competitorAnalysis?.mainCompetitors) {
-            const competitors = aiResult.competitorAnalysis.mainCompetitors.map((c, i) => ({
-              id: i + 2,
-              name: c.name,
-              score: Math.round(70 + Math.random() * 20),
-              mentionRate: c.mentionRate || Math.round(Math.random() * 30),
-              trend: Math.round(Math.random() * 10 - 3),
-              isCurrentBrand: false
-            }))
-            
-            brandRanking.value = [
-              { 
-                id: 1, 
-                name: latestReport.brandName || '我的品牌', 
-                score: aiResult.overallScore || 72, 
-                mentionRate: bossStats.value.mentionRate, 
-                trend: 5, 
-                isCurrentBrand: true 
-              },
-              ...competitors.slice(0, 3)
-            ].sort((a, b) => b.score - a.score)
-          }
-        }
-      }
-    }
-  } catch (e) {
-    console.error('加载诊断报告数据到Hub失败:', e)
-  }
-}
 </script>
 
 <style scoped>

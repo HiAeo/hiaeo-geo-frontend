@@ -40,5 +40,10 @@ export const diagnosisApi = {
   // 获取诊断历史
   getHistory: (brandId, page = 1, pageSize = 10) => {
     return request(`/diagnosis/history?brandId=${brandId}&page=${page}&pageSize=${pageSize}`)
+  },
+
+  // 根据报告ID获取报告详情
+  getReportById: (reportId) => {
+    return request(`/diagnosis/reports/${reportId}`)
   }
 }

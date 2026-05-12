@@ -1,5 +1,16 @@
 <template>
   <div class="knowledge-page" :data-theme="theme">
+    <!-- 加载中遮罩 -->
+    <div v-if="loading" class="loading-overlay">
+      <div class="loading-spinner">
+        <svg class="animate-spin" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+        </svg>
+        <p>加载知识库数据中...</p>
+      </div>
+    </div>
+
     <!-- Page Header -->
     <div class="page-header">
       <div class="header-content">
@@ -307,23 +318,70 @@
         </div>
         <div class="module-content">
           <p class="module-tip">上传品牌相关资料，帮助AI更深入地了解品牌，用于生成更精准的内容</p>
-          <div class="upload-area">
+          
+          <!-- 文件错误提示 -->
+          <div v-if="fileError" class="file-error">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="15" y1="9" x2="9" y2="15"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            {{ fileError }}
+          </div>
+          
+          <!-- 上传区域 -->
+          <div class="upload-area" :class="{ 'uploading': uploading }" @click="!uploading && $refs.fileInput.click()">
+            <input 
+              ref="fileInput"
+              type="file" 
+              @change="handleFileChange" 
+              :disabled="uploading"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md,.jpg,.jpeg,.png,.gif,.webp,.svg,.mp4,.mp3,.wav"
+              style="display: none;"
+            />
             <div class="upload-placeholder">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <svg v-if="uploading" class="animate-spin" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              <svg v-else width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
-              <p>拖拽文件到此处，或点击上传</p>
-              <span>支持 PDF、Word、图片等格式</span>
+              <p>{{ uploading ? '上传中...' : '点击上传文件' }}</p>
+              <span>支持 PDF、Word、Excel、PPT、图片、音视频等常见格式</span>
             </div>
           </div>
-          <div class="uploaded-files" v-if="form.module6.uploadedFiles.length">
-            <div v-for="(file, idx) in form.module6.uploadedFiles" :key="idx" class="uploaded-file">
-              <span>{{ file.name }}</span>
-              <button class="remove-btn" @click="removeFile(idx)">×</button>
+          
+          <!-- 文件列表（从 profile.fileIndex 派生） -->
+          <div class="uploaded-files" v-if="fileList.length">
+            <div v-for="(file, idx) in fileList" :key="file.fileId || idx" class="uploaded-file">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <span :title="file.name">{{ file.name || '未知文件' }}</span>
+              <button 
+                class="remove-btn" 
+                @click="handleDeleteFile(file.fileId)" 
+                :disabled="deleting"
+                :title="deleting ? '删除中...' : '删除'"
+              >
+                <svg v-if="deleting" class="animate-spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                <span v-else>×</span>
+              </button>
             </div>
           </div>
+          
+          <!-- 无文件提示 -->
+          <div v-else class="no-files-tip">
+            暂无上传文件
+          </div>
+          
           <div class="form-group" style="margin-top: 16px;">
             <label>资料补充说明</label>
             <textarea v-model="form.module6.notes" rows="3" placeholder="补充说明这些资料的特点或重点关注内容"></textarea>
@@ -386,12 +444,14 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useTheme } from '../../composables/useTheme'
 import {
-  getKnowledgeBase,
-  createKnowledgeBase,
-  updateKnowledgeBase,
+  getProfile,
+  createProfile,
+  updateProfile,
+  uploadFile,
+  deleteFile,
 } from '@/api/knowledge'
 import { getAISuggestion, searchCompany } from '@/api/workflow'
 
@@ -406,6 +466,63 @@ export default {
     const searching = ref(false)
     const fetchError = ref('')
     const fetchSuccess = ref(false)
+
+    // 页面加载状态
+    const loading = ref(true)
+
+    // 当前知识库的 ID，用于判断新建还是更新
+    const profileId = ref(null)
+    
+    // 完整的 profile 数据，用于派生 file_index
+    const profile = ref(null)
+    
+    // 文件列表 - 从 profile.fileIndex 派生（兼容对象和数组结构）
+    const fileList = computed(() => {
+      if (!profile.value) return []
+      
+      // 优先尝试 fileIndex（后端返回的对象结构：{ module: [files] }）
+      const fileIndex = profile.value.fileIndex
+      
+      if (fileIndex) {
+        // 如果是对象（{ module: [files] } 结构），合并所有模块的文件
+        if (typeof fileIndex === 'object' && !Array.isArray(fileIndex)) {
+          const allFiles = []
+          for (const mod of Object.keys(fileIndex)) {
+            const files = fileIndex[mod]
+            if (Array.isArray(files)) {
+              allFiles.push(...files.map(f => ({ ...f, module: mod })))
+            }
+          }
+          return allFiles
+        }
+        // 如果是数组，直接返回
+        if (Array.isArray(fileIndex)) {
+          return fileIndex
+        }
+        // 如果是字符串，尝试解析
+        if (typeof fileIndex === 'string') {
+          try {
+            return JSON.parse(fileIndex)
+          } catch {
+            return []
+          }
+        }
+      }
+      
+      // 备用：尝试 uploadedFiles
+      const uploadedFiles = profile.value.uploadedFiles
+      if (uploadedFiles) {
+        if (Array.isArray(uploadedFiles)) return uploadedFiles
+        if (typeof uploadedFiles === 'string') {
+          try { return JSON.parse(uploadedFiles) } catch { return [] }
+        }
+      }
+      
+      return []
+    })
+    
+    // 文件输入 ref
+    const fileInput = ref(null)
     
     // 进度显示
     const progressPercent = ref(0)
@@ -419,6 +536,11 @@ export default {
     const saving5 = ref(false)
     const saving6 = ref(false)
     const saving7 = ref(false)
+
+    // 文件上传/删除状态
+    const uploading = ref(false)
+    const deleting = ref(false)
+    const fileError = ref('')
 
     const toast = reactive({
       show: false,
@@ -488,9 +610,15 @@ export default {
 
     // 加载智库数据
     const loadProfile = async () => {
+      loading.value = true
       try {
-        const res = await getKnowledgeBase()
+        const res = await getProfile()
         if (res?.data) {
+          // 保存完整 profile 数据
+          profile.value = res.data
+          console.log('Profile loaded:', res.data)
+          console.log('file_index field:', res.data.file_index)
+          console.log('uploadedFiles field:', res.data.uploadedFiles)
           const data = res.data
           // 模块一
           if (data.basicInfo) {
@@ -555,9 +683,25 @@ export default {
           if (data.specialRequirements) {
             form.module7.specialRequirements = data.specialRequirements
           }
+          // 强制初始化 uploadedFiles 为空数组，避免 undefined 导致后端 500
+          if (!form.module6.uploadedFiles) {
+            form.module6.uploadedFiles = []
+          }
         }
+        // 保存 profile ID，用于判断新建还是更新
+        profileId.value = res.data?.id || res.data?._id || null
       } catch (err) {
-        console.error('加载智库失败:', err)
+        // 404: 没有数据，保持页面空状态，用户可以新建
+        if (err.message && err.message.includes('404')) {
+          // 无数据，静默保持空状态
+          profileId.value = null
+        } else {
+          // 其他错误，显示提示
+          console.error('加载智库失败:', err)
+          showToast(err.message || '加载知识库失败，请稍后重试', 'error')
+        }
+      } finally {
+        loading.value = false
       }
     }
 
@@ -731,38 +875,51 @@ export default {
 
     // 各模块保存函数
     const saveModule1 = async () => {
+      if (saving1.value) return
       saving1.value = true
       try {
         const data = {
           basicInfo: form.module1,
         }
-        await updateKnowledgeBase(data)
+        if (profileId.value) {
+          await updateProfile(data)
+        } else {
+          await createProfile(data)
+        }
         showToast('模块一保存成功', 'success')
+        await loadProfile()
       } catch (err) {
         console.error('保存失败:', err)
-        showToast('保存失败', 'error')
+        showToast(err.message || '保存失败', 'error')
       } finally {
         saving1.value = false
       }
     }
 
     const saveModule2 = async () => {
+      if (saving2.value) return
       saving2.value = true
       try {
         const data = {
           bizPositioning: form.module2,
         }
-        await updateKnowledgeBase(data)
+        if (profileId.value) {
+          await updateProfile(data)
+        } else {
+          await createProfile(data)
+        }
         showToast('模块二保存成功', 'success')
+        await loadProfile()
       } catch (err) {
         console.error('保存失败:', err)
-        showToast('保存失败', 'error')
+        showToast(err.message || '保存失败', 'error')
       } finally {
         saving2.value = false
       }
     }
 
     const saveModule3 = async () => {
+      if (saving3.value) return
       saving3.value = true
       try {
         const data = {
@@ -771,66 +928,90 @@ export default {
             seoKeywords: form.module3.seoKeywords.split(',').map(k => k.trim()).filter(Boolean),
           },
         }
-        await updateKnowledgeBase(data)
+        if (profileId.value) {
+          await updateProfile(data)
+        } else {
+          await createProfile(data)
+        }
         showToast('模块三保存成功', 'success')
+        await loadProfile()
       } catch (err) {
         console.error('保存失败:', err)
-        showToast('保存失败', 'error')
+        showToast(err.message || '保存失败', 'error')
       } finally {
         saving3.value = false
       }
     }
 
     const saveModule4 = async () => {
+      if (saving4.value) return
       saving4.value = true
       try {
         const data = {
           competitorMarket: form.module4,
         }
-        await updateKnowledgeBase(data)
+        if (profileId.value) {
+          await updateProfile(data)
+        } else {
+          await createProfile(data)
+        }
         showToast('模块四保存成功', 'success')
+        await loadProfile()
       } catch (err) {
         console.error('保存失败:', err)
-        showToast('保存失败', 'error')
+        showToast(err.message || '保存失败', 'error')
       } finally {
         saving4.value = false
       }
     }
 
     const saveModule5 = async () => {
+      if (saving5.value) return
       saving5.value = true
       try {
         const data = {
           geoGoals: form.module5,
         }
-        await updateKnowledgeBase(data)
+        if (profileId.value) {
+          await updateProfile(data)
+        } else {
+          await createProfile(data)
+        }
         showToast('模块五保存成功', 'success')
+        await loadProfile()
       } catch (err) {
         console.error('保存失败:', err)
-        showToast('保存失败', 'error')
+        showToast(err.message || '保存失败', 'error')
       } finally {
         saving5.value = false
       }
     }
 
     const saveModule6 = async () => {
+      if (saving6.value) return
       saving6.value = true
       try {
         const data = {
           uploadedFiles: form.module6.uploadedFiles,
           materialNotes: form.module6.notes,
         }
-        await updateKnowledgeBase(data)
+        if (profileId.value) {
+          await updateProfile(data)
+        } else {
+          await createProfile(data)
+        }
         showToast('模块六保存成功', 'success')
+        await loadProfile()
       } catch (err) {
         console.error('保存失败:', err)
-        showToast('保存失败', 'error')
+        showToast(err.message || '保存失败', 'error')
       } finally {
         saving6.value = false
       }
     }
 
     const saveModule7 = async () => {
+      if (saving7.value) return
       saving7.value = true
       try {
         const data = {
@@ -844,16 +1025,88 @@ export default {
           },
           specialRequirements: form.module7.specialRequirements,
         }
-        await updateKnowledgeBase(data)
+        if (profileId.value) {
+          await updateProfile(data)
+        } else {
+          await createProfile(data)
+        }
         showToast('模块七保存成功', 'success')
+        await loadProfile()
       } catch (err) {
         console.error('保存失败:', err)
-        showToast('保存失败', 'error')
+        showToast(err.message || '保存失败', 'error')
       } finally {
         saving7.value = false
       }
     }
 
+    // 处理文件选择
+    const handleFileChange = (event) => {
+      const files = event.target.files
+      if (files && files.length > 0) {
+        handleUpload(files[0])
+      }
+      // 清空 input 以允许重复选择同一文件
+      event.target.value = ''
+    }
+
+    // 上传文件
+    const handleUpload = async (file) => {
+      if (uploading.value) return
+      
+      fileError.value = ''
+      uploading.value = true
+      
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('brandId', profileId.value || 'default')
+        
+        const result = await uploadFile(formData)
+        
+        if (result.code === 0 || result.success) {
+          showToast('文件上传成功', 'success')
+          await loadProfile() // 刷新文件列表
+        } else {
+          fileError.value = result.message || '文件上传失败'
+          showToast(result.message || '文件上传失败', 'error')
+        }
+      } catch (err) {
+        console.error('上传失败:', err)
+        fileError.value = err.message || '文件上传失败'
+        showToast(err.message || '文件上传失败', 'error')
+      } finally {
+        uploading.value = false
+      }
+    }
+
+    // 删除文件
+    const handleDeleteFile = async (fileId) => {
+      if (deleting.value) return
+      
+      fileError.value = ''
+      deleting.value = true
+      
+      try {
+        const result = await deleteFile(fileId)
+        
+        if (result.code === 0 || result.success) {
+          showToast('文件删除成功', 'success')
+          await loadProfile() // 刷新文件列表
+        } else {
+          fileError.value = result.message || '文件删除失败'
+          showToast(result.message || '文件删除失败', 'error')
+        }
+      } catch (err) {
+        console.error('删除失败:', err)
+        fileError.value = err.message || '文件删除失败'
+        showToast(err.message || '文件删除失败', 'error')
+      } finally {
+        deleting.value = false
+      }
+    }
+
+    // 本地移除文件（仅用于 UI 反馈，不实际删除）
     const removeFile = (idx) => {
       form.module6.uploadedFiles.splice(idx, 1)
     }
@@ -864,6 +1117,8 @@ export default {
 
     return {
       theme,
+      loading,
+      profileId,
       companyNameInput,
       searching,
       fetchError,
@@ -878,6 +1133,11 @@ export default {
       saving5,
       saving6,
       saving7,
+      uploading,
+      deleting,
+      fileError,
+      fileList,
+      fileInput,
       toast,
       handleSearchCompany,
       saveModule1,
@@ -887,6 +1147,9 @@ export default {
       saveModule5,
       saveModule6,
       saveModule7,
+      handleFileChange,
+      handleUpload,
+      handleDeleteFile,
       removeFile,
     }
   },
@@ -916,7 +1179,7 @@ export default {
 }
 
 .page-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 4px 0;
@@ -1372,8 +1635,40 @@ export default {
   background: rgba(22, 93, 255, 0.02);
 }
 
+.upload-area.uploading {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.file-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: rgba(245, 63, 63, 0.1);
+  border: 1px solid var(--color-danger);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--color-danger);
+}
+
+.no-files-tip {
+  margin-top: 12px;
+  padding: 16px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+}
+
 .upload-placeholder {
   color: var(--text-tertiary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .upload-placeholder svg {
@@ -1441,5 +1736,38 @@ export default {
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* 加载中遮罩 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0.95;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--color-primary);
+}
+
+.loading-spinner svg {
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0;
 }
 </style>

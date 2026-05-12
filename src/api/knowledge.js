@@ -25,17 +25,15 @@ export const updateKnowledgeBase = (data) => {
   })
 }
 
-export const uploadFile = (file, module) => {
-  const formData = new FormData()
-  formData.append('file', file)
-  formData.append('module', module)
-
+export const uploadFile = (formData) => {
   const token = localStorage.getItem('auth_token')
   
   return fetch(`${BASE_URL}/upload`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
+      // 注意：FormData 不要手动设置 Content-Type，浏览器会自动设置并包含 boundary
+      // 但文件名编码需要后端配合处理
     },
     body: formData,
   }).then(res => res.json())
@@ -142,11 +140,22 @@ export const checkContentWithKnowledge = (content) => {
   })
 }
 
+export const getProfile = () => {
+  return request(`${BASE_URL}/profile`, { method: 'GET' })
+}
+
+// 别名
+export const createProfile = createKnowledgeBase
+export const updateProfile = updateKnowledgeBase
+
 export default {
   // 基础
   getKnowledgeBase,
   createKnowledgeBase,
   updateKnowledgeBase,
+  getProfile,
+  createProfile,
+  updateProfile,
   uploadFile,
   deleteFile,
   getVersionHistory,
