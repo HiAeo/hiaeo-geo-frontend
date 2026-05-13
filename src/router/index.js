@@ -157,6 +157,14 @@ const routes = [
     ]
   },
 
+  // 关于我们页面
+  {
+    path: '/about',
+    name: 'about',
+    component: () => import('../components/pages/AboutPage.vue'),
+    meta: { title: '关于我们', layout: 'none' }
+  },
+
   // 404 - 回到首页
   {
     path: '/:pathMatch(.*)*',

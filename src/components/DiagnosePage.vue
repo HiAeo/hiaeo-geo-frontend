@@ -5,12 +5,14 @@
       <div class="header-content">
         <h1 class="page-title">MiraSeek模镜·AI诊断报告</h1>
         <div class="header-actions">
-          <button class="primary-btn" @click="showCreateModal = true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
+          <button class="primary-btn" @click="createDiagnosisFromKnowledge" :disabled="knowledgeLoading">
+            <svg v-if="!knowledgeLoading" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
             </svg>
-            新建诊断
+            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin">
+              <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+            </svg>
+            {{ knowledgeLoading ? '加载中...' : '一键诊断' }}
           </button>
         </div>
       </div>
@@ -186,7 +188,9 @@
             <polyline points="14 2 14 8 20 8"/>
           </svg>
           <p>暂无诊断报告</p>
-          <button class="primary-btn" @click="showCreateModal = true">创建第一个诊断</button>
+          <button class="primary-btn" @click="createDiagnosisFromKnowledge" :disabled="knowledgeLoading">
+            {{ knowledgeLoading ? '加载品牌智库中...' : '基于品牌智库一键诊断' }}
+          </button>
         </div>
       </div>
     </div>
@@ -410,9 +414,40 @@
 import { ref, computed, onMounted } from 'vue'
 import jsPDF from 'jspdf'
 import { useTheme } from '../composables/useTheme'
+import { getKnowledgeBase } from '../api/knowledge'
 
 // 获取主题
 const { theme, initTheme } = useTheme()
+
+// 品牌智库数据
+const knowledgeBase = ref(null)
+const knowledgeLoading = ref(false)
+
+// 获取品牌智库数据
+const fetchKnowledgeBase = async () => {
+  try {
+    knowledgeLoading.value = true
+    console.log('开始获取品牌智库数据...')
+    const res = await getKnowledgeBase()
+    console.log('品牌智库API返回:', res)
+    // API 返回格式为 { code: 0, data: {...} } 或直接返回 {...}
+    if (res?.data) {
+      knowledgeBase.value = res.data
+      console.log('品牌智库数据已加载:', knowledgeBase.value)
+    } else if (res && typeof res === 'object' && (res.basicInfo || res.bizPositioning)) {
+      // 兼容直接返回数据的情况
+      knowledgeBase.value = res
+      console.log('品牌智库数据已加载(直接格式):', knowledgeBase.value)
+    } else {
+      console.warn('品牌智库数据为空或格式不正确')
+    }
+  } catch (error) {
+    console.error('获取品牌智库失败:', error)
+    alert('获取品牌智库失败，请确保后端服务已启动。错误: ' + error.message)
+  } finally {
+    knowledgeLoading.value = false
+  }
+}
 
 // Stats
 const stats = ref({
@@ -592,6 +627,81 @@ const formatDate = (date) => {
   })
 }
 
+// 基于品牌智库数据创建诊断
+const createDiagnosisFromKnowledge = async () => {
+  // 先确保获取最新品牌智库数据
+  await fetchKnowledgeBase()
+  
+  console.log('createDiagnosisFromKnowledge - knowledgeBase:', knowledgeBase.value)
+  
+  if (!knowledgeBase.value) {
+    alert('请先在"品牌智库"中填写企业资料并保存')
+    return
+  }
+  
+  // 从品牌智库获取诊断所需信息
+  const knowledge = knowledgeBase.value
+  console.log('获取到的数据:', {
+    basicInfo: knowledge.basicInfo,
+    website: knowledge.website,
+    bizPositioning: knowledge.bizPositioning,
+    industry: knowledge.industry
+  })
+  
+  const targetUrl = knowledge.basicInfo?.website || knowledge.website || ''
+  const targetName = knowledge.basicInfo?.companyName || knowledge.companyName || '品牌'
+  const targetIndustry = knowledge.bizPositioning?.industry || knowledge.industry || 'other'
+  
+  if (!targetUrl) {
+    alert('品牌智库中未填写官网地址，请先完善"企业基础信息"中的官方网址')
+    return
+  }
+  
+  console.log('开始诊断:', { targetUrl, targetName, targetIndustry })
+  creating.value = true
+  
+  setTimeout(() => {
+    const report = {
+      id: Date.now(),
+      targetUrl: targetUrl,
+      targetName: targetName,
+      targetIndustry: targetIndustry,
+      seoScore: null,
+      issues: [],
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    }
+    
+    reports.value.unshift(report)
+    stats.value.total++
+    stats.value.pending++
+    
+    showCreateModal.value = false
+    creating.value = false
+    
+    // 模拟开始诊断
+    setTimeout(() => {
+      report.status = 'running'
+      stats.value.pending--
+      stats.value.running++
+    }, 1000)
+    
+    // 模拟完成
+    setTimeout(() => {
+      report.status = 'completed'
+      report.seoScore = {
+        overall: Math.floor(Math.random() * 30) + 60,
+        technical: Math.floor(Math.random() * 30) + 60,
+        content: Math.floor(Math.random() * 30) + 60,
+        authority: Math.floor(Math.random() * 30) + 60,
+        performance: Math.floor(Math.random() * 30) + 60
+      }
+      stats.value.running--
+      stats.value.completed++
+    }, 3000)
+  }, 500)
+}
+
 const viewReport = (report) => {
   selectedReport.value = report
   showDetailModal.value = true
@@ -624,6 +734,12 @@ const deleteReport = (report) => {
     }
   }
 }
+
+// 页面加载时获取品牌智库数据
+onMounted(() => {
+  initTheme()
+  fetchKnowledgeBase()
+})
 
 const createReport = () => {
   formErrors.value = {}
@@ -2128,6 +2244,16 @@ const getIndustryLabel = (industry) => {
 .empty-state p {
   margin-bottom: 20px;
   font-size: 0.9375rem;
+}
+
+/* Loading animation */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* Modal */

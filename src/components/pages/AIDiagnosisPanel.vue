@@ -199,7 +199,7 @@ export default {
         const result = await triggerIncrementalDiagnosis()
         if (result.success) {
           this.$message.success('诊断任务已创建，请稍后查看结果')
-          this.$router.push('/diagnosis')
+          this.$router.push('/app/diagnose')
         }
       } catch (error) {
         this.$message.error('触发诊断失败')

@@ -141,6 +141,10 @@ export default {
       type: String,
       default: null,
     },
+    brandName: {
+      type: String,
+      default: null,
+    },
   },
   setup(props) {
     // 移除硬编码的 theme，继承父组件的 data-theme 设置
@@ -172,8 +176,9 @@ export default {
     const loadCompetitors = async () => {
       loading.value = true
       try {
-        if (props.brandId) {
-          const res = await getCompetitorList(props.brandId)
+        const name = props.brandName || props.brandId
+        if (name) {
+          const res = await getCompetitorList(name)
           if (res?.data) {
             competitors.value = res.data
           }
@@ -199,7 +204,8 @@ export default {
 
       adding.value = true
       try {
-        await addCompetitor(props.brandId, newCompetitor.url)
+        const name = props.brandName || props.brandId
+        await addCompetitor(name, newCompetitor.url)
         showToast('竞品添加成功', 'success')
         showAddModal.value = false
         newCompetitor.name = ''
@@ -226,7 +232,8 @@ export default {
 
     const trackCompetitor = async (competitor) => {
       try {
-        await apiTrackCompetitor(competitor.id)
+        const brandName = props.brandName || props.brandId
+        await apiTrackCompetitor(competitor.name, brandName)
         showToast('追踪已启动', 'success')
       } catch (err) {
         console.error('追踪失败:', err)
@@ -236,7 +243,8 @@ export default {
 
     const analyzeCompetitor = async (competitor) => {
       try {
-        await getCompetitorAnalysis(competitor.id)
+        const brandName = props.brandName || props.brandId
+        await getCompetitorAnalysis(competitor.name, brandName)
         showToast('分析完成', 'success')
       } catch (err) {
         console.error('分析失败:', err)

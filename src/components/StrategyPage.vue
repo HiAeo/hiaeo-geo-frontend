@@ -1,5 +1,67 @@
 <template>
   <div class="strategy-page">
+    <!-- P0-3: 诊断数据来源卡片 -->
+    <div v-if="diagnosisData" class="diagnosis-source-card">
+      <div class="diagnosis-source-header">
+        <div class="source-left">
+          <span class="source-icon">🔍</span>
+          <span class="source-title">诊断数据来源</span>
+        </div>
+        <div class="source-right">
+          <span v-if="diagnosisConfirmed" class="confirmed-badge success">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            诊断已确认
+          </span>
+          <span v-else class="confirmed-badge warning">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            待确认诊断
+          </span>
+        </div>
+      </div>
+      <div class="diagnosis-source-body">
+        <div class="diagnosis-info">
+          <div class="info-item">
+            <span class="info-label">品牌</span>
+            <span class="info-value">{{ diagnosisData.brandName || diagnosisData.companyName || '-' }}</span>
+          </div>
+          <div class="info-item" v-if="diagnosisData.overallScore || diagnosisData.score">
+            <span class="info-label">GEO健康分</span>
+            <span class="info-value score">{{ diagnosisData.overallScore || diagnosisData.score }}</span>
+          </div>
+          <div class="info-item" v-if="diagnosisData.engineName">
+            <span class="info-label">诊断引擎</span>
+            <span class="info-value">{{ diagnosisData.engineName }}</span>
+          </div>
+        </div>
+        <!-- 维度得分展示 -->
+        <div v-if="diagnosisData.dimensions && diagnosisData.dimensions.length" class="dimension-preview">
+          <div v-for="dim in diagnosisData.dimensions.slice(0, 4)" :key="dim.id" class="dim-chip">
+            <span class="dim-name">{{ dim.name?.replace(/^[A-Z]\d\s*/, '').substring(0, 8) }}</span>
+            <span class="dim-score" :class="'score-' + (dim.score >= 70 ? 'high' : dim.score >= 50 ? 'mid' : 'low')">
+              {{ dim.score }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- 确认策略按钮 -->
+      <div v-if="diagnosisData && !diagnosisConfirmed" class="diagnosis-actions">
+        <button class="confirm-strategy-btn" @click="handleConfirmStrategy">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          确认策略
+        </button>
+        <span class="action-hint">确认后可以执行GEO优化</span>
+      </div>
+    </div>
+
     <!-- 统一页面头部 -->
     <div class="page-header">
       <div class="header-content">
@@ -191,6 +253,8 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import MediaSelector from './MediaSelector.vue'
 import { defaultSelectedMedia } from '../config/mediaConfig'
+import { getDiagnosisReports } from '@/api/diagnosis'
+import { confirmStrategy } from '@/api/workflow'
 
 // 响应式数据
 const loading = ref(false)
@@ -214,6 +278,95 @@ const generateForm = reactive({
   product: '',
   keywordsStr: '',
   tone: 'professional'
+})
+
+// ==================== P0-3: 诊断数据读取 ====================
+// 诊断数据状态
+const diagnosisData = ref<any>(null)
+const diagnosisConfirmed = ref(false)
+const loadingDiagnosis = ref(false)
+
+// 当前品牌 ID
+const currentBrandId = ref<string | null>(null)
+
+// 从 sessionStorage 读取诊断数据
+const readDiagnosisFromSession = () => {
+  try {
+    // 检查是否有诊断确认标记
+    const confirmed = sessionStorage.getItem('diagnosis_confirmed')
+    diagnosisConfirmed.value = confirmed === 'true'
+    
+    // 获取品牌 ID
+    const brandId = sessionStorage.getItem('confirmed_brand_id')
+    currentBrandId.value = brandId || null
+    
+    // 获取从诊断报告传来的数据
+    const reportData = sessionStorage.getItem('strategy_from_report')
+    if (reportData) {
+      const parsed = JSON.parse(reportData)
+      diagnosisData.value = parsed
+      console.log('[策略页] 从 sessionStorage 读取诊断数据:', parsed)
+    }
+  } catch (err) {
+    console.error('[策略页] 读取诊断数据失败:', err)
+  }
+}
+
+// 获取诊断报告列表
+const fetchDiagnosisData = async () => {
+  loadingDiagnosis.value = true
+  try {
+    const res = await getDiagnosisReports()
+    if (res?.data && res.data.length > 0) {
+      // 使用最新的诊断报告
+      diagnosisData.value = res.data[0]
+      console.log('[策略页] 获取诊断报告:', diagnosisData.value)
+    }
+  } catch (err) {
+    console.error('[策略页] 获取诊断报告失败:', err)
+  } finally {
+    loadingDiagnosis.value = false
+  }
+}
+
+// ==================== P0-3: 确认机制 ====================
+// 确认策略结果
+const handleConfirmStrategy = async () => {
+  if (!diagnosisData.value) {
+    alert('请先生成策略')
+    return
+  }
+  
+  if (!currentBrandId.value) {
+    alert('错误：无法获取品牌ID，请先完成品牌智库和诊断')
+    return
+  }
+  
+  try {
+    await confirmStrategy(currentBrandId.value, diagnosisData.value.id || 'strategy-' + Date.now())
+    alert('策略已确认！可以开始执行。')
+    // 清除确认标记
+    sessionStorage.removeItem('diagnosis_confirmed')
+    sessionStorage.removeItem('strategy_from_report')
+    diagnosisConfirmed.value = false
+  } catch (err: any) {
+    console.error('确认策略失败:', err)
+    alert('确认失败: ' + (err.message || '请重试'))
+  }
+}
+
+// 检查是否可以生成策略
+const canGenerateStrategy = computed(() => {
+  // 如果有诊断数据且已确认，可以生成策略
+  if (diagnosisData.value && diagnosisConfirmed.value) {
+    return true
+  }
+  // 如果有诊断数据但未确认，给出提示
+  if (diagnosisData.value && !diagnosisConfirmed.value) {
+    return 'pending_confirmation'
+  }
+  // 如果没有诊断数据，允许生成但给出提示
+  return true
 })
 
 // 策略类型选项
@@ -341,6 +494,10 @@ const formatDate = (date: string) => {
 
 // 生命周期
 onMounted(() => {
+  // P0-3: 读取诊断数据
+  readDiagnosisFromSession()
+  fetchDiagnosisData()
+  
   fetchStrategies()
 })
 </script>
@@ -350,6 +507,170 @@ onMounted(() => {
   min-height: 100vh;
   padding-bottom: 40px;
   background: var(--bg-primary);
+}
+
+/* P0-3: 诊断数据来源卡片 */
+.diagnosis-source-card {
+  max-width: 1400px;
+  margin: 16px auto 0;
+  padding: 0 24px;
+}
+
+.diagnosis-source-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(22, 93, 255, 0.1), rgba(139, 92, 246, 0.1));
+  border: 1px solid rgba(22, 93, 255, 0.3);
+  border-radius: 12px 12px 0 0;
+}
+
+.source-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.source-icon { font-size: 1.125rem; }
+
+.source-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.diagnosis-source-body {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 16px;
+  background: var(--bg-elevated);
+  border: 1px solid rgba(22, 93, 255, 0.2);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+}
+
+.diagnosis-info {
+  display: flex;
+  gap: 24px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.info-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.info-value.score {
+  color: var(--color-primary);
+  font-size: 1rem;
+}
+
+.dimension-preview {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dim-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--bg-primary);
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+.dim-chip .dim-name {
+  color: var(--text-secondary);
+}
+
+.dim-chip .dim-score {
+  font-weight: 600;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.dim-chip .dim-score.score-high {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.dim-chip .dim-score.score-mid {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.dim-chip .dim-score.score-low {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.diagnosis-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.confirm-strategy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirm-strategy-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(22, 93, 255, 0.4);
+}
+
+.action-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.confirmed-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.confirmed-badge.success {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.confirmed-badge.warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
 }
 
 /* 统一页面头部 */

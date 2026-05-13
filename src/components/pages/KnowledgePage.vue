@@ -18,6 +18,41 @@
           <h1 class="page-title">MiraBox模盒·AI品牌智库</h1>
           <p class="page-subtitle">输入公司名称，AI 自动抓取并填充品牌信息</p>
         </div>
+        <!-- 启动AI诊断按钮（完成度100%时显示） -->
+        <button
+          v-if="completionPercent >= 100"
+          class="start-diagnosis-btn"
+          @click="handleStartDiagnosis"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+          启动AI诊断
+        </button>
+      </div>
+      <!-- 完成度进度条 -->
+      <div class="completion-progress" v-if="!loading">
+        <div class="progress-header">
+          <span class="progress-label">智库完成度</span>
+          <span class="progress-value" :class="{ 'complete': completionPercent >= 100 }">
+            {{ completionPercent }}%
+          </span>
+        </div>
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar-bg">
+            <div 
+              class="progress-bar-fill" 
+              :class="{ 'complete': completionPercent >= 100 }"
+              :style="{ width: completionPercent + '%' }"
+            ></div>
+          </div>
+          <span class="progress-hint" v-if="completionPercent < 100">
+            填写必填项后可启动AI诊断
+          </span>
+          <span class="progress-hint success" v-else>
+            ✓ 智库已完善，可以开始诊断
+          </span>
+        </div>
       </div>
     </div>
 
@@ -453,12 +488,14 @@ import {
   uploadFile,
   deleteFile,
 } from '@/api/knowledge'
-import { getAISuggestion, searchCompany } from '@/api/workflow'
+import { searchCompany, startDiagnosis } from '@/api/workflow'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'KnowledgePage',
   setup() {
     const { theme } = useTheme()
+    const router = useRouter()
     
     // URL 抓取相关
     // 企查查公司查询
@@ -599,6 +636,84 @@ export default {
       },
     })
 
+    // 计算智库完成度
+    const completionPercent = computed(() => {
+      let totalWeight = 0
+      let completedWeight = 0
+      
+      // 模块1：企业基础信息 - 权重30%
+      const module1Fields = [
+        form.module1.companyName,
+        form.module1.industry,
+        form.module1.intro,
+      ]
+      const module1Required = 3
+      const module1Completed = module1Fields.filter(f => f && f.trim()).length
+      totalWeight += 30
+      completedWeight += (module1Completed / module1Required) * 30
+      
+      // 模块2：核心业务与定位 - 权重25%
+      const module2Fields = [
+        form.module2.coreBusiness,
+        form.module2.positioning,
+        form.module2.targetCustomers,
+        form.module2.differentiation,
+      ]
+      const module2Required = 4
+      const module2Completed = module2Fields.filter(f => f && f.trim()).length
+      totalWeight += 25
+      completedWeight += (module2Completed / module2Required) * 25
+      
+      // 模块3：产品与服务详情 - 权重25%
+      const module3Fields = [
+        form.module3.mainProducts,
+        form.module3.sellPoints,
+      ]
+      const module3Required = 2
+      const module3Completed = module3Fields.filter(f => f && f.trim()).length
+      totalWeight += 25
+      completedWeight += (module3Completed / module3Required) * 25
+      
+      // 模块5：GEO推广目标 - 权重20%
+      const module5Fields = [
+        form.module5.geoKeywords,
+        form.module5.targetRegions,
+        form.module5.contentGoals,
+        form.module5.contentStyle,
+      ]
+      const module5Required = 4
+      const module5Completed = module5Fields.filter(f => f && f.trim()).length
+      totalWeight += 20
+      completedWeight += (module5Completed / module5Required) * 20
+      
+      return Math.min(100, Math.round(completedWeight))
+    })
+
+    // 启动AI诊断
+    const handleStartDiagnosis = async () => {
+      try {
+        // 获取品牌ID，优先使用已保存的 profileId
+        const brandId = profileId.value
+        if (!brandId) {
+          showToast('请先保存品牌智库信息', 'error')
+          return
+        }
+        const result = await startDiagnosis(brandId)
+        if (result.code === 0 || result.success) {
+          showToast('正在跳转至诊断页面...', 'success')
+          // 跳转到诊断页面
+          setTimeout(() => {
+            router.push('/app/diagnose')
+          }, 500)
+        } else {
+          showToast(result.message || '启动诊断失败', 'error')
+        }
+      } catch (err) {
+        console.error('启动诊断失败:', err)
+        showToast(err.message || '启动诊断失败', 'error')
+      }
+    }
+
     const showToast = (message, type = 'info') => {
       toast.message = message
       toast.type = type
@@ -702,71 +817,6 @@ export default {
         }
       } finally {
         loading.value = false
-      }
-    }
-
-    // AI URL 抓取 - 直接填充表单
-    const handleFetchWebsite = async () => {
-      if (!urlInput.value.trim()) return
-
-      fetching.value = true
-      fetchError.value = ''
-      fetchSuccess.value = false
-
-      try {
-        const result = await getAISuggestion(urlInput.value)
-        
-        if (result.code === 0 && result.data) {
-          const s = result.data
-          
-          // 填充模块一：基础信息
-          if (s.basicInfo) {
-            if (s.basicInfo.companyName) form.module1.companyName = s.basicInfo.companyName
-            if (s.basicInfo.industry) form.module1.industry = s.basicInfo.industry
-            if (s.basicInfo.companyRegion) form.module1.region = s.basicInfo.companyRegion
-            if (s.basicInfo.website) form.module1.website = s.basicInfo.website
-            if (s.basicInfo.slogan) form.module1.slogan = s.basicInfo.slogan
-            if (s.basicInfo.intro) form.module1.intro = s.basicInfo.intro
-            if (s.basicInfo.companySize) form.module1.companySize = s.basicInfo.companySize
-          }
-          
-          // 填充模块二：业务定位
-          if (s.bizPositioning) {
-            if (s.bizPositioning.coreBizIntro) form.module2.coreBusiness = s.bizPositioning.coreBizIntro
-            if (s.bizPositioning.targetCustomer) form.module2.targetCustomers = s.bizPositioning.targetCustomer
-            if (s.bizPositioning.differentialAdvantage) form.module2.differentiation = s.bizPositioning.differentialAdvantage
-            if (s.bizPositioning.positioning) form.module2.positioning = s.bizPositioning.positioning
-            if (s.bizPositioning.brandStory) form.module2.brandStory = s.bizPositioning.brandStory
-          }
-          
-          // 填充模块三：产品服务
-          if (s.productService) {
-            if (s.productService.mainProducts) form.module3.mainProducts = s.productService.mainProducts
-            if (s.productService.sellPoints) form.module3.sellPoints = s.productService.sellPoints
-            if (s.productService.serviceProcess) form.module3.serviceProcess = s.productService.serviceProcess
-            if (s.productService.seoKeywords?.length) form.module3.seoKeywords = s.productService.seoKeywords.join(', ')
-          }
-          
-          // 填充模块七：联系方式
-          if (s.contact) {
-            if (s.contact.phone) form.module7.contactPhone = s.contact.phone
-            if (s.contact.email) form.module7.contactEmail = s.contact.email
-            if (s.contact.wechat) form.module7.socialWechat = s.contact.wechat
-            if (s.contact.weibo) form.module7.socialWeibo = s.contact.weibo
-            if (s.contact.zhihu) form.module7.socialZhihu = s.contact.zhihu
-            if (s.contact.douyin) form.module7.socialDouyin = s.contact.douyin
-          }
-          
-          fetchSuccess.value = true
-          showToast('AI 已填充数据，请检查并修改后保存', 'success')
-        } else {
-          fetchError.value = result.message || 'AI 分析失败'
-        }
-      } catch (err) {
-        console.error('URL 抓取失败:', err)
-        fetchError.value = err.message || '网络错误，请稍后重试'
-      } finally {
-        fetching.value = false
       }
     }
 
@@ -1118,6 +1168,7 @@ export default {
     return {
       theme,
       loading,
+      completionPercent,
       profileId,
       companyNameInput,
       searching,
@@ -1139,6 +1190,7 @@ export default {
       fileList,
       fileInput,
       toast,
+      handleStartDiagnosis,
       handleSearchCompany,
       saveModule1,
       saveModule2,
@@ -1176,6 +1228,9 @@ export default {
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .page-title {
@@ -1189,6 +1244,107 @@ export default {
   font-size: 0.875rem;
   color: var(--text-secondary);
   margin: 0;
+}
+
+/* 启动诊断按钮 */
+.start-diagnosis-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.start-diagnosis-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(16, 185, 129, 0.5);
+  }
+}
+
+/* 完成度进度条 */
+.completion-progress {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  padding: 16px 20px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.progress-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.progress-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  transition: color 0.3s;
+}
+
+.progress-value.complete {
+  color: #10b981;
+}
+
+.progress-bar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-primary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), #8b5cf6);
+  border-radius: 4px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.progress-bar-fill.complete {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.progress-hint {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.progress-hint.success {
+  color: #10b981;
 }
 
 .ai-fetch-section {

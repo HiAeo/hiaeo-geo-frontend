@@ -8,9 +8,8 @@ const BASE_URL = '/api/v1/optimization'
 // ==================== 优化建议 API ====================
 
 export const getOptimizationSuggestions = (brandId) => {
-  return request(`${BASE_URL}/suggestions`, {
+  return request(`${BASE_URL}/brand/${brandId}/suggestions`, {
     method: 'GET',
-    params: { brandId },
   })
 }
 
@@ -22,94 +21,94 @@ export const createOptimizationTask = (data) => {
 }
 
 export const getOptimizationTasks = (brandId, status) => {
-  return request(`${BASE_URL}/tasks`, {
+  return request(`${BASE_URL}/brand/${brandId}/suggestions`, {
     method: 'GET',
-    params: { brandId, status },
+    params: { status },
   })
 }
 
 export const executeOptimization = (taskId) => {
-  return request(`${BASE_URL}/tasks/${taskId}/execute`, {
+  return request(`${BASE_URL}/suggestion/${taskId}/execute`, {
     method: 'POST',
   })
 }
 
 export const getExecutionHistory = (brandId, page = 1, size = 10) => {
-  return request(`${BASE_URL}/executions`, {
+  return request(`${BASE_URL}/brand/${brandId}/execution-history`, {
     method: 'GET',
-    params: { brandId, page, size },
+    params: { page, size },
   })
 }
 
 // ==================== 竞品追踪 API ====================
 
-export const getCompetitorList = (brandId) => {
-  return request(`${BASE_URL}/competitors`, {
+export const getCompetitorList = (brandName) => {
+  return request(`${BASE_URL}/competitor/${brandName}/history`, {
     method: 'GET',
-    params: { brandId },
   })
 }
 
-export const addCompetitor = (brandId, competitorUrl) => {
-  return request(`${BASE_URL}/competitors`, {
+export const addCompetitor = (brandName, competitorUrl) => {
+  return request(`${BASE_URL}/competitor/discover`, {
     method: 'POST',
-    body: JSON.stringify({ brandId, competitorUrl }),
+    body: JSON.stringify({ brandName, keywords: [] }),
   })
 }
 
 export const removeCompetitor = (competitorId) => {
-  return request(`${BASE_URL}/competitors/${competitorId}`, {
+  return request(`${BASE_URL}/competitor/${competitorId}/track`, {
     method: 'DELETE',
   })
 }
 
-export const trackCompetitor = (competitorId) => {
-  return request(`${BASE_URL}/competitors/${competitorId}/track`, {
+export const trackCompetitor = (competitorName, brandName) => {
+  return request(`${BASE_URL}/competitor/${competitorName}/track`, {
     method: 'POST',
+    body: JSON.stringify({ brandName }),
   })
 }
 
-export const getCompetitorAnalysis = (competitorId) => {
-  return request(`${BASE_URL}/competitors/${competitorId}/analysis`, {
-    method: 'GET',
+export const getCompetitorAnalysis = (competitorName, brandName) => {
+  return request(`${BASE_URL}/competitor/comparison`, {
+    method: 'POST',
+    body: JSON.stringify({ brandName, competitors: [competitorName] }),
   })
 }
 
 // ==================== 效果追踪 API ====================
 
 export const getEffectMetrics = (brandId, startDate, endDate) => {
-  return request(`${BASE_URL}/effects`, {
+  return request(`${BASE_URL}/brand/${brandId}/analysis`, {
     method: 'GET',
-    params: { brandId, startDate, endDate },
+    params: { startDate, endDate },
   })
 }
 
 export const getRankingImprovement = (brandId) => {
-  return request(`${BASE_URL}/effects/ranking`, {
+  return request(`${BASE_URL}/brand/${brandId}/analysis`, {
     method: 'GET',
-    params: { brandId },
   })
 }
 
 // ==================== 诊断联动 API ====================
 
-export const getOptimizationFromDiagnosis = (diagnosisReportId) => {
-  return request(`${BASE_URL}/from-diagnosis/${diagnosisReportId}`, {
-    method: 'GET',
+export const getOptimizationFromDiagnosis = (diagnosisReportId, diagnosisData) => {
+  return request(`${BASE_URL}/diagnosis/${diagnosisReportId}/generate`, {
+    method: 'POST',
+    body: JSON.stringify({ brandId: '', diagnosisData }),
   })
 }
 
 export const applyRAGDiagnosis = (brandId) => {
-  return request(`${BASE_URL}/rag-diagnosis`, {
+  return request(`${BASE_URL}/diagnosis/rag-enhanced`, {
     method: 'POST',
-    body: JSON.stringify({ brandId }),
+    body: JSON.stringify({ brandId, brandName: '' }),
   })
 }
 
 export const getRAGDiagnosisResult = (brandId) => {
-  return request(`${BASE_URL}/rag-diagnosis`, {
+  return request(`${BASE_URL}/diagnosis/${brandId}/rag-context`, {
     method: 'GET',
-    params: { brandId },
   })
 }
 

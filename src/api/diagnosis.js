@@ -45,5 +45,13 @@ export const diagnosisApi = {
   // 根据报告ID获取报告详情
   getReportById: (reportId) => {
     return request(`/diagnosis/reports/${reportId}`)
+  },
+
+  // 创建诊断报告（用于前端本地报告保存到后端）
+  createReport: (data) => {
+    return request('/diagnosis/reports', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
   }
 }

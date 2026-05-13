@@ -1,5 +1,35 @@
 <template>
   <div class="diagnose-detail">
+    <!-- 智库数据来源卡片 -->
+    <div class="knowledge-source-card" v-if="knowledgeSource">
+      <div class="source-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span>数据来源：品牌智库</span>
+        <span class="source-brand">{{ knowledgeSource.companyName }}</span>
+      </div>
+      <div class="source-brief">
+        <div class="brief-item">
+          <span class="brief-label">行业</span>
+          <span class="brief-value">{{ knowledgeSource.industry || '-' }}</span>
+        </div>
+        <div class="brief-item">
+          <span class="brief-label">定位</span>
+          <span class="brief-value">{{ knowledgeSource.positioning || '-' }}</span>
+        </div>
+        <div class="brief-item">
+          <span class="brief-label">目标用户</span>
+          <span class="brief-value">{{ knowledgeSource.targetCustomers || '-' }}</span>
+        </div>
+        <div class="brief-item">
+          <span class="brief-label">核心产品</span>
+          <span class="brief-value">{{ knowledgeSource.mainProducts || '-' }}</span>
+        </div>
+      </div>
+    </div>
+
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
@@ -21,6 +51,26 @@
           </div>
         </div>
         <div class="header-actions">
+          <!-- 确认诊断按钮（诊断完成后显示，点亮策略） -->
+          <button 
+            v-if="aiResult && !diagnosisConfirmed" 
+            class="confirm-btn"
+            @click="handleConfirmDiagnosis"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            确认诊断结果
+          </button>
+          <!-- 确认状态提示 -->
+          <span v-if="diagnosisConfirmed" class="confirmed-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            已确认
+          </span>
+          
           <!-- 快捷操作：从诊断报告直接生成策略 -->
           <button class="primary-action-btn" @click="generateStrategyFromReport">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -55,6 +105,13 @@
       <div v-if="loading" class="loading-section">
         <div class="loading-spinner"></div>
         <p>加载诊断报告...</p>
+      </div>
+
+      <!-- Error -->
+      <div v-else-if="error" class="error-section">
+        <div class="error-icon">⚠️</div>
+        <p class="error-text">{{ error }}</p>
+        <button class="retry-btn" @click="loadReport">重新加载</button>
       </div>
 
       <template v-else-if="aiResult">
@@ -282,13 +339,82 @@ import { useRoute, useRouter } from 'vue-router'
 import jsPDF from 'jspdf'
 import OptimizationPanel from '@/components/optimization/OptimizationPanel.vue'
 import CompetitorTrackingPanel from '@/components/optimization/CompetitorTrackingPanel.vue'
+import { diagnosisApi } from '@/api/diagnosis'
+import { getKnowledgeBase } from '@/api/knowledge'
+import { confirmDiagnosis } from '@/api/workflow'
 
 const route = useRoute()
 const router = useRouter()
 
 const loading = ref(true)
+const error = ref(null)
 const aiResult = ref(null)
 const showExportMenu = ref(false)
+const knowledgeSource = ref(null)
+const diagnosisConfirmed = ref(false)
+const currentBrandId = ref(null)
+
+// 获取智库数据作为诊断来源
+const fetchKnowledgeSource = async () => {
+  try {
+    const res = await getKnowledgeBase()
+    if (res?.data) {
+      const data = res.data
+      // 保存品牌 ID 用于后续 API 调用
+      currentBrandId.value = data.id || data._id || null
+      knowledgeSource.value = {
+        companyName: data.basicInfo?.companyName || data.module1?.companyName || '',
+        industry: data.basicInfo?.industry || data.module1?.industry || '',
+        positioning: data.bizPositioning?.positioning || data.module2?.positioning || '',
+        targetCustomers: data.bizPositioning?.targetCustomers || data.module2?.targetCustomers || '',
+        mainProducts: data.productService?.mainProducts || data.module3?.mainProducts || '',
+        coreBusiness: data.bizPositioning?.coreBusiness || data.module2?.coreBusiness || '',
+      }
+    }
+  } catch (err) {
+    console.log('[诊断详情] 获取智库数据失败:', err)
+  }
+}
+
+// 确认诊断结果
+const handleConfirmDiagnosis = async () => {
+  if (!currentBrandId.value) {
+    alert('错误：无法获取品牌ID，请先完成品牌智库填写')
+    return
+  }
+  try {
+    // 如果报告ID是本地ID，先保存到后端
+    let reportId = report.value.id
+    if (reportId && reportId.startsWith('local_')) {
+      const { createReport } = await import('@/api/diagnosis')
+      const saveRes = await createReport({
+        brandId: currentBrandId.value,
+        brandName: report.value.brandName || knowledgeSource.value?.companyName || '',
+        engineName: report.value.engineName || '通用引擎',
+        overallScore: aiResult.value?.overallScore || report.value.score || 0,
+        summary: aiResult.value?.summary || '',
+        dimensions: aiResult.value?.dimensions || [],
+        keyFindings: aiResult.value?.keyFindings || [],
+        competitorAnalysis: aiResult.value?.competitorAnalysis || null,
+        contentSuggestions: aiResult.value?.contentSuggestions || [],
+      })
+      if (saveRes?.success && saveRes?.data?.id) {
+        reportId = saveRes.data.id
+        report.value.id = reportId
+      }
+    }
+    await confirmDiagnosis(currentBrandId.value, reportId)
+    diagnosisConfirmed.value = true
+    // 显示成功提示
+    alert('诊断结果已确认！现在可以生成GEO优化策略。')
+    // 触发策略页面更新
+    sessionStorage.setItem('diagnosis_confirmed', 'true')
+    sessionStorage.setItem('confirmed_brand_id', currentBrandId.value)
+  } catch (err) {
+    console.error('确认诊断失败:', err)
+    alert('确认失败，请重试')
+  }
+}
 
 // 从诊断报告跳转到策略生成
 const generateStrategyFromReport = () => {
@@ -391,13 +517,18 @@ const getFindingIcon = (finding) => {
 // 从诊断报告生成优化建议
 const generateOptimizationFromReport = async () => {
   if (!report.value.id) return
-  
+
   try {
-    const { generateSuggestionsFromReport } = await import('@/api/optimization')
-    const res = await generateSuggestionsFromReport(report.value.id, report.value.brandName)
-    if (res.data?.success) {
-      console.log('优化建议生成成功:', res.data.data)
-      // 可以显示提示或刷新优化面板
+    const { getOptimizationFromDiagnosis } = await import('@/api/optimization')
+    // 传入完整的诊断数据，让后端基于实际数据生成建议
+    const diagnosisData = report.value.result || report.value
+    const res = await getOptimizationFromDiagnosis(report.value.id, diagnosisData)
+    if (res?.success && res?.data) {
+      console.log('优化建议生成成功:', res.data)
+      // 将生成的建议保存到报告对象中，触发 UI 更新
+      if (res.data.length > 0) {
+        report.value.optimizationSuggestions = res.data
+      }
     }
   } catch (error) {
     console.error('生成优化建议失败:', error)
@@ -416,6 +547,14 @@ const loadReport = async () => {
   const reportId = route.params.id
   console.log('[诊断详情] 加载报告, ID:', reportId)
   
+  // 如果是本地 ID（以 local_ 开头），直接从 localStorage 加载
+  if (reportId && reportId.startsWith('local_')) {
+    console.log('[诊断详情] 本地报告，从 localStorage 加载')
+    loadFromLocalStorage(reportId)
+    loading.value = false
+    return
+  }
+  
   try {
     const res = await diagnosisApi.getReportById(reportId)
     
@@ -428,18 +567,18 @@ const loadReport = async () => {
         id: data.id,
         brandName: data.brandName,
         type: '完整诊断',
-        date: data.createdAt,
-        score: data.overallScore,
+        date: data.createdAt || data.date || data.timestamp,
+        score: data.overallScore || data.score || 0,
         grade: data.grade,
-        engineName: data.enginesUsed?.[0] || '通用引擎'
+        engineName: data.engineName || data.enginesUsed?.[0] || '通用引擎'
       }
       
-      // 映射 AI 诊断结果
+      // 映射 AI 诊断结果 - 兼容多种字段命名
       aiResult.value = {
-        overallScore: data.overallScore,
-        summary: data.executiveSummary,
-        keyFindings: data.aiInsights ? data.aiInsights.split('\n').filter(Boolean) : [],
-        dimensions: (data.dimensionScores || []).map((dim, index) => ({
+        overallScore: data.overallScore || data.score || 0,
+        summary: data.summary || data.executiveSummary || '',
+        keyFindings: data.keyFindings || (data.aiInsights ? data.aiInsights.split('\n').filter(Boolean) : []),
+        dimensions: (data.dimensions || data.dimensionScores || []).map((dim, index) => ({
           id: dim.id || `D${index + 1}`,
           name: dim.name || `维度${index + 1}`,
           score: dim.score || 0,
@@ -453,7 +592,7 @@ const loadReport = async () => {
           }))
         })),
         competitorAnalysis: data.competitorAnalysis,
-        contentSuggestions: (data.suggestions || []).map(s => ({
+        contentSuggestions: (data.contentSuggestions || data.suggestions || []).map(s => ({
           priority: s.priority || '中',
           type: s.type || 'seo',
           content: s.action || s.text || ''
@@ -471,6 +610,44 @@ const loadReport = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 从 localStorage 加载本地报告
+const loadFromLocalStorage = (reportId) => {
+  const savedReports = localStorage.getItem('diagnose_reports')
+  if (savedReports) {
+    const reports = JSON.parse(savedReports)
+    const found = reports.find(r => r.id === reportId)
+    if (found) {
+      console.log('[诊断详情] 从 localStorage 找到报告:', found)
+      report.value = found
+      if (found.result) {
+        // 兼容 result 中的不同字段命名
+        const r = found.result
+        aiResult.value = {
+          overallScore: r.overallScore || r.score || 0,
+          summary: r.summary || r.executiveSummary || '',
+          keyFindings: r.keyFindings || (r.aiInsights ? r.aiInsights.split('\n').filter(Boolean) : []),
+          dimensions: r.dimensions || r.dimensionScores || [],
+          competitorAnalysis: r.competitorAnalysis || null,
+          contentSuggestions: r.contentSuggestions || r.suggestions || [],
+        }
+      } else {
+        // 兼容：直接从 report 获取数据
+        aiResult.value = {
+          overallScore: found.overallScore || found.score || 0,
+          dimensions: found.dimensions || [],
+          summary: found.summary || '',
+          keyFindings: found.keyFindings || [],
+          competitorAnalysis: found.competitorAnalysis || null,
+          contentSuggestions: found.contentSuggestions || [],
+        }
+      }
+      return
+    }
+  }
+  console.warn('[诊断详情] localStorage 中未找到报告 ID:', reportId)
+  error.value = '报告未找到或已过期'
 }
 
 // PDF Color palette
@@ -1248,11 +1425,113 @@ const exportAsText = async () => {
 
 onMounted(() => {
   loadReport()
+  fetchKnowledgeSource()
+  // 检查是否已确认
+  const confirmed = sessionStorage.getItem('diagnosis_confirmed')
+  if (confirmed === 'true') {
+    diagnosisConfirmed.value = true
+    // 清除标记
+    sessionStorage.removeItem('diagnosis_confirmed')
+  }
 })
 </script>
 
 <style scoped>
 .diagnose-detail { min-height: 100vh; padding-bottom: 40px; background: var(--bg-primary); }
+
+/* 智库数据来源卡片 */
+.knowledge-source-card {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 12px;
+}
+
+.source-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.source-brand {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.source-brief {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.brief-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brief-label {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.brief-value {
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 确认诊断按钮 */
+.confirm-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.confirm-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); }
+  50% { box-shadow: 0 2px 16px rgba(16, 185, 129, 0.5); }
+}
+
+.confirmed-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
 .page-header { position: sticky; top: 0; z-index: 50; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); padding: 16px 24px; }
 .header-content { display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; }
 .header-left { display: flex; align-items: center; gap: 12px; }
@@ -1265,8 +1544,15 @@ onMounted(() => {
 .secondary-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--bg-elevated); border: 1px solid var(--border-color); border-radius: 10px; font-size: 0.8125rem; font-weight: 600; color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
 .secondary-btn:hover { border-color: var(--color-primary); }
 
-.primary-action-btn {
+.header-actions {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.primary-action-btn {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 10px 18px;
@@ -1276,6 +1562,7 @@ onMounted(() => {
   font-size: 0.875rem;
   font-weight: 600;
   color: white;
+  white-space: nowrap;
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
@@ -1285,7 +1572,7 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 }
 
-.export-dropdown { position: relative; }
+.export-dropdown { position: relative; flex-shrink: 0; }
 .dropdown-menu {
   position: absolute;
   top: 100%;
@@ -1318,6 +1605,12 @@ onMounted(() => {
 .loading-section { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 24px; gap: 16px; }
 .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border-color); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.error-section { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 24px; gap: 16px; }
+.error-icon { font-size: 3rem; }
+.error-text { color: var(--color-danger); font-size: 1.1rem; }
+.retry-btn { padding: 10px 24px; background: var(--color-primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+.retry-btn:hover { opacity: 0.9; }
 
 .detail-content { max-width: 1200px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 24px; }
 

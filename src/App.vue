@@ -4,6 +4,9 @@
     <!-- App/Manage 子路由页面 (全屏覆盖官网 NavBar 也隐藏) -->
     <router-view v-if="isSubApp" />
 
+    <!-- 关于我们页面 -->
+    <router-view v-else-if="isAboutPage" />
+
     <!-- 官网首页 -->
     <template v-else>
       <!-- NavBar -->
@@ -111,6 +114,8 @@ watch(() => route.path, () => {
 
 // 判断是否在 App/Manage 子路由中
 const isSubApp = computed(() => route.path.startsWith('/app') || route.path.startsWith('/manage'))
+
+const isAboutPage = computed(() => route.path === '/about')
 
 // 切换主题 - 使用全局函数
 const toggleTheme = () => {

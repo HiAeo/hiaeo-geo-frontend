@@ -51,7 +51,21 @@ const request = async (url, options = {}) => {
       return {}
     }
     
-    const data = JSON.parse(text)
+    // 检查是否是 HTML 响应（通常是 404 或错误页面）
+    if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+      if (!response.ok) {
+        throw new Error(`请求失败: ${response.status} ${response.statusText}`)
+      }
+      throw new Error('服务器返回了 HTML 页面，请检查 API 路径是否正确')
+    }
+    
+    let data
+    try {
+      data = JSON.parse(text)
+    } catch (parseError) {
+      console.error('JSON 解析失败:', text.substring(0, 200))
+      throw new Error('服务器返回了非 JSON 数据')
+    }
     
     if (!response.ok) {
       throw new Error(data.message || `请求失败: ${response.status}`)

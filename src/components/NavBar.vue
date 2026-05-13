@@ -115,6 +115,7 @@ const navLinks = [
   { label: '案例', href: '#cases-detail' },
   { label: '定价', href: '#pricing' },
   { label: 'FAQ', href: '#faq' },
+  { label: '关于我们', href: '/about' },
 ]
 
 const handleScroll = () => {
