@@ -115,35 +115,35 @@
             </div>
           </div>
           <div class="chart-container">
-            <svg class="trend-chart" viewBox="0 0 760 260" preserveAspectRatio="none">
+            <svg class="trend-chart" viewBox="0 0 900 320" preserveAspectRatio="xMidYMid meet">
               <defs>
                 <linearGradient id="bossAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="rgba(22, 93, 255, 0.25)"/>
+                  <stop offset="0%" stop-color="rgba(22, 93, 255, 0.2)"/>
                   <stop offset="100%" stop-color="rgba(22, 93, 255, 0)"/>
                 </linearGradient>
                 <linearGradient id="industryAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="rgba(107, 114, 128, 0.15)"/>
+                  <stop offset="0%" stop-color="rgba(107, 114, 128, 0.12)"/>
                   <stop offset="100%" stop-color="rgba(107, 114, 128, 0)"/>
                 </linearGradient>
               </defs>
 
               <!-- Y轴 -->
-              <line x1="60" y1="20" x2="60" y2="210" class="axis-line"/>
+              <line x1="70" y1="30" x2="70" y2="250" class="axis-line"/>
               <!-- X轴 -->
-              <line x1="60" y1="210" x2="720" y2="210" class="axis-line"/>
+              <line x1="70" y1="250" x2="860" y2="250" class="axis-line"/>
 
               <!-- Y轴网格线和标签 -->
               <g v-for="i in 5" :key="'yg'+i">
-                <line :x1="60" :y1="20 + (190/4)*(i-1)" :x2="720" :y2="20 + (190/4)*(i-1)" class="grid-line"/>
-                <text :x="50" :y="20 + (190/4)*(i-1) + 4" class="axis-label" text-anchor="end">{{ yAxisLabels[i-1] }}</text>
+                <line :x1="70" :y1="30 + (220/4)*(i-1)" :x2="860" :y2="30 + (220/4)*(i-1)" class="grid-line"/>
+                <text :x="58" :y="30 + (220/4)*(i-1) + 4" class="axis-label" text-anchor="end">{{ yAxisLabels[i-1] }}</text>
               </g>
 
-              <!-- X轴标签 -->
-              <text v-for="(d, i) in visibilityData" :key="'xl'+i"
-                :x="60 + (660 / (visibilityData.length - 1)) * i"
-                :y="230"
+              <!-- X轴标签 - 智能采样，避免重叠 -->
+              <text v-for="(d, i) in xAxisLabels" :key="'xl'+i"
+                :x="70 + (790 / (xAxisLabels.length - 1 || 1)) * i"
+                :y="275"
                 class="axis-label"
-                text-anchor="middle">{{ d.date }}</text>
+                text-anchor="middle">{{ d }}</text>
 
               <!-- 行业平均线区域 -->
               <path :d="industryAreaPath" fill="url(#industryAreaGrad)"/>
@@ -160,11 +160,11 @@
               <!-- 行业平均数据点 -->
               <circle v-for="(p, i) in industryPoints" :key="'ic'+i" :cx="p.x" :cy="p.y" r="3" class="chart-point industry"/>
 
-              <!-- 数据标签 -->
-              <text v-for="(p, i) in visibilityPoints" :key="'tv'+i"
-                :x="p.x" :y="p.y - 12"
+              <!-- 数据标签 - 只在关键点显示 -->
+              <text v-for="(p, i) in keyPointIndices" :key="'tv'+i"
+                :x="visibilityPoints[p]?.x || 0" :y="(visibilityPoints[p]?.y || 0) - 14"
                 class="data-label"
-                text-anchor="middle">{{ visibilityData[i].value }}</text>
+                text-anchor="middle">{{ visibilityData[p]?.value }}</text>
             </svg>
 
             <!-- 图例 -->
@@ -486,7 +486,27 @@ const techReferences = ref([
   { type: 'sitemap', icon: '🗺️', title: 'Sitemap', description: '生成站点地图' }
 ])
 
-// 行业平均数据（模拟）
+// 根据周期生成模拟数据
+const generateTrendData = (period) => {
+  const days = period === '7d' ? 7 : period === '30d' ? 30 : 90
+  const data = []
+  const industry = []
+  const now = new Date()
+  let brandVal = 55
+  let indVal = 48
+  for (let i = 0; i < days; i++) {
+    const d = new Date(now)
+    d.setDate(d.getDate() - (days - 1 - i))
+    const label = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    brandVal += Math.random() * 3 - 0.5
+    indVal += Math.random() * 2 - 0.3
+    data.push({ date: label, value: Math.min(Math.round(brandVal), 100) })
+    industry.push({ date: label, value: Math.min(Math.round(indVal), 100) })
+  }
+  return { data, industry }
+}
+
+// 行业平均数据
 const industryData = ref([
   { date: '05-01', value: 48 },
   { date: '05-05', value: 50 },
@@ -511,25 +531,44 @@ const visibilityTrend = computed(() => {
 })
 
 // Y轴标签（0-100分）
-const yAxisLabels = computed(() => {
-  return [100, 75, 50, 25, 0]
+const yAxisLabels = computed(() => [100, 75, 50, 25, 0])
+
+// X轴标签 - 智能采样避免重叠
+const xAxisLabels = computed(() => {
+  const len = visibilityData.value.length
+  if (len <= 8) return visibilityData.value.map(d => d.date)
+  const step = Math.ceil(len / 8)
+  return visibilityData.value.filter((_, i) => i % step === 0 || i === len - 1).map(d => d.date)
+})
+
+// 关键点索引（首尾+中间均匀分布）
+const keyPointIndices = computed(() => {
+  const len = visibilityData.value.length
+  if (len <= 0) return []
+  const indices = [0, len - 1]
+  if (len > 5) indices.push(Math.floor(len / 2))
+  if (len > 10) {
+    indices.push(Math.floor(len / 4))
+    indices.push(Math.floor(len * 3 / 4))
+  }
+  return [...new Set(indices)].sort((a, b) => a - b)
 })
 
 const visibilityPoints = computed(() => {
-  const w = 660
-  const h = 190
+  const w = 790
+  const h = 220
   return visibilityData.value.map((d, i) => ({
-    x: 60 + (w / (visibilityData.value.length - 1)) * i,
-    y: 20 + h - (d.value / 100) * h
+    x: 70 + (w / (visibilityData.value.length - 1 || 1)) * i,
+    y: 30 + h - (d.value / 100) * h
   }))
 })
 
 const industryPoints = computed(() => {
-  const w = 660
-  const h = 190
+  const w = 790
+  const h = 220
   return industryData.value.map((d, i) => ({
-    x: 60 + (w / (industryData.value.length - 1)) * i,
-    y: 20 + h - (d.value / 100) * h
+    x: 70 + (w / (industryData.value.length - 1 || 1)) * i,
+    y: 30 + h - (d.value / 100) * h
   }))
 })
 
@@ -545,7 +584,7 @@ const industryLinePath = computed(() => {
 
 const visibilityAreaPath = computed(() => {
   if (visibilityPoints.value.length === 0) return ''
-  const bottomY = 210
+  const bottomY = 250
   const first = visibilityPoints.value[0]
   const last = visibilityPoints.value[visibilityPoints.value.length - 1]
   return `${visibilityLinePath.value} L ${last.x} ${bottomY} L ${first.x} ${bottomY} Z`
@@ -553,7 +592,7 @@ const visibilityAreaPath = computed(() => {
 
 const industryAreaPath = computed(() => {
   if (industryPoints.value.length === 0) return ''
-  const bottomY = 210
+  const bottomY = 250
   const first = industryPoints.value[0]
   const last = industryPoints.value[industryPoints.value.length - 1]
   return `${industryLinePath.value} L ${last.x} ${bottomY} L ${first.x} ${bottomY} Z`
@@ -607,9 +646,18 @@ const loadVisibilityTrend = async () => {
         date: item.date || item.label || '',
         value: item.value || item.score || 0
       }))
+    } else {
+      // 使用模拟数据
+      const mock = generateTrendData(bossPeriod.value)
+      visibilityData.value = mock.data
+      industryData.value = mock.industry
     }
   } catch (e) {
     console.error('加载可见度趋势失败:', e)
+    // 使用模拟数据
+    const mock = generateTrendData(bossPeriod.value)
+    visibilityData.value = mock.data
+    industryData.value = mock.industry
   }
 }
 
@@ -1049,7 +1097,7 @@ onMounted(() => {
 
 .trend-chart {
   width: 100%;
-  height: 200px;
+  height: 280px;
 }
 
 .grid-line {
@@ -1075,12 +1123,12 @@ onMounted(() => {
 
 .axis-label {
   fill: var(--text-tertiary);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .data-label {
   fill: var(--color-info);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
