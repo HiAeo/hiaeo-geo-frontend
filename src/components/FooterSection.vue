@@ -37,11 +37,11 @@
           <div v-for="col in footerCols" :key="col.title" class="footer-col">
             <h4 class="footer-col-title">{{ col.title }}</h4>
             <div class="space-y-2">
-              <a v-for="link in col.links" :key="link"
-                href="#"
+              <router-link v-for="link in col.links" :key="link.text"
+                :to="link.path || '#'"
                 class="footer-link">
-                {{ link }}
-              </a>
+                {{ link.text }}
+              </router-link>
             </div>
           </div>
         </div>
@@ -78,19 +78,39 @@ const props = defineProps({
 const footerCols = [
   {
     title: '产品',
-    links: ['模镜 MiraSeek', '模豆 MiraMod', '模法 MiraMag', '魔鲸Hub'],
+    links: [
+      { text: '模镜 MiraSeek', path: '/app/diagnose' },
+      { text: '模豆 MiraMod', path: '/app/strategy' },
+      { text: '模法 MiraMag', path: '/app/publish' },
+      { text: '魔鲸Hub', path: '/app/hub' },
+    ],
   },
   {
     title: '资源',
-    links: ['帮助中心', 'API文档', '产品更新日志', '案例库'],
+    links: [
+      { text: '帮助中心', path: null },
+      { text: 'API文档', path: null },
+      { text: '产品更新日志', path: null },
+      { text: '案例库', path: null },
+    ],
   },
   {
     title: '公司',
-    links: ['关于我们', '加入团队', '媒体报道', '联系我们'],
+    links: [
+      { text: '关于我们', path: '/about' },
+      { text: '加入团队', path: null },
+      { text: '媒体报道', path: null },
+      { text: '联系我们', path: null },
+    ],
   },
   {
     title: '合规',
-    links: ['隐私政策', '服务条款', '数据安全', '合规认证'],
+    links: [
+      { text: '隐私政策', path: null },
+      { text: '服务条款', path: null },
+      { text: '数据安全', path: null },
+      { text: '合规认证', path: null },
+    ],
   },
 ]
 </script>

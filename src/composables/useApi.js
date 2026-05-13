@@ -505,6 +505,16 @@ export async function loginWithPassword(data) {
     body: JSON.stringify(data) 
   })
   
+  // 保存 Token
+  if (result.accessToken) {
+    authToken = result.accessToken
+    localStorage.setItem('auth_token', result.accessToken)
+  }
+  if (result.refreshToken) {
+    refreshToken = result.refreshToken
+    localStorage.setItem('refresh_token', result.refreshToken)
+  }
+  
   // 保存用户信息
   if (result.user) {
     currentUser.value = result.user
@@ -534,6 +544,16 @@ export async function register(data) {
     method: 'POST', 
     body: JSON.stringify(data) 
   })
+  
+  // 保存 Token
+  if (result.accessToken) {
+    authToken = result.accessToken
+    localStorage.setItem('auth_token', result.accessToken)
+  }
+  if (result.refreshToken) {
+    refreshToken = result.refreshToken
+    localStorage.setItem('refresh_token', result.refreshToken)
+  }
   
   // 保存用户信息
   if (result.user) {
