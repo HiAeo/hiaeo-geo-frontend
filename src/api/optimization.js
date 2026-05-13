@@ -3,7 +3,7 @@
  */
 import request from './request'
 
-const BASE_URL = '/api/v1/optimization'
+const BASE_URL = '/v1/optimization'
 
 // ==================== 优化建议 API ====================
 

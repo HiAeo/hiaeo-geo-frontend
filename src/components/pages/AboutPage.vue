@@ -349,33 +349,33 @@ const toggleTheme = () => {
   globalToggleTheme()
 }
 
-// Logo数据
+// Logo数据 - 使用public目录下的路径
 const aiModelLogos = [
-  '/src/assets/logos/ai-models/claude-color.svg',
-  '/src/assets/logos/ai-models/deepseek-color.svg',
-  '/src/assets/logos/ai-models/doubao-color.svg',
-  '/src/assets/logos/ai-models/gemini-color.svg',
-  '/src/assets/logos/ai-models/grok.svg',
-  '/src/assets/logos/ai-models/meta-color.svg',
-  '/src/assets/logos/ai-models/openai.svg',
-  '/src/assets/logos/ai-models/qwen-color.svg',
-  '/src/assets/logos/ai-models/spark-color.svg',
-  '/src/assets/logos/ai-models/wenxin-color.svg',
-  '/src/assets/logos/ai-models/yuanbao-color.svg',
-  '/src/assets/logos/ai-models/zhipu-color.svg',
+  '/ai-logos/claude-color.svg',
+  '/ai-logos/deepseek-color.svg',
+  '/ai-logos/doubao-color.svg',
+  '/ai-logos/gemini-color.svg',
+  '/ai-logos/grok.svg',
+  '/ai-logos/meta-color.svg',
+  '/ai-logos/openai.svg',
+  '/ai-logos/qwen-color.svg',
+  '/ai-logos/spark-color.svg',
+  '/ai-logos/wenxin-color.svg',
+  '/ai-logos/yuanbao-color.svg',
+  '/ai-logos/zhipu-color.svg',
 ]
 
 const aiMediaLogos = [
-  '/src/assets/logos/ai-media/今日头条.svg',
-  '/src/assets/logos/ai-media/哔哩哔哩.svg',
-  '/src/assets/logos/ai-media/小红书.svg',
-  '/src/assets/logos/ai-media/微信.svg',
-  '/src/assets/logos/ai-media/微博.svg',
-  '/src/assets/logos/ai-media/快手.svg',
-  '/src/assets/logos/ai-media/抖音.svg',
-  '/src/assets/logos/ai-media/百度.svg',
-  '/src/assets/logos/ai-media/虎扑.svg',
-  '/src/assets/logos/ai-media/豆瓣.svg',
+  '/media-logos/今日头条.svg',
+  '/media-logos/哔哩哔哩.svg',
+  '/media-logos/小红书.svg',
+  '/media-logos/微信.svg',
+  '/media-logos/微博.svg',
+  '/media-logos/快手.svg',
+  '/media-logos/抖音.svg',
+  '/media-logos/百度-baike.svg',
+  '/media-logos/虎扑.svg',
+  '/media-logos/豆瓣.svg',
 ]
 
 const businessItems = [
