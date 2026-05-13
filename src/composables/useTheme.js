@@ -4,24 +4,21 @@
  */
 import { ref, watch, onMounted } from 'vue'
 
-// 全局主题状态
-export const theme = ref('dark')
-
-// 初始化主题 - 每次调用都同步 localStorage
-export const initTheme = () => {
+// 全局主题状态 - 默认从 localStorage 读取，fallback 到系统偏好
+const getInitialTheme = () => {
   const savedTheme = localStorage.getItem('theme')
-  if (savedTheme) {
-    theme.value = savedTheme
-  } else {
-    // 检查系统偏好
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-      theme.value = 'light'
-    }
+  if (savedTheme) return savedTheme
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    return 'light'
   }
-  
-  // 应用到 document
-  document.documentElement.setAttribute('data-theme', theme.value)
+  return 'dark'
+}
 
+export const theme = ref(getInitialTheme())
+
+// 初始化主题 - 应用到 DOM
+export const initTheme = () => {
+  document.documentElement.setAttribute('data-theme', theme.value)
   return theme.value
 }
 
@@ -54,14 +51,16 @@ export const getTheme = () => theme.value
 
 // 组合式函数
 export const useTheme = () => {
+  // 只在首次挂载时初始化 DOM
   onMounted(() => {
     initTheme()
   })
-  
+
+  // 监听主题变化，同步到 DOM
   watch(theme, (newTheme) => {
     document.documentElement.setAttribute('data-theme', newTheme)
   })
-  
+
   return {
     theme,
     toggleTheme,

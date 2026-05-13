@@ -98,17 +98,16 @@ const theme = globalTheme
 const showLogin = ref(false)
 const showContact = ref(false)
 
-// 初始化主题
+// 初始化主题 - 确保页面加载时恢复用户选择的主题
 onMounted(() => {
   initTheme()
+  // 确保 DOM 主题属性正确设置
+  document.documentElement.setAttribute('data-theme', theme.value)
 })
 
 // 监听路由变化，确保子应用页面同步主题到 DOM
 watch(() => route.path, () => {
-  // 进入后台时强制深色主题
-  if (route.path.startsWith('/app') || route.path.startsWith('/manage')) {
-    setTheme('dark')
-  }
+  // 保持当前主题不变，仅同步到 DOM
   document.documentElement.setAttribute('data-theme', theme.value)
 }, { immediate: false })
 
