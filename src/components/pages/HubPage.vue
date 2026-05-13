@@ -44,12 +44,12 @@
     <div v-if="activeRole === 'boss'" class="role-content">
       <!-- Key Metrics -->
       <div class="metrics-grid">
-        <div class="metric-card primary">
+        <div class="metric-card">
           <div class="metric-header">
             <span class="metric-label">GEO健康分</span>
             <span class="metric-trend positive">↑ 8%</span>
           </div>
-          <div class="metric-value primary">{{ bossStats.geoScore }}</div>
+          <div class="metric-value">{{ bossStats.geoScore }}</div>
           <div class="metric-bar">
             <div class="metric-bar-fill" :style="{ width: bossStats.geoScore + '%' }"></div>
           </div>
@@ -115,18 +115,91 @@
             </div>
           </div>
           <div class="chart-container">
-            <svg class="trend-chart" viewBox="0 0 700 200" preserveAspectRatio="none">
+            <svg class="trend-chart" viewBox="0 0 760 260" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="bossAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="rgba(22, 93, 255, 0.3)"/>
+                  <stop offset="0%" stop-color="rgba(22, 93, 255, 0.25)"/>
                   <stop offset="100%" stop-color="rgba(22, 93, 255, 0)"/>
                 </linearGradient>
+                <linearGradient id="industryAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(107, 114, 128, 0.15)"/>
+                  <stop offset="100%" stop-color="rgba(107, 114, 128, 0)"/>
+                </linearGradient>
               </defs>
-              <line v-for="i in 4" :key="'g'+i" :x1="50" :y1="20 + (160/3)*(i-1)" :x2="680" :y2="20 + (160/3)*(i-1)" class="grid-line"/>
+
+              <!-- Y轴 -->
+              <line x1="60" y1="20" x2="60" y2="210" class="axis-line"/>
+              <!-- X轴 -->
+              <line x1="60" y1="210" x2="720" y2="210" class="axis-line"/>
+
+              <!-- Y轴网格线和标签 -->
+              <g v-for="i in 5" :key="'yg'+i">
+                <line :x1="60" :y1="20 + (190/4)*(i-1)" :x2="720" :y2="20 + (190/4)*(i-1)" class="grid-line"/>
+                <text :x="50" :y="20 + (190/4)*(i-1) + 4" class="axis-label" text-anchor="end">{{ yAxisLabels[i-1] }}</text>
+              </g>
+
+              <!-- X轴标签 -->
+              <text v-for="(d, i) in visibilityData" :key="'xl'+i"
+                :x="60 + (660 / (visibilityData.length - 1)) * i"
+                :y="230"
+                class="axis-label"
+                text-anchor="middle">{{ d.date }}</text>
+
+              <!-- 行业平均线区域 -->
+              <path :d="industryAreaPath" fill="url(#industryAreaGrad)"/>
+              <!-- 行业平均线 -->
+              <path :d="industryLinePath" class="chart-line industry"/>
+
+              <!-- 品牌可见度区域 -->
               <path :d="visibilityAreaPath" fill="url(#bossAreaGrad)"/>
+              <!-- 品牌可见度线 -->
               <path :d="visibilityLinePath" class="chart-line blue"/>
-              <circle v-for="(p, i) in visibilityPoints" :key="'c'+i" :cx="p.x" :cy="p.y" r="4" class="chart-point" @mouseenter="showTooltip(i)" @mouseleave="hideTooltip"/>
+
+              <!-- 数据点 -->
+              <circle v-for="(p, i) in visibilityPoints" :key="'c'+i" :cx="p.x" :cy="p.y" r="5" class="chart-point" @mouseenter="showTooltip(i)" @mouseleave="hideTooltip"/>
+              <!-- 行业平均数据点 -->
+              <circle v-for="(p, i) in industryPoints" :key="'ic'+i" :cx="p.x" :cy="p.y" r="3" class="chart-point industry"/>
+
+              <!-- 数据标签 -->
+              <text v-for="(p, i) in visibilityPoints" :key="'tv'+i"
+                :x="p.x" :y="p.y - 12"
+                class="data-label"
+                text-anchor="middle">{{ visibilityData[i].value }}</text>
             </svg>
+
+            <!-- 图例 -->
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-dot brand"></span>
+                <span class="legend-text">本品牌可见度</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot industry"></span>
+                <span class="legend-text">行业平均</span>
+              </div>
+            </div>
+
+            <!-- 统计摘要 -->
+            <div class="chart-summary">
+              <div class="summary-item">
+                <span class="summary-label">当前分数</span>
+                <span class="summary-value">{{ visibilityData[visibilityData.length-1]?.value || 0 }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">较上期</span>
+                <span class="summary-value" :class="visibilityTrend >= 0 ? 'up' : 'down'">
+                  {{ visibilityTrend >= 0 ? '+' : '' }}{{ visibilityTrend }}%
+                </span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">最高分</span>
+                <span class="summary-value">{{ maxVisibility }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">平均分</span>
+                <span class="summary-value">{{ avgVisibility }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -413,15 +486,50 @@ const techReferences = ref([
   { type: 'sitemap', icon: '🗺️', title: 'Sitemap', description: '生成站点地图' }
 ])
 
+// 行业平均数据（模拟）
+const industryData = ref([
+  { date: '05-01', value: 48 },
+  { date: '05-05', value: 50 },
+  { date: '05-10', value: 52 },
+  { date: '05-15', value: 53 },
+  { date: '05-20', value: 55 },
+  { date: '05-25', value: 56 },
+  { date: '05-28', value: 57 }
+])
+
 // Computed
 const maxVisibility = computed(() => Math.max(...visibilityData.value.map(d => d.value), 1))
+const avgVisibility = computed(() => {
+  const sum = visibilityData.value.reduce((acc, d) => acc + d.value, 0)
+  return (sum / visibilityData.value.length).toFixed(1)
+})
+const visibilityTrend = computed(() => {
+  if (visibilityData.value.length < 2) return 0
+  const last = visibilityData.value[visibilityData.value.length - 1].value
+  const prev = visibilityData.value[visibilityData.value.length - 2].value
+  return (((last - prev) / prev) * 100).toFixed(1)
+})
+
+// Y轴标签（0-100分）
+const yAxisLabels = computed(() => {
+  return [100, 75, 50, 25, 0]
+})
 
 const visibilityPoints = computed(() => {
-  const w = 630
-  const h = 160
+  const w = 660
+  const h = 190
   return visibilityData.value.map((d, i) => ({
-    x: 50 + (w / (visibilityData.value.length - 1)) * i,
-    y: 20 + h - (d.value / maxVisibility.value) * h
+    x: 60 + (w / (visibilityData.value.length - 1)) * i,
+    y: 20 + h - (d.value / 100) * h
+  }))
+})
+
+const industryPoints = computed(() => {
+  const w = 660
+  const h = 190
+  return industryData.value.map((d, i) => ({
+    x: 60 + (w / (industryData.value.length - 1)) * i,
+    y: 20 + h - (d.value / 100) * h
   }))
 })
 
@@ -430,12 +538,25 @@ const visibilityLinePath = computed(() => {
   return visibilityPoints.value.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
 })
 
+const industryLinePath = computed(() => {
+  if (industryPoints.value.length === 0) return ''
+  return industryPoints.value.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+})
+
 const visibilityAreaPath = computed(() => {
   if (visibilityPoints.value.length === 0) return ''
-  const bottomY = 180
+  const bottomY = 210
   const first = visibilityPoints.value[0]
   const last = visibilityPoints.value[visibilityPoints.value.length - 1]
   return `${visibilityLinePath.value} L ${last.x} ${bottomY} L ${first.x} ${bottomY} Z`
+})
+
+const industryAreaPath = computed(() => {
+  if (industryPoints.value.length === 0) return ''
+  const bottomY = 210
+  const first = industryPoints.value[0]
+  const last = industryPoints.value[industryPoints.value.length - 1]
+  return `${industryLinePath.value} L ${last.x} ${bottomY} L ${first.x} ${bottomY} Z`
 })
 
 // Methods
@@ -830,25 +951,6 @@ onMounted(() => {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-.metric-card.primary {
-  background: rgba(22, 93, 255, 0.1);
-  border-color: var(--color-primary);
-}
-
-.metric-card.primary .metric-label,
-.metric-card.primary .metric-trend,
-.metric-card.primary .metric-compare {
-  color: var(--color-primary);
-}
-
-.metric-card.primary .metric-value {
-  color: var(--color-primary);
-}
-
-.metric-card.primary .metric-bar-fill {
-  background: var(--color-primary);
-}
-
 .metric-header {
   display: flex;
   justify-content: space-between;
@@ -964,6 +1066,23 @@ onMounted(() => {
 }
 
 .chart-line.blue { stroke: var(--color-info); }
+.chart-line.industry { stroke: var(--text-tertiary); stroke-dasharray: 6 4; stroke-width: 2; }
+
+.axis-line {
+  stroke: var(--border-color);
+  stroke-width: 1;
+}
+
+.axis-label {
+  fill: var(--text-tertiary);
+  font-size: 10px;
+}
+
+.data-label {
+  fill: var(--color-info);
+  font-size: 11px;
+  font-weight: 600;
+}
 
 .chart-point {
   fill: var(--color-primary);
@@ -971,8 +1090,79 @@ onMounted(() => {
   transition: all 0.2s ease;
 }
 
+.chart-point.industry {
+  fill: var(--text-tertiary);
+}
+
 .chart-point:hover {
-  r: 6;
+  r: 7;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.legend-dot.brand {
+  background: var(--color-info);
+}
+
+.legend-dot.industry {
+  background: var(--text-tertiary);
+}
+
+.chart-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--bg-primary);
+  border-radius: 12px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.summary-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summary-value.up {
+  color: var(--color-success);
+}
+
+.summary-value.down {
+  color: var(--color-danger);
 }
 
 /* Comparison */
