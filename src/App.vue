@@ -1,5 +1,11 @@
 <template>
-  <div class="min-h-screen overflow-x-hidden pb-16 md:pb-0" :data-theme="theme">
+  <!-- 小智机器人（geobuddy.net 或访问 /xiaozhi 路径） - 独立渲染，无魔鲸GEO包裹 -->
+  <template v-if="isXiaoZhiDomain || isXiaoZhiRoute">
+    <router-view />
+  </template>
+
+  <!-- 魔鲸GEO（modelbuddy.net）- 原有渲染逻辑 -->
+  <div v-else class="min-h-screen overflow-x-hidden pb-16 md:pb-0" :data-theme="theme">
 
     <!-- App/Manage 子路由页面 (全屏覆盖官网 NavBar 也隐藏) -->
     <router-view v-if="isSubApp" />
@@ -70,6 +76,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useApi } from './composables/useApi'
+import { useDomain } from './composables/useDomain'
 import { initTheme, toggleTheme as globalToggleTheme, theme as globalTheme, setTheme } from './composables/useTheme'
 
 // 组件导入 (官网)
@@ -92,6 +99,7 @@ import ContactModal from './components/ContactModal.vue'
 const route = useRoute()
 const router = useRouter()
 const { loginWithPassword, register, submitContactForm, logout } = useApi()
+const { isXiaoZhi: isXiaoZhiDomain } = useDomain()
 
 // 使用全局主题状态，确保所有组件同步
 const theme = globalTheme
@@ -113,6 +121,9 @@ watch(() => route.path, () => {
 
 // 判断是否在 App/Manage 子路由中
 const isSubApp = computed(() => route.path.startsWith('/app') || route.path.startsWith('/manage'))
+
+// 判断是否在小智路由中（无论哪个域名，访问 /xiaozhi 就用小智布局）
+const isXiaoZhiRoute = computed(() => route.path.startsWith('/xiaozhi'))
 
 const isAboutPage = computed(() => route.path === '/about')
 

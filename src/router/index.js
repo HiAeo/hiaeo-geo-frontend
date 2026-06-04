@@ -157,6 +157,21 @@ const routes = [
     ]
   },
 
+  // 小智机器人（360智见 geobuddy.net）
+  {
+    path: '/xiaozhi',
+    component: () => import('../components/xiaozhi/XiaoZhiChat.vue'),
+    meta: { title: '小智 · 360智见AI智能助手', layout: 'none' },
+    children: [
+      {
+        path: 'admin',
+        name: 'xiaozhi-admin',
+        component: () => import('../components/xiaozhi/XiaoZhiAdmin.vue'),
+        meta: { title: '小智后台 · 知识库管理', layout: 'none' }
+      }
+    ]
+  },
+
   // 关于我们页面
   {
     path: '/about',
@@ -177,8 +192,28 @@ const router = createRouter({
   routes
 })
 
+// 域名检测辅助函数
+function isXiaoZhiDomain() {
+  const host = window.location.hostname.toLowerCase()
+  return host === 'geobuddy.net' || host === 'www.geobuddy.net'
+}
+
 // 导航守卫
 router.beforeEach((to, from, next) => {
+  const xiaozhiDomain = isXiaoZhiDomain()
+
+  // geobuddy.net 根路径 → 重定向到小智聊天
+  if (xiaozhiDomain && to.path === '/') {
+    next('/xiaozhi')
+    return
+  }
+
+  // geobuddy.net 下禁止访问魔鲸GEO的 /app/* /manage/* 等路径
+  if (xiaozhiDomain && !to.path.startsWith('/xiaozhi')) {
+    next('/xiaozhi')
+    return
+  }
+
   const userStr = localStorage.getItem('user_info')
   const user = userStr ? JSON.parse(userStr) : null
   const userRole = localStorage.getItem('user_role') || 'brand'
@@ -198,9 +233,10 @@ router.beforeEach((to, from, next) => {
     return
   }
 
-  // 更新页面标题
+  // 更新页面标题（根据域名不同标题不同）
   if (to.meta.title) {
-    document.title = `${to.meta.title} - ModelBuddy`
+    const suffix = xiaozhiDomain ? '360智见 · 小智' : 'ModelBuddy'
+    document.title = `${to.meta.title} - ${suffix}`
   }
 
   next()
