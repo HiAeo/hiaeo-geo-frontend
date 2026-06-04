@@ -150,11 +150,6 @@
 
     <!-- 右侧聊天区 -->
     <main class="chat-main">
-      <!-- 聊天头部（右侧顶部） -->
-      <header class="chat-header-right">
-        <span>{{ currentTitle }}</span>
-      </header>
-
       <!-- 聊天内容区 -->
       <div class="chat-messages" ref="messagesContainer">
         <!-- 欢迎消息 -->
@@ -591,8 +586,8 @@ function scrollToBottom() {
 
 /* ====== 侧边栏 ====== */
 .sidebar {
-  width: 260px;
-  min-width: 260px;
+  width: 220px;
+  min-width: 220px;
   background: #fff;
   border-right: 1px solid #E8ECF1;
   display: flex;
@@ -602,7 +597,7 @@ function scrollToBottom() {
   z-index: 10;
 }
 .sidebar-collapsed .sidebar {
-  margin-left: -260px;
+  margin-left: -220px;
   opacity: 0;
   pointer-events: none;
 }
@@ -996,8 +991,7 @@ function scrollToBottom() {
 /* 输入区域 */
 .chat-input-area {
   padding: 12px 20px 16px;
-  background: #fff;
-  border-top: 1px solid #E8ECF1;
+  background: #F5F7FA;
   flex-shrink: 0;
   padding-bottom: max(16px, env(safe-area-inset-bottom));
 }
