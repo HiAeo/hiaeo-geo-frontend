@@ -122,6 +122,120 @@
         </div>
       </section>
 
+      <!-- 问答知识库管理 -->
+      <section v-if="activeTab === 'knowledge'" class="config-section">
+        <h2>问答知识库</h2>
+        <p class="section-desc">管理小智的问答对。每条问答包含匹配关键词和对应回答内容，按顺序优先匹配。</p>
+
+        <!-- 新增问答 -->
+        <div class="kb-add-card">
+          <h3>➕ 新增问答</h3>
+          <div class="form-group">
+            <label>匹配关键词（多个用逗号分隔）</label>
+            <input
+              v-model="newQA.id"
+              type="text"
+              class="form-input"
+              placeholder="ID标识，如: pricing"
+              style="margin-bottom:8px"
+            />
+            <input
+              v-model="newKwInput"
+              type="text"
+              class="form-input"
+              placeholder="例如: 收费, 多少钱, 价格, 费用, 报价"
+            />
+          </div>
+          <div class="form-group">
+            <label>回答内容（支持 Markdown）</label>
+            <textarea
+              v-model="newQA.answer"
+              rows="5"
+              class="form-textarea"
+              placeholder="输入对应的回答内容..."
+            ></textarea>
+          </div>
+          <button class="btn btn-primary" @click="addQAPair" :disabled="!newQA.id || !newKwInput.trim() || !newQA.answer.trim()">
+            添加问答
+          </button>
+        </div>
+
+        <!-- 问答列表 -->
+        <div class="kb-list" v-if="qaPairs.length > 0">
+          <h3>📚 已有问答 ({{ qaPairs.length }}条) <span class="kb-hint">拖拽可调整优先级</span></h3>
+
+          <div
+            v-for="(pair, idx) in qaPairs"
+            :key="pair.id"
+            class="kb-item"
+            :class="{ 'kb-editing': editingId === pair.id }"
+          >
+            <!-- 展示模式 -->
+            <template v-if="editingId !== pair.id">
+              <div class="kb-item-header">
+                <span class="kb-idx">{{ idx + 1 }}</span>
+                <span class="kb-id">{{ pair.id }}</span>
+                <span class="kb-kws">{{ pair.keywords.slice(0, 4).join('、') }}{{ pair.keywords.length > 4 ? '...' : '' }}</span>
+                <div class="kb-actions">
+                  <button class="btn-icon" @click="startEdit(pair)" title="编辑">✏️</button>
+                  <button class="btn-icon danger" @click="removeQAPair(idx)" title="删除">🗑️</button>
+                  <button class="btn-icon" @click="moveQAPair(idx, -1)" :disabled="idx === 0" title="上移">⬆️</button>
+                  <button class="btn-icon" @click="moveQAPair(idx, 1)" :disabled="idx === qaPairs.length - 1" title="下移">⬇️</button>
+                </div>
+              </div>
+              <div class="kb-preview">{{ pair.answer.slice(0, 80) }}{{ pair.answer.length > 80 ? '...' : '' }}</div>
+            </template>
+
+            <!-- 编辑模式 -->
+            <template v-else>
+              <div class="form-group" style="margin-bottom:8px">
+                <label>ID</label>
+                <input v-model="editForm.id" class="form-input" disabled style="background:#f5f7fa" />
+              </div>
+              <div class="form-group" style="margin-bottom:8px">
+                <label>关键词（逗号分隔）</label>
+                <input v-model="editKwInput" class="form-input" placeholder="收费, 多少钱..." />
+              </div>
+              <div class="form-group" style="margin-bottom:8px">
+                <label>回答内容</label>
+                <textarea v-model="editForm.answer" rows="4" class="form-textarea"></textarea>
+              </div>
+              <div class="kb-edit-actions">
+                <button class="btn btn-primary btn-sm" @click="saveEdit">保存</button>
+                <button class="btn btn-secondary btn-sm" @click="cancelEdit">取消</button>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <div v-else class="empty-state">
+          <p>暂无问答对，请在上方添加。</p>
+        </div>
+
+        <!-- 默认回复编辑 -->
+        <div class="kb-default-section" style="margin-top:24px">
+          <h3>💬 默认回复（无匹配时显示）</h3>
+          <textarea
+            v-model="defaultReply"
+            rows="3"
+            class="form-textarea"
+            placeholder="当用户问题无法匹配任何关键词时的默认回复..."
+          ></textarea>
+        </div>
+
+        <div class="form-actions" style="margin-top:20px">
+          <button class="btn btn-primary" @click="saveKnowledgeBase" :disabled="savingKB">
+            {{ savingKB ? '保存中...' : '💾 保存全部修改' }}
+          </button>
+          <button class="btn btn-secondary" @click="resetKnowledgeBase">重置为默认</button>
+          <button class="btn btn-secondary" @click="exportKnowledgeBase">📥 导出JSON</button>
+        </div>
+
+        <div class="kb-save-status" v-if="kbSaveStatus">
+          {{ kbSaveStatus }}
+        </div>
+      </section>
+
       <!-- 知识源管理 -->
       <section v-if="activeTab === 'sources'" class="config-section">
         <h2>知识源管理</h2>
@@ -232,7 +346,8 @@ import {
 
 const tabs = [
   { id: 'welcome', label: '欢迎语配置', icon: 'ChatDotRound' },
-  { id: 'sources', label: '知识源管理', icon: 'Files' },
+  { id: 'knowledge', label: '问答知识库', icon: 'Files' },
+  { id: 'sources', label: '知识源管理', icon: 'Upload' },
   { id: 'settings', label: '系统设置', icon: 'Operation' }
 ]
 
@@ -352,7 +467,175 @@ function checkPassword() {
   }
 }
 
-function handleLogout() {
+// ========== 知识库管理 ==========
+const qaPairs = ref([])
+const defaultReply = ref('')
+const newQA = reactive({ id: '', answer: '' })
+const newKwInput = ref('')
+const editingId = ref(null)
+const editForm = reactive({ id: '', answer: '' })
+const editKwInput = ref('')
+const savingKB = ref(false)
+const kbSaveStatus = ref('')
+
+// 加载知识库（优先从 localStorage，其次从 API 获取默认）
+async function loadKnowledgeBase() {
+  // 1. 先检查本地是否有自定义版本
+  const localKB = localStorage.getItem('xiaozhi_custom_kb')
+  if (localKB) {
+    try {
+      const data = JSON.parse(localKB)
+      qaPairs.value = data.qaPairs || []
+      defaultReply.value = data.defaultReply || ''
+      return
+    } catch { /* ignore */ }
+  }
+
+  // 2. 从线上 API 获取当前部署的知识库
+  try {
+    const res = await fetch('/api/xiaozhi/admin/knowledge')
+    if (res.ok) {
+      const result = await res.json()
+      if (result.data) {
+        qaPairs.value = result.data.qaPairs || []
+        defaultReply.value = result.data.defaultReply || ''
+      }
+    }
+  } catch (err) {
+    console.error('[Admin] Failed to load KB:', err)
+  }
+}
+
+// 新增问答
+function addQAPair() {
+  if (!newQA.id.trim() || !newKwInput.value.trim() || !newQA.answer.trim()) return
+
+  const keywords = newKwInput.value.split(/[,，]/).map(k => k.trim()).filter(k => k)
+
+  // 检查ID重复
+  if (qaPairs.value.some(p => p.id === newQA.id.trim())) {
+    kbSaveStatus.value = '⚠️ ID 已存在，请使用不同的标识'
+    setTimeout(() => { kbSaveStatus.value = '' }, 3000)
+    return
+  }
+
+  qaPairs.value.push({
+    id: newQA.id.trim(),
+    keywords,
+    answer: newQA.answer.trim()
+  })
+
+  // 清空输入
+  newQA.id = ''
+  newQA.answer = ''
+  newKwInput.value = ''
+  kbSaveStatus.value = '✅ 已添加（请点击保存按钮使修改生效）'
+}
+
+// 删除问答
+function removeQAPair(idx) {
+  if (confirm('确定删除这条问答吗？')) {
+    qaPairs.value.splice(idx, 1)
+    kbSaveStatus.value = '已删除（请保存）'
+  }
+}
+
+// 开始编辑
+function startEdit(pair) {
+  editingId.value = pair.id
+  editForm.id = pair.id
+  editForm.answer = pair.answer
+  editKwInput.value = pair.keywords.join('，')
+}
+
+// 保存编辑
+function saveEdit() {
+  const idx = qaPairs.value.findIndex(p => p.id === editForm.id)
+  if (idx !== -1) {
+    qaPairs.value[idx].answer = editForm.answer
+    qaPairs.value[idx].keywords = editKwInput.value.split(/[,，]/).map(k => k.trim()).filter(k => k)
+  }
+  editingId.value = null
+  kbSaveStatus.value = '✅ 已更新（请保存）'
+}
+
+// 取消编辑
+function cancelEdit() {
+  editingId.value = null
+}
+
+// 移动顺序
+function moveQAPair(idx, direction) {
+  const newIdx = idx + direction
+  if (newIdx < 0 || newIdx >= qaPairs.value.length) return
+  const temp = qaPairs.value[idx]
+  qaPairs.value[idx] = qaPairs.value[newIdx]
+  qaPairs.value[newIdx] = temp
+}
+
+// 保存到 localStorage + 同步到后端
+async function saveKnowledgeBase() {
+  savingKB.value = true
+  kbSaveStatus.value = ''
+
+  const kbData = {
+    name: '360智见小智知识库',
+    version: '1.0.0',
+    description: '小智机器人后台管理的问答知识库',
+    defaultReply: defaultReply.value,
+    qaPairs: qaPairs.value,
+    lastUpdated: new Date().toISOString()
+  }
+
+  // 1. 保存到 localStorage（立即生效）
+  localStorage.setItem('xiaozhi_custom_kb', JSON.stringify(kbData))
+
+  // 2. 尝试同步到后端
+  try {
+    const res = await fetch('/api/xiaozhi/admin/knowledge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        qaPairs: kbData.qaPairs,
+        defaultReply: kbData.defaultReply
+      })
+    })
+
+    if (res.ok) {
+      kbSaveStatus.value = '✅ 知识库已保存！刷新聊天页面即可看到最新内容。'
+    } else {
+      kbSaveStatus.value = '✅ 本地已保存（云端同步失败，但不影响使用）'
+    }
+  } catch (err) {
+    kbSaveStatus.value = '✅ 本地已保存！修改已在当前浏览器生效。'
+  }
+
+  savingKB.value = false
+  setTimeout(() => { kbSaveStatus.value = '' }, 5000)
+}
+
+// 重置为默认
+function resetKnowledgeBase() {
+  if (!confirm('确定重置为默认知识库吗？所有自定义修改将丢失。')) return
+  localStorage.removeItem('xiaozhi_custom_kb')
+  loadKnowledgeBase()
+  kbSaveStatus.value = '已重置为默认知识库'
+}
+
+// 导出 JSON
+function exportKnowledgeBase() {
+  const data = {
+    defaultReply: defaultReply.value,
+    qaPairs: qaPairs.value
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'xiaozhi-knowledge-base-' + new Date().toISOString().slice(0, 10) + '.json'
+  a.click()
+  URL.revokeObjectURL(url)
+}
   authenticated.value = false
   passwordInput.value = ''
   passwordError.value = ''
@@ -364,6 +647,7 @@ onMounted(() => {
   if (auth === 'true') {
     authenticated.value = true
     loadConfig()
+    loadKnowledgeBase()
   }
 })
 
@@ -891,4 +1175,136 @@ watch(authenticated, (val) => {
   width: 100%;
   margin-top: 16px;
 }
+
+/* ===== 知识库管理 ===== */
+.kb-add-card {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.kb-add-card h3 {
+  font-size: 15px;
+  color: #1D2129;
+  margin: 0 0 16px;
+}
+
+.kb-list {
+  margin-top: 8px;
+}
+
+.kb-list h3 {
+  font-size: 15px;
+  color: #1D2129;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kb-hint {
+  font-size: 12px;
+  color: #86909C;
+  font-weight: normal;
+}
+
+.kb-item {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.kb-item:hover { border-color: #c9cdd4; }
+.kb-editing { border-color: #165DFF; box-shadow: 0 0 0 3px rgba(22,93,255,0.08); }
+
+.kb-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.kb-idx {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #F5F7FA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #86909C;
+  flex-shrink: 0;
+}
+
+.kb-id {
+  font-size: 13px;
+  font-weight: 600;
+  color: #165DFF;
+  flex-shrink: 0;
+}
+
+.kb-kws {
+  flex: 1;
+  font-size: 12px;
+  color: #4E5969;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kb-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.kb-item:hover .kb-actions { opacity: 1; }
+
+.kb-preview {
+  padding: 0 12px 8px;
+  font-size: 12px;
+  color: #86909C;
+  line-height: 1.6;
+  border-top: 1px solid #f5f7fa;
+}
+
+.kb-edit-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafbfc;
+}
+
+.kb-default-section {
+  background: #fff;
+  border: 1px dashed #c9cdd4;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.kb-default-section h3 {
+  font-size: 14px;
+  color: #4E5969;
+  margin: 0 0 8px;
+}
+
+.kb-save-status {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.kb-save-status:empty { display: none; }
 </style>

@@ -216,6 +216,13 @@ async function sendMessage() {
   scrollToBottom()
 
   try {
+    // 读取本地自定义知识库（后台编辑过的）
+    let customKB = null
+    try {
+      const savedKB = localStorage.getItem('xiaozhi_custom_kb')
+      if (savedKB) customKB = JSON.parse(savedKB)
+    } catch { /* ignore */ }
+
     // 调用后端 API 获取 AI 回复
     const res = await fetch('/api/xiaozhi/chat', {
       method: 'POST',
@@ -225,7 +232,8 @@ async function sendMessage() {
         history: messages.value.slice(0, -1).map(m => ({
           role: m.role,
           content: m.content
-        }))
+        })),
+        knowledgeBase: customKB  // 传入自定义知识库
       })
     })
 
