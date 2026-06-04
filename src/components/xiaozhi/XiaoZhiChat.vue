@@ -81,33 +81,66 @@
       </div>
     </aside>
 
-    <!-- 登录弹窗 -->
+    <!-- 登录/注册弹窗 -->
     <Teleport to="body">
       <div class="login-overlay" v-if="showLoginModal" @click.self="showLoginModal = false">
         <div class="login-modal">
           <button class="login-close" @click="showLoginModal = false">&times;</button>
+
+          <!-- Logo -->
           <div class="login-logo">
-            <svg class="ai360-icon" style="width:40px;height:40px;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path clip-rule="evenodd" d="M12 0h.018c1.473-.002 2.88.261 4.179.754C20.755 2.456 24 6.85 24 12c0 6.627-5.373 12-12 12S0 18.627 0 12 5.373 0 12 0zm8.604 18.967A11.024 11.024 0 0023.07 12c0-1.717-.39-3.344-1.089-4.794a2.59 2.59 0 01-3.214.62 6.278 6.278 0 01-1.333-.992C16.283 5.73 15.109 4.66 13.696 3.9c-3.211-1.729-6.825-1.501-9.695.447A11.033 11.033 0 00.93 12c0 1.663.367 3.241 1.024 4.657.75-.973 2.131-1.346 3.232-.71.667.384 1.257.92 1.837 1.447l.176.16c1.365 1.234 2.794 2.355 4.558 2.965 3.053 1.053 6.356.437 8.847-1.552z" fill="#165DFF" fill-rule="evenodd"/>
-              <path d="M5.643 10.312c-.83.11-1.401.766-1.408 1.618a1.715 1.715 0 001.45 1.72c.805.128 1.64-.426 1.87-1.26.046-.167.076-.338.106-.51.025-.14.05-.282.084-.42.318-1.317 1.237-1.95 2.788-1.93 1.086.013 1.318.271 1.68 1.855.017.076.043.151.07.226.26.714.976 1.17 1.67 1.065a1.647 1.647 0 001.38-1.438c.083-.729-.348-1.264-1.122-1.575-.34-.136-.664-.158-.995-.141-.726.037-1.121-.36-1.339-.977a3.359 3.359 0 01-.134-.65c-.014-.093-.027-.186-.043-.278-.156-.887-.835-1.51-1.669-1.532-.791-.02-1.464.551-1.665 1.418l-.06.27-.025.117c-.355 1.636-.974 2.205-2.638 2.422z" fill="#fff"/>
-            </svg>
+            <div class="login-logo-icon">
+              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="32" height="32" rx="8" fill="url(#lg)"/>
+                <path d="M8 16L14 10L20 16L14 22Z" fill="#fff" opacity=".9"/>
+                <path d="M14 10L20 16L26 10" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#165DFF"/><stop offset="1" stop-color="#0F4CD0"/></linearGradient></defs>
+              </svg>
+            </div>
+            <span class="login-brand">智见GEO</span>
           </div>
-          <h2 class="login-title">登录账号</h2>
-          <p class="login-subtitle">登录后可保存对话记录，享受更多功能</p>
-          <form @submit.prevent="handleLogin" class="login-form">
+
+          <!-- Tab 切换 -->
+          <div class="auth-tabs">
+            <button :class="['tab-btn', { active: authMode === 'login' }]" @click="switchAuthMode('login')">登 录</button>
+            <button :class="['tab-btn', { active: authMode === 'register' }]" @click="switchAuthMode('register')">注 册</button>
+          </div>
+
+          <!-- ====== 登录表单 ====== -->
+          <form v-if="authMode === 'login'" @submit.prevent="handleLogin" class="login-form">
             <div class="form-group">
-              <label>用户名 / 邮箱</label>
-              <input v-model="loginForm.username" type="text" placeholder="请输入用户名或邮箱" required autofocus />
+              <label>手机号</label>
+              <input v-model="loginForm.phone" type="tel" placeholder="请输入手机号" maxlength="11" required autofocus />
             </div>
             <div class="form-group">
               <label>密码</label>
               <input v-model="loginForm.password" type="password" placeholder="请输入密码" required />
             </div>
             <div class="login-error" v-if="loginError">{{ loginError }}</div>
-            <button type="submit" class="login-submit-btn" :disabled="loginLoading">
+            <button type="submit" class="submit-btn" :disabled="loginLoading">
               {{ loginLoading ? '登录中...' : '登 录' }}
             </button>
-            <p class="login-hint">首次使用？联系管理员开通账号</p>
+          </form>
+
+          <!-- ====== 注册表单 ====== -->
+          <form v-else @submit.prevent="handleRegister" class="login-form">
+            <div class="form-group">
+              <label>手机号</label>
+              <input v-model="registerForm.phone" type="tel" placeholder="请输入手机号" maxlength="11" required autofocus />
+            </div>
+            <div class="form-group">
+              <label>设置密码</label>
+              <input v-model="registerForm.password" type="password" placeholder="请设置密码（至少6位）" minlength="6" required />
+            </div>
+            <div class="form-group">
+              <label>确认密码</label>
+              <input v-model="registerForm.confirmPassword" type="password" placeholder="请再次输入密码" minlength="6" required />
+            </div>
+            <div class="login-error" v-if="registerError">{{ registerError }}</div>
+            <button type="submit" class="submit-btn" :disabled="registerLoading">
+              {{ registerLoading ? '注册中...' : '注 册' }}
+            </button>
+            <p class="login-hint">注册即表示同意用户协议和隐私政策</p>
           </form>
         </div>
       </div>
@@ -266,9 +299,15 @@ const userName = ref(localStorage.getItem('xiaozhi_user_name') || '')
 
 // 登录弹窗
 const showLoginModal = ref(false)
+const authMode = ref('login') // 'login' | 'register'
 const loginLoading = ref(false)
 const loginError = ref('')
-const loginForm = ref({ username: '', password: '' })
+const loginForm = ref({ phone: '', password: '' })
+
+// 注册
+const registerLoading = ref(false)
+const registerError = ref('')
+const registerForm = ref({ phone: '', password: '', confirmPassword: '' })
 
 // 当前对话标题
 const currentTitle = computed(() => {
@@ -447,10 +486,16 @@ function sendQuickQuestion(question) {
   sendMessage()
 }
 
-// ========== 登录 ==========
+// ========== 登录 / 注册 ==========
+function switchAuthMode(mode) {
+  authMode.value = mode
+  loginError.value = ''
+  registerError.value = ''
+}
+
 async function handleLogin() {
-  const { username, password } = loginForm.value
-  if (!username || !password) return
+  const { phone, password } = loginForm.value
+  if (!phone || !password) return
 
   loginLoading.value = true
   loginError.value = ''
@@ -459,24 +504,70 @@ async function handleLogin() {
     const res = await fetch('/api/v1/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ phone, password })
     })
 
     if (res.ok) {
       const data = await res.json()
-      userName.value = data.user?.username || username
+      userName.value = data.user?.phone || phone
       localStorage.setItem('xiaozhi_user_name', userName.value)
       localStorage.setItem('xiaozhi_user_token', data.accessToken || data.token || '')
       showLoginModal.value = false
-      loginForm.value = { username: '', password: '' }
+      loginForm.value = { phone: '', password: '' }
     } else {
       const errData = await res.json().catch(() => ({}))
-      loginError.value = errData.message || '用户名或密码错误'
+      loginError.value = errData.message || '手机号或密码错误'
     }
   } catch (e) {
     loginError.value = '网络连接失败，请稍后重试'
   } finally {
     loginLoading.value = false
+  }
+}
+
+async function handleRegister() {
+  const { phone, password, confirmPassword } = registerForm.value
+  if (!phone || !password) return
+
+  // 前端校验
+  if (!/^1\d{10}$/.test(phone)) {
+    registerError.value = '请输入正确的手机号'
+    return
+  }
+  if (password.length < 6) {
+    registerError.value = '密码至少6位'
+    return
+  }
+  if (password !== confirmPassword) {
+    registerError.value = '两次输入的密码不一致'
+    return
+  }
+
+  registerLoading.value = true
+  registerError.value = ''
+
+  try {
+    const res = await fetch('/api/v1/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, password })
+    })
+
+    if (res.ok) {
+      const data = await res.json()
+      userName.value = data.user?.phone || phone
+      localStorage.setItem('xiaozhi_user_name', userName.value)
+      localStorage.setItem('xiaozhi_user_token', data.accessToken || data.token || '')
+      showLoginModal.value = false
+      registerForm.value = { phone: '', password: '', confirmPassword: '' }
+    } else {
+      const errData = await res.json().catch(() => ({}))
+      registerError.value = errData.message || '注册失败，该手机号可能已注册'
+    }
+  } catch (e) {
+    registerError.value = '网络连接失败，请稍后重试'
+  } finally {
+    registerLoading.value = false
   }
 }
 
@@ -964,7 +1055,7 @@ function scrollToBottom() {
   transform: scale(1.05);
 }
 
-/* 登录弹窗 */
+/* 登录/注册弹窗 */
 .login-overlay {
   position: fixed;
   inset: 0;
@@ -980,7 +1071,7 @@ function scrollToBottom() {
 .login-modal {
   background: #fff;
   border-radius: 16px;
-  padding: 36px 32px;
+  padding: 32px 28px 28px;
   width: 400px;
   max-width: 90vw;
   position: relative;
@@ -991,12 +1082,12 @@ function scrollToBottom() {
 
 .login-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 30px;
-  height: 30px;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
   border: none;
-  background: #F5F7FA;
+  background: transparent;
   border-radius: 8px;
   font-size: 18px;
   color: #86909C;
@@ -1006,29 +1097,62 @@ function scrollToBottom() {
   justify-content: center;
   transition: all 0.15s;
 }
-.login-close:hover { background: #E8ECF1; color: #1D2129; }
+.login-close:hover { background: #F5F7FA; color: #1D2129; }
 
+/* Logo */
 .login-logo {
-  text-align: center;
-  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 22px;
 }
-
-.login-title {
+.login-logo-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+.login-logo-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.login-brand {
   font-size: 20px;
   font-weight: 700;
   color: #1D2129;
-  text-align: center;
-  margin: 0 0 6px;
-}
-.login-subtitle {
-  font-size: 13px;
-  color: #86909C;
-  text-align: center;
-  margin: 0 0 24px;
+  letter-spacing: 0.5px;
 }
 
+/* Tab 切换 */
+.auth-tabs {
+  display: flex;
+  background: #F5F7FA;
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 20px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 9px 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #86909C;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tab-btn.active {
+  background: #fff;
+  color: #165DFF;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  font-weight: 600;
+}
+
+/* 表单 */
 .login-form .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 .login-form label {
   display: block;
@@ -1039,7 +1163,7 @@ function scrollToBottom() {
 }
 .login-form input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 11px 14px;
   border: 1px solid #E5E7EB;
   border-radius: 10px;
   font-size: 14px;
@@ -1055,6 +1179,7 @@ function scrollToBottom() {
 }
 .login-form input::placeholder { color: #C9CDD4; }
 
+/* 错误提示 + 按钮 + 提示 */
 .login-error {
   background: #FFECE8;
   color: #F53F3F;
@@ -1064,7 +1189,7 @@ function scrollToBottom() {
   margin-bottom: 12px;
 }
 
-.login-submit-btn {
+.submit-btn {
   width: 100%;
   padding: 11px;
   background: linear-gradient(135deg, #165DFF, #0F4CD0);
@@ -1075,13 +1200,13 @@ function scrollToBottom() {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  margin-bottom: 12px;
+  margin-top: 4px;
 }
-.login-submit-btn:hover:not(:disabled) {
+.submit-btn:hover:not(:disabled) {
   box-shadow: 0 4px 16px rgba(22, 93, 255, 0.35);
   transform: translateY(-1px);
 }
-.login-submit-btn:disabled {
+.submit-btn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
 }
@@ -1090,7 +1215,7 @@ function scrollToBottom() {
   text-align: center;
   font-size: 12px;
   color: #C9CDD4;
-  margin: 0;
+  margin: 12px 0 0;
 }
 @media (max-width: 640px) {
   .sidebar {
