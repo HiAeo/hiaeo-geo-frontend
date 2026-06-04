@@ -55,8 +55,8 @@
 
       <!-- 底部用户区域 -->
       <div class="sidebar-footer">
-        <div class="user-area">
-          <div class="user-avatar-circle">U</div>
+        <div class="user-area" @click="showLoginModal = true" :style="{ cursor: userName ? 'default' : 'pointer' }">
+          <div class="user-avatar-circle">{{ userName ? userName.charAt(0).toUpperCase() : 'U' }}</div>
           <span class="user-name">{{ userName || '未登录' }}</span>
         </div>
         <a href="/xiaozhi/admin" class="admin-link-sm" target="_blank" title="管理后台">
@@ -65,6 +65,39 @@
           </svg>
         </a>
       </div>
+    </aside>
+
+    <!-- 登录弹窗 -->
+    <Teleport to="body">
+      <div class="login-overlay" v-if="showLoginModal" @click.self="showLoginModal = false">
+        <div class="login-modal">
+          <button class="login-close" @click="showLoginModal = false">&times;</button>
+          <div class="login-logo">
+            <svg class="ai360-icon" style="width:40px;height:40px;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path clip-rule="evenodd" d="M12 0h.018c1.473-.002 2.88.261 4.179.754C20.755 2.456 24 6.85 24 12c0 6.627-5.373 12-12 12S0 18.627 0 12 5.373 0 12 0zm8.604 18.967A11.024 11.024 0 0023.07 12c0-1.717-.39-3.344-1.089-4.794a2.59 2.59 0 01-3.214.62 6.278 6.278 0 01-1.333-.992C16.283 5.73 15.109 4.66 13.696 3.9c-3.211-1.729-6.825-1.501-9.695.447A11.033 11.033 0 00.93 12c0 1.663.367 3.241 1.024 4.657.75-.973 2.131-1.346 3.232-.71.667.384 1.257.92 1.837 1.447l.176.16c1.365 1.234 2.794 2.355 4.558 2.965 3.053 1.053 6.356.437 8.847-1.552z" fill="#165DFF" fill-rule="evenodd"/>
+              <path d="M5.643 10.312c-.83.11-1.401.766-1.408 1.618a1.715 1.715 0 001.45 1.72c.805.128 1.64-.426 1.87-1.26.046-.167.076-.338.106-.51.025-.14.05-.282.084-.42.318-1.317 1.237-1.95 2.788-1.93 1.086.013 1.318.271 1.68 1.855.017.076.043.151.07.226.26.714.976 1.17 1.67 1.065a1.647 1.647 0 001.38-1.438c.083-.729-.348-1.264-1.122-1.575-.34-.136-.664-.158-.995-.141-.726.037-1.121-.36-1.339-.977a3.359 3.359 0 01-.134-.65c-.014-.093-.027-.186-.043-.278-.156-.887-.835-1.51-1.669-1.532-.791-.02-1.464.551-1.665 1.418l-.06.27-.025.117c-.355 1.636-.974 2.205-2.638 2.422z" fill="#fff"/>
+            </svg>
+          </div>
+          <h2 class="login-title">登录账号</h2>
+          <p class="login-subtitle">登录后可保存对话记录，享受更多功能</p>
+          <form @submit.prevent="handleLogin" class="login-form">
+            <div class="form-group">
+              <label>用户名 / 邮箱</label>
+              <input v-model="loginForm.username" type="text" placeholder="请输入用户名或邮箱" required autofocus />
+            </div>
+            <div class="form-group">
+              <label>密码</label>
+              <input v-model="loginForm.password" type="password" placeholder="请输入密码" required />
+            </div>
+            <div class="login-error" v-if="loginError">{{ loginError }}</div>
+            <button type="submit" class="login-submit-btn" :disabled="loginLoading">
+              {{ loginLoading ? '登录中...' : '登 录' }}
+            </button>
+            <p class="login-hint">首次使用？联系管理员开通账号</p>
+          </form>
+        </div>
+      </div>
+    </Teleport>
     </aside>
 
     <!-- 右侧聊天区 -->
@@ -217,6 +250,12 @@ const conversationList = ref([])
 
 // 用户名
 const userName = ref(localStorage.getItem('xiaozhi_user_name') || '')
+
+// 登录弹窗
+const showLoginModal = ref(false)
+const loginLoading = ref(false)
+const loginError = ref('')
+const loginForm = ref({ username: '', password: '' })
 
 // 当前对话标题
 const currentTitle = computed(() => {
@@ -393,6 +432,39 @@ async function sendMessage() {
 function sendQuickQuestion(question) {
   inputText.value = question
   sendMessage()
+}
+
+// ========== 登录 ==========
+async function handleLogin() {
+  const { username, password } = loginForm.value
+  if (!username || !password) return
+
+  loginLoading.value = true
+  loginError.value = ''
+
+  try {
+    const res = await fetch('/api/v1/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    })
+
+    if (res.ok) {
+      const data = await res.json()
+      userName.value = data.user?.username || username
+      localStorage.setItem('xiaozhi_user_name', userName.value)
+      localStorage.setItem('xiaozhi_user_token', data.accessToken || data.token || '')
+      showLoginModal.value = false
+      loginForm.value = { username: '', password: '' }
+    } else {
+      const errData = await res.json().catch(() => ({}))
+      loginError.value = errData.message || '用户名或密码错误'
+    }
+  } catch (e) {
+    loginError.value = '网络连接失败，请稍后重试'
+  } finally {
+    loginLoading.value = false
+  }
 }
 
 function scrollToBottom() {
@@ -810,15 +882,14 @@ function scrollToBottom() {
   gap: 10px;
   max-width: 800px;
   margin: 0 auto;
-  background: #F5F7FA;
+  background: #fff;
   border-radius: 14px;
-  padding: 10px 14px;
-  border: 1px solid #E8ECF1;
+  padding: 12px 16px;
+  border: 1px solid #E5E7EB;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .input-wrapper:focus-within {
   border-color: #165DFF;
-  background: #fff;
   box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.08);
 }
 .input-wrapper textarea {
@@ -856,7 +927,134 @@ function scrollToBottom() {
   transform: scale(1.05);
 }
 
-/* 移动端适配 */
+/* 登录弹窗 */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.login-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 32px;
+  width: 400px;
+  max-width: 90vw;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.login-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: #F5F7FA;
+  border-radius: 8px;
+  font-size: 18px;
+  color: #86909C;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.login-close:hover { background: #E8ECF1; color: #1D2129; }
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.login-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1D2129;
+  text-align: center;
+  margin: 0 0 6px;
+}
+.login-subtitle {
+  font-size: 13px;
+  color: #86909C;
+  text-align: center;
+  margin: 0 0 24px;
+}
+
+.login-form .form-group {
+  margin-bottom: 16px;
+}
+.login-form label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4E5969;
+  margin-bottom: 6px;
+}
+.login-form input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1D2129;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+.login-form input:focus {
+  border-color: #165DFF;
+  box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.08);
+}
+.login-form input::placeholder { color: #C9CDD4; }
+
+.login-error {
+  background: #FFECE8;
+  color: #F53F3F;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 11px;
+  background: linear-gradient(135deg, #165DFF, #0F4CD0);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 12px;
+}
+.login-submit-btn:hover:not(:disabled) {
+  box-shadow: 0 4px 16px rgba(22, 93, 255, 0.35);
+  transform: translateY(-1px);
+}
+.login-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.login-hint {
+  text-align: center;
+  font-size: 12px;
+  color: #C9CDD4;
+  margin: 0;
+}
 @media (max-width: 640px) {
   .sidebar {
     position: absolute;
