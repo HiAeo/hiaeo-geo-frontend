@@ -636,6 +636,8 @@ function exportKnowledgeBase() {
   a.click()
   URL.revokeObjectURL(url)
 }
+
+function handleLogout() {
   authenticated.value = false
   passwordInput.value = ''
   passwordError.value = ''
