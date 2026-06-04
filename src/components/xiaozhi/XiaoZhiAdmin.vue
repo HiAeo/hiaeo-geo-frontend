@@ -368,9 +368,10 @@ const passwordError = ref('')
 const defaultConfig = {
   welcomeMessage: '我是360智见AI智能助手小智，可以帮你解答GEO优化、品牌建设、AI搜索等相关问题。',
   quickQuestions: [
-    '什么是GEO？',
-    '如何提升品牌在AI搜索中的可见度？',
-    '360智见有哪些核心功能？'
+    '介绍一下360智见？',
+    '360智见有哪些优势？',
+    '360智见有哪些核心功能？',
+    '360智见怎么收费？'
   ],
   knowledgeUrls: [],
   uploadedFiles: [],
@@ -392,13 +393,41 @@ const quickQuestionsList = computed(() => {
     .slice(0, 8)
 })
 
+// ========== 配置版本控制 ==========
+const CONFIG_VERSION = '2.0.0'
+
+// ========== Cookie 跨域同步工具 ==========
+function setSyncCookie(key, value) {
+  try {
+    const encoded = encodeURIComponent(value)
+    document.cookie = key + '=' + encoded + ';path=/;domain=.geobuddy.net;max-age=86400*30;SameSite=Lax'
+  } catch (e) { /* ignore cookie errors */ }
+}
+
+function getSyncCookie(key) {
+  try {
+    const match = document.cookie.match(new RegExp('(^| )' + key + '=([^;]+)'))
+    return match ? decodeURIComponent(match[2]) : null
+  } catch { return null }
+}
+
+function syncVersion() {
+  localStorage.setItem('xiaozhi_config_version', CONFIG_VERSION)
+  setSyncCookie('xiaozhi_config_version', CONFIG_VERSION)
+}
+
 function loadConfig() {
+  // 优先读 localStorage，其次尝试跨域 Cookie
   const saved = localStorage.getItem('xiaozhi_config')
   if (saved) {
-    try {
-      const data = JSON.parse(saved)
-      Object.assign(config, data)
-    } catch { /* ignore */ }
+    try { Object.assign(config, JSON.parse(saved)) } catch { /* ignore */ }
+  }
+  // 如果本地没有，检查是否有其他子域名通过 Cookie 同步的配置
+  if (!saved) {
+    const cookieConfig = getSyncCookie('xiaozhi_config')
+    if (cookieConfig) {
+      try { Object.assign(config, JSON.parse(cookieConfig)) } catch { /* ignore */ }
+    }
   }
   quickQuestionsText.value = (config.quickQuestions || []).join('\n')
 }
@@ -406,6 +435,9 @@ function loadConfig() {
 function saveConfig() {
   config.quickQuestions = quickQuestionsList.value
   localStorage.setItem('xiaozhi_config', JSON.stringify({ ...config }))
+  // 跨域同步：写入共享Cookie（覆盖所有子域名）
+  setSyncCookie('xiaozhi_config', JSON.stringify({ ...config }))
+  syncVersion()
   showSaveSuccess()
 }
 
@@ -589,6 +621,9 @@ async function saveKnowledgeBase() {
 
   // 1. 保存到 localStorage（立即生效）
   localStorage.setItem('xiaozhi_custom_kb', JSON.stringify(kbData))
+  // 跨域同步：写入共享Cookie
+  setSyncCookie('xiaozhi_custom_kb', JSON.stringify(kbData))
+  syncVersion()
 
   // 2. 尝试同步到后端
   try {

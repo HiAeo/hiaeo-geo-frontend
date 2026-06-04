@@ -151,14 +151,33 @@ const inputRef = ref(null)
 const inputText = ref('')
 const loading = ref(false)
 
-// 从 localStorage 读取配置，或使用默认值
-const configStr = localStorage.getItem('xiaozhi_config')
+// ========== 配置版本控制（版本变化时自动清除旧缓存）=========
+const CONFIG_VERSION = '2.0.0'  // 升级此值可强制刷新所有客户端缓存
+const STORED_VERSION = localStorage.getItem('xiaozhi_config_version')
+if (STORED_VERSION !== CONFIG_VERSION) {
+  // 版本不匹配，清除所有旧配置缓存
+  localStorage.removeItem('xiaozhi_config')
+  localStorage.removeItem('xiaozhi_custom_kb')
+  localStorage.setItem('xiaozhi_config_version', CONFIG_VERSION)
+}
+
+// ========== Cookie 跨域同步读取 ==========
+function getSyncCookie(key) {
+  try {
+    const match = document.cookie.match(new RegExp('(^| )' + key + '=([^;]+)'))
+    return match ? decodeURIComponent(match[2]) : null
+  } catch { return null }
+}
+
+// 从 localStorage 读取配置，或使用默认值（也尝试跨域 Cookie）
+const configStr = localStorage.getItem('xiaozhi_config') || getSyncCookie('xiaozhi_config')
 const config = configStr ? JSON.parse(configStr) : {
   welcomeMessage: '我是360智见AI智能助手小智，可以帮你解答GEO优化、品牌建设、AI搜索等相关问题。',
   quickQuestions: [
-    '什么是GEO？',
-    '如何提升品牌在AI搜索中的可见度？',
-    '360智见有哪些核心功能？'
+    '介绍一下360智见？',
+    '360智见有哪些优势？',
+    '360智见有哪些核心功能？',
+    '360智见怎么收费？'
   ]
 }
 
@@ -216,10 +235,10 @@ async function sendMessage() {
   scrollToBottom()
 
   try {
-    // 读取本地自定义知识库（后台编辑过的）
+    // 读取本地自定义知识库（后台编辑过的），也尝试跨域 Cookie
     let customKB = null
     try {
-      const savedKB = localStorage.getItem('xiaozhi_custom_kb')
+      const savedKB = localStorage.getItem('xiaozhi_custom_kb') || getSyncCookie('xiaozhi_custom_kb')
       if (savedKB) customKB = JSON.parse(savedKB)
     } catch { /* ignore */ }
 
