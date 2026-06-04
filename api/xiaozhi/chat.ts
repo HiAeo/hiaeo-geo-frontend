@@ -1,47 +1,34 @@
 /**
  * Vercel Serverless Function - 小智机器人对话接口 v4
- * 纯知识库驱动 - 所有回答内容来自 knowledge-base.json
+ * 纯知识库驱动 - 所有回答内容来自内联知识库
  */
 
-// @ts-ignore
-var kbData = require('./knowledge-base.json');
-
-interface QAPair {
-  id: string;
-  keywords: string[];
-  answer: string;
-}
-
-interface KnowledgeBase {
-  name: string;
-  version: string;
-  description: string;
-  defaultReply: string;
-  qaPairs: QAPair[];
-}
+// 内联知识库数据（避免 require/import JSON 在 Serverless 中的兼容问题）
+var KB_DATA = {"name":"360智见小智知识库","version":"1.0.0","defaultReply":"感谢您的提问！我是**小智**，360智见的AI智能助手 🤖\n\n我可以帮您解答以下方面的问题：\n\n| 问题类型 | 示例 |\n|---------|------|\n| 🤖 **小智介绍** | \"小智是什么？”“有哪些能力？” |\n| 💰 **收费标准** | \"怎么收费？”“有免费版吗？” |\n| 🔧 **功能说明** | \"知识库怎么管理？\"\“如何配置回答？” |\n| ⚡ **接入方式** | \"怎么嵌入网站？”“支持哪些平台？” |\n| 📞 **联系支持** | \"联系方式”“技术支持” |\n\n您可以随时问我上述任意问题！","qaPairs":[{"id":"pricing","keywords":["收费","多少钱","价格","费用","报价","套餐","付费","资费","免费试用","免费吗","体验版","标准版","高级版","会员费","订阅","按年","按月"],"answer":"**360智见·小智能收费方案** 💰\n\n小智提供灵活的版本选择：\n\n| 版本 | 适用对象 | 核心能力 |\n|------|---------|----------|\n| 🆓 **体验版** | 个人用户/试用 | 基础对话 + 预设知识库（免费永久） |\n| ⭐ **标准版** | 小型团队 | 自定义知识库 + 访客统计 + 基础样式定制 |\n| 🚀 **专业版** | 企业客户 | 无限知识库 + API接口 + 多坐席 + 高级分析 |\n\n**特色服务：**\n- ✅ 体验版**完全免费**，无需绑卡\n- ✅ 所有版本均支持**14天全功能试用**\n- ✅ 专业版支持**私有化部署**和**定制开发**\n- ✅ 年付享受**8折优惠**\n\n💡 具体价格请联系销售获取最新报价表，或直接在当前平台升级体验。"},{"id":"intro","keywords":["什么产品","介绍","简介","概述","概况","是什么","小智是什么","360智见小智","ai助手","智能客服","聊天机器人"],"answer":"**360智见·小智** 是一款企业级AI智能对话机器人 🤖\n\n## 核心能力\n\n### 🧠 智能问答\n- 基于360大模型驱动的自然语言理解\n- 支持多轮上下文连续对话\n- 精准识别用户意图，给出准确回复\n\n### 📚 知识库驱动\n- 管理员可自定义上传问答知识库\n- 支持文档、网页、FAQ等多种知识源\n- 持续学习优化，越用越聪明\n\n### 🎨 多场景适配\n- **网站嵌入式**：一行代码嵌入任意网站\n- **独立页面模式**：作为独立客服窗口使用\n- **API接入**：与企业系统深度集成\n\n### 📊 数据洞察\n- 实时访客对话统计\n- 热门问题分析\n- 用户满意度追踪\n\n> 小智让每一个企业都能拥有自己的AI智能客服！"},{"id":"features","keywords":["功能","能做什么","有什么功能","核心功能","主要功能","产品特点","能力","支持什么","可以做什么"],"answer":"**小智核心功能一览** ⚡\n\n### 1. 📚 知识库管理\n- **自定义问答**：管理员通过后台添加/编辑问答对\n- **多格式导入**：支持 TXT、PDF、JSON 批量导入\n- **URL抓取**：输入网页地址自动提取知识内容\n- **分类标签**：支持知识分类管理和优先级排序\n\n### 2. 🗣️ 智能对话\n- **意图识别**：自动理解用户问题并匹配最佳答案\n- **模糊匹配**：支持近义词、错别字容忍\n- **多轮对话**：记住上下文，连贯交流\n- **未命中兜底**：无法回答时给出友好引导语\n\n### 3. 🎨 外观定制\n- **主题色调整**：匹配您的品牌色彩\n- **头像名称**：自定义机器人形象和名称\n- **欢迎语配置**：设置开场白和快捷问题\n- **位置布局**：悬浮位置、展开方式可调\n\n### 4. 📈 数据统计\n- **对话量统计**：每日/每周/每月趋势\n- **热门问题 Top10**：了解用户最关心什么\n- **满意度评分**：追踪服务质量\n\n### 5. 🔌 接入方式\n- **JS SDK**：3行代码嵌入任何网站\n- **iframe**：独立窗口嵌入\n- **REST API**：程序化调用"},{"id":"knowledge-mgmt","keywords":["知识库","怎么管理","如何配置","如何添加","如何编辑","怎么上传","问答对","设置回答","修改回答","添加知识","更新知识"],"answer":"**知识库管理指南** 📚\n\n### 如何管理问答知识\n\n**第一步：进入后台**\n访问 `/xiaozhi/admin`，输入管理员密码登录\n\n**第二步：编辑知识库**\n在左侧导航选择「**问答知识库**」标签页，你可以：\n- ➕ **新增问答**：填写关键词和对应回答\n- ✏️ **编辑内容**：点击已有条目进行修改\n- 🗑️ **删除条目**：移除不需要的问答\n- ⬆️ **排序调整**：拖拽调整匹配优先级\n\n**第三步：保存生效**\n编辑完成后点击「保存」，新知识立即生效，无需重启\n\n💡 **提示**：关键词越精确，匹配越准确。建议为同一个问题设置多个近义词关键词（如\"收费\"\"价格\"\"多少钱\"）。"},{"id":"integration","keywords":["接入","嵌入","安装","集成","部署","代码","sdk","js代码","iframe","api接口","怎么用","放到网站","嵌入网站","支持哪些平台","微信公众号","钉钉","企业微信","小程序","app"],"answer":"**小智接入指南** 🔌\n\n### 网站嵌入（推荐）\n在您网站的 `</body>` 前添加以下代码：\n\n```html\n<script>\n  (function(){\n    var s=document.createElement('script');\n    s.src='https://geobuddy.net/xiaozhi/embed.js';\n    s.async=true;\n    document.head.appendChild(s);\n  })();\n</script>\n```\n\n### 可选配置项\n```html\n<script>\n  window.XIAOZHI_CONFIG = {\n    primaryColor: '#165DFF',   // 主题色\n    title: '小智',             // 机器人名称\n    position: 'right',         // right 或 left\n    welcome: '您好！有什么可以帮您？'\n  };\n</script>\n```\n\n### 支持的平台\n| 平台 | 接入方式 | 状态 |\n|------|---------|------|\n| 🌐 **Web网站** | JS SDK / iframe | ✅ 全部支持 |\n| 📱 **H5移动页** | JS SDK | ✅ 全部支持 |\n| 💬 **微信公众号** | API对接 | 🚧 开发中 |\n| 📦 **钉钉/企微** | Webhook | 🚧 开发中 |\n| 📲 **小程序/App** | REST API | 🚧 开发中 |"},{"id":"advantage","keywords":["优势","优点","强项","为什么选择","为啥选","凭什么","好在哪里","区别于","差异化","领先","相比其他","和其他机器人区别","比市面上的好在哪里"],"answer":"**为什么选择360智见·小智？** ⭐\n\n### 核心优势\n\n🔹 **360大模型驱动**\n背靠360集团AI研发实力，中文理解能力国内领先，对话更自然流畅\n\n🔹 **开箱即用**\n无需AI训练经验，上传知识即可使用，5分钟完成部署\n\n🔹 **知识库自主可控**\n问答内容完全由您掌控，回答准确可控，不会\"胡说八道\"\n\n🔹 **数据安全隐私**\n对话数据加密传输存储，支持私有化部署，金融/政务级安全合规\n\n🔹 **持续迭代进化**\n模型定期更新升级，知识库可持续优化，越用越智能\n\n🔹 **性价比突出**\n体验版永久免费，付费版价格仅为传统客服系统的1/10\n\n### vs 其他方案\n| 对比 | 传统客服系统 | 小智 |\n|------|------------|------|\n| 成本 | 数万/年+人工 | 低至免费 |\n| 时间 | 7×24需人值守 | AI全自动 |\n| 效果 | 模板式回复 | 智能理解自然语言 |\n| 维护 | 需专业团队 | 后台自助管理 |"},{"id":"security","keywords":["安全吗","数据安全","隐私保护","信息安全","数据泄露","加密","合规","保密","数据存哪里","隐私政策"],"answer":"**数据安全与隐私保障** 🔒\n\n360智见·小智将数据安全视为生命线：\n\n### 安全措施\n- 🔐 **传输加密**：全程 HTTPS/TLS 1.3 加密\n- 🛡️ **存储加密**：数据库AES-256加密存储\n- 👤 **隐私隔离**：不同租户数据严格物理隔离\n- 🚫 **不滥用**：对话数据仅用于服务改进，绝不用于其他用途\n- 📋 **合规认证**：等保三级认证，符合《个人信息保护法》要求\n\n### 数据主权\n- 您的知识库内容和对话记录**100%属于您**\n- 支持一键导出全部数据\n- 支持合同约定数据销毁条款\n\n### 企业级选项\n- ☁️ **私有云部署**：数据不出您的服务器\n- 🏢 **混合部署**：敏感数据本地，AI推理云端\n- 📜 **安全审计日志**：全程操作可追溯\n\n如有特殊安全需求，请联系安全技术团队获取定制方案。"},{"id":"support","keywords":["客服","联系方式","联系电话","邮箱","在线客服","技术支持","帮助中心","问题反馈","报错","故障","人工服务","工单","bug"],"answer":"**联系我们** 📞\n\n### 客服渠道\n- 📧 **邮箱**：xiaozhi-support@360.cn\n- 💬 **在线客服**：页面右下角「联系客服」按钮\n- 📱 **工作时间**：周一至周五 9:00-21:00，周末 10:00-18:00\n\n### 专业技术支持\n- 📖 **帮助文档**\n- 🐛 **问题反馈**：发送邮件至 xiaozhi-support@360.cn\n- 🎬 **视频教程**\n\n### 企业版专享\n- 🎯 专属技术客户经理 1对1 服务\n- ⚡ 优先响应通道（< 30分钟）\n- 🏠 上门实施和培训服务\n- 📞 7×24小时紧急热线\n\n我们承诺：每个问题都会得到回应，每个建议都会被认真对待 ❤️"}]};
 
 // 获取知识库（优先使用前端传入的自定义版本）
-function getKB(customKB?: any): KnowledgeBase {
+function getKB(customKB) {
   if (customKB && Array.isArray(customKB.qaPairs) && customKB.qaPairs.length > 0) {
     return {
-      name: customKB.name || kbData.name,
-      version: customKB.version || kbData.version,
-      description: customKB.description || kbData.description,
-      defaultReply: customKB.defaultReply || kbData.defaultReply,
+      name: customKB.name || KB_DATA.name,
+      version: customKB.version || KB_DATA.version,
+      defaultReply: customKB.defaultReply || KB_DATA.defaultReply,
       qaPairs: customKB.qaPairs,
     };
   }
-  return kbData as KnowledgeBase;
+  return KB_DATA;
 }
 
 // 关键词匹配引擎
-function findBestAnswer(message: string, kb: KnowledgeBase): string {
+function findBestAnswer(message, kb) {
   var text = message.toLowerCase().trim();
+  var pairs = kb.qaPairs;
 
-  for (var i = 0; i < kb.qaPairs.length; i++) {
-    var pair = kb.qaPairs[i];
-    for (var j = 0; j < pair.keywords.length; j++) {
-      if (text.indexOf(pair.keywords[j].toLowerCase()) !== -1) {
+  for (var i = 0; i < pairs.length; i++) {
+    var pair = pairs[i];
+    var keywords = pair.keywords;
+    for (var j = 0; j < keywords.length; j++) {
+      if (text.indexOf(keywords[j].toLowerCase()) !== -1) {
         return pair.answer;
       }
     }
@@ -51,47 +38,49 @@ function findBestAnswer(message: string, kb: KnowledgeBase): string {
 }
 
 // LLM API 调用（可选增强）
-async function callLLMAPI(messages: Array<{role: string; content: string}>, kb: KnowledgeBase): Promise<string> {
-  var apiKey = (typeof process !== 'undefined' && process.env ? process.env.OPENAI_API_KEY : null)
-            || (typeof process !== 'undefined' && process.env ? process.env.LLM_API_KEY : null);
+async function callLLMAPI(messages, kb) {
+  try {
+    var envApiKey = typeof process !== 'undefined' && process.env ? (process.env.OPENAI_API_KEY || process.env.LLM_API_KEY) : null;
+    if (!envApiKey) throw new Error('NO_API_KEY');
 
-  if (!apiKey) throw new Error('NO_API_KEY');
+    var apiUrl = (typeof process !== 'undefined' && process.env ? process.env.LLM_API_URL : null) || 'https://api.openai.com/v1/chat/completions';
+    var model = (typeof process !== 'undefined' && process.env ? process.env.LLM_MODEL : null) || 'gpt-3.5-turbo';
 
-  var apiUrl = (typeof process !== 'undefined' && process.env ? process.env.LLM_API_URL : null) || 'https://api.openai.com/v1/chat/completions';
-  var model = (typeof process !== 'undefined' && process.env ? process.env.LLM_MODEL : null) || 'gpt-3.5-turbo';
+    var qaContext = '';
+    var qaPairs = kb.qaPairs;
+    for (var i = 0; i < Math.min(qaPairs.length, 20); i++) {
+      var p = qaPairs[i];
+      qaContext += '关键词: ' + p.keywords.join('、') + '\n回答: ' + p.answer.slice(0, 200) + '...\n\n';
+    }
 
-  var qaContext = '';
-  for (var i = 0; i < Math.min(kb.qaPairs.length, 20); i++) {
-    var p = kb.qaPairs[i];
-    qaContext += '关键词: ' + p.keywords.join('、') + '\n回答: ' + p.answer.slice(0, 200) + '...\n\n';
+    var systemPrompt = '你是"小智"，360智见的AI智能助手。\n\n参考知识库：\n' + qaContext + '\n请优先基于知识库回答。用中文简洁专业，控制在200字以内。\n不要提及任何外部网站或域名。';
+
+    var resp = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + envApiKey },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...messages,
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
+    });
+
+    if (!resp.ok) throw new Error('LLM error: ' + resp.status);
+    var data = await resp.json();
+    return data.choices && data.choices[0] && data.choices[0].message
+      ? data.choices[0].message.content
+      : '抱歉，无法获取回复。';
+  } catch (e) {
+    throw e;
   }
-
-  var systemPrompt = '你是"小智"，360智见的AI智能助手。\n\n以下是你参考的知识库内容：\n' + qaContext + '\n请优先基于以上知识库回答。如果知识库中有匹配的内容，直接使用；如果没有相关内容，友好地说明并引导用户。\n回答用中文，简洁专业，控制在200字以内。\n不要提及任何外部网站或域名。';
-
-  var resp = await fetch(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-    body: JSON.stringify({
-      model: model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...messages,
-      ],
-      temperature: 0.7,
-      max_tokens: 1000,
-    }),
-  });
-
-  if (!resp.ok) throw new Error('LLM error: ' + resp.status);
-
-  var data = await resp.json() as any;
-  return data.choices && data.choices[0] && data.choices[0].message
-    ? data.choices[0].message.content
-    : '抱歉，无法获取回复。';
 }
 
 // 主入口
-export default async function handler(req: any, res: any) {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -114,8 +103,9 @@ export default async function handler(req: any, res: any) {
 
     // 如果有 LLM API Key，尝试用 LLM 增强
     try {
-      var envApiKey = (typeof process !== 'undefined' && process.env ? process.env.OPENAI_API_KEY : null)
-                     || (typeof process !== 'undefined' && process.env ? process.env.LLM_API_KEY : null);
+      var envApiKey = typeof process !== 'undefined' && process.env
+        ? (process.env.OPENAI_API_KEY || process.env.LLM_API_KEY)
+        : null;
       if (envApiKey) {
         var messages = [];
         if (Array.isArray(history)) {
@@ -129,7 +119,7 @@ export default async function handler(req: any, res: any) {
         messages.push({ role: 'user', content: message });
         reply = await callLLMAPI(messages, kb);
       }
-    } catch (e) {
+    } catch (llmErr) {
       // LLM不可用时使用知识库结果
     }
 
