@@ -2,7 +2,6 @@
  * Vercel Serverless Function - 小智机器人对话接口
  * 直接调用 LLM API，绕过 NestJS 后端（Serverless 不兼容原生模块）
  */
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // 360智见小智系统提示词
 const SYSTEM_PROMPT = `你是"小智"，360智见的AI智能助手。你的职责是帮助用户解答关于以下领域的问题：
@@ -126,7 +125,6 @@ function findBuiltInReply(message: string): string {
       return reply;
     }
   }
-  // 关键词匹配
   if (lowerMsg.includes('geo') || lowerMsg.includes('生成式') || lowerMsg.includes('ai搜索')) {
     return KNOWLEDGE_BASE['什么是geo'];
   }
@@ -143,14 +141,17 @@ function findBuiltInReply(message: string): string {
 }
 
 async function callLLMAPI(messages: Array<{role: string; content: string}>): Promise<string> {
-  const apiKey = process.env.OPENAI_API_KEY || process.env.LLM_API_KEY;
+  // @ts-ignore - Vercel provides process.env
+  const apiKey = (typeof process !== 'undefined' && process.env?.OPENAI_API_KEY) || (typeof process !== 'undefined' && process.env?.LLM_API_KEY);
   
   if (!apiKey) {
     throw new Error('NO_API_KEY');
   }
 
-  const apiUrl = process.env.LLM_API_URL || 'https://api.openai.com/v1/chat/completions';
-  const model = process.env.LLM_MODEL || 'gpt-3.5-turbo';
+  // @ts-ignore
+  const apiUrl = (typeof process !== 'undefined' && process.env?.LLM_API_URL) || 'https://api.openai.com/v1/chat/completions';
+  // @ts-ignore
+  const model = (typeof process !== 'undefined' && process.env?.LLM_MODEL) || 'gpt-3.5-turbo';
 
   const response = await fetch(apiUrl, {
     method: 'POST',
@@ -177,7 +178,7 @@ async function callLLMAPI(messages: Array<{role: string; content: string}>): Pro
   return data.choices?.[0]?.message?.content || '抱歉，无法获取回复。';
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: any, res: any) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -198,7 +199,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: '缺少 message 参数' });
     }
 
-    // 构建消息历史
     const messages = [
       ...(history || []).map(h => ({
         role: h.role === 'assistant' ? 'assistant' : 'user',
@@ -210,10 +210,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let reply: string;
 
     try {
-      // 尝试调用 LLM API
       reply = await callLLMAPI(messages);
     } catch (err) {
-      // API不可用时使用内置知识库
       console.log('[XiaoZhi] LLM API unavailable, using built-in knowledge:', err);
       reply = findBuiltInReply(message);
     }
