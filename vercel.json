@@ -4,6 +4,10 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/xiaozhi/:path*",
+      "destination": "/api/xiaozhi/:path*"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://hiaeo-geo-backend.vercel.app/api/:path*"
     },
