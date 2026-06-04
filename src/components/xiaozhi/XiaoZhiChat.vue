@@ -4,17 +4,7 @@
     <header class="chat-header">
       <div class="header-left">
         <div class="logo-icon">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="40" height="40" rx="10" fill="url(#grad)" />
-            <path d="M12 20c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" />
-            <circle cx="20" cy="20" r="3" fill="#fff" />
-            <defs>
-              <linearGradient id="grad" x1="0" y1="0" x2="40" y2="40">
-                <stop offset="0%" stop-color="#165DFF" />
-                <stop offset="100%" stop-color="#0F4CD0" />
-              </linearGradient>
-            </defs>
-          </svg>
+          <Ai360.Color :size="40" />
         </div>
         <div class="header-text">
           <h1>小智</h1>
@@ -34,19 +24,7 @@
       <!-- 欢迎消息 -->
       <div class="welcome-area" v-if="messages.length === 0">
         <div class="welcome-avatar">
-          <div class="avatar-circle">
-            <svg viewBox="0 0 40 40" fill="none">
-              <rect width="40" height="40" rx="10" fill="url(#grad2)" />
-              <path d="M12 20c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" />
-              <circle cx="20" cy="20" r="3" fill="#fff" />
-              <defs>
-                <linearGradient id="grad2" x1="0" y1="0" x2="40" y2="40">
-                  <stop offset="0%" stop-color="#165DFF" />
-                  <stop offset="100%" stop-color="#0F4CD0" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
+          <Ai360.Color :size="64" />
         </div>
         <h2 class="welcome-title">你好，我是小智 👋</h2>
         <p class="welcome-desc">{{ welcomeMessage }}</p>
@@ -70,19 +48,7 @@
           :class="['message-row', msg.role === 'user' ? 'user' : 'assistant']"
         >
           <div class="message-avatar" v-if="msg.role === 'assistant'">
-            <div class="avatar-circle small">
-              <svg viewBox="0 0 40 40" fill="none">
-                <rect width="40" height="40" rx="8" fill="url(#grad3)" />
-                <path d="M12 20c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round" />
-                <circle cx="20" cy="20" r="3" fill="#fff" />
-                <defs>
-                  <linearGradient id="grad3" x1="0" y1="0" x2="40" y2="40">
-                    <stop offset="0%" stop-color="#165DFF" />
-                    <stop offset="100%" stop-color="#0F4CD0" />
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
+            <Ai360.Color :size="32" />
           </div>
           <div class="message-bubble" :class="msg.role">
             <div class="message-text" v-html="formatMessage(msg.content)"></div>
@@ -93,13 +59,7 @@
         <!-- 加载中 -->
         <div class="message-row assistant" v-if="loading">
           <div class="message-avatar">
-            <div class="avatar-circle small">
-              <svg viewBox="0 0 40 40" fill="none">
-                <rect width="40" height="40" rx="8" fill="url(#grad3)" />
-                <path d="M12 20c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round" />
-                <circle cx="20" cy="20" r="3" fill="#fff" />
-              </svg>
-            </div>
+            <Ai360.Color :size="32" />
           </div>
           <div class="message-bubble assistant typing">
             <span class="dot"></span><span class="dot"></span><span class="dot"></span>
@@ -145,6 +105,7 @@
 <script setup>
 import { ref, nextTick, onMounted } from 'vue'
 import { Setting } from '@element-plus/icons-vue'
+import { Ai360 } from '@lobehub/icons'
 
 const messagesContainer = ref(null)
 const inputRef = ref(null)
@@ -322,11 +283,9 @@ function scrollToBottom() {
 .logo-icon {
   width: 40px;
   height: 40px;
-}
-
-.logo-icon svg {
-  width: 100%;
-  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-text h1 {
@@ -380,21 +339,8 @@ function scrollToBottom() {
 
 .welcome-avatar {
   margin-bottom: 16px;
-}
-
-.avatar-circle {
-  width: 64px;
-  height: 64px;
-}
-
-.avatar-circle.small {
-  width: 32px;
-  height: 32px;
-}
-
-.avatar-circle svg {
-  width: 100%;
-  height: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .welcome-title {
