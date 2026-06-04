@@ -43,7 +43,7 @@
             :class="['history-item', { active: currentConvId === conv.id }]"
             @click="switchConversation(conv.id)"
           >
-            <span class="history-text">{{ conv.title }}</span>
+            <span class="history-text">{{ formatConvTitle(conv.title) }}</span>
             <button class="delete-btn" @click.stop="deleteConversation(conv.id)" title="删除对话">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M11 3.5L3 11.5M3 3.5L11 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
@@ -335,6 +335,8 @@ function saveConversations() {
 
 function saveCurrentMessages() {
   if (!currentConvId.value) return
+  // 没有消息时不保存，防止随机ID被存为标题
+  if (messages.value.length === 0) return
   // 自动从第一条用户消息生成标题
   let title = currentConvId.value
   const firstUserMsg = messages.value.find(m => m.role === 'user')
@@ -430,6 +432,12 @@ function formatMessage(text) {
 
 function getTime() {
   return new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+}
+
+function formatConvTitle(title) {
+  // 过滤掉随机ID（纯小写字母+数字，长度>10）
+  if (/^[a-z0-9]{10,}$/.test(title)) return '未命名对话'
+  return title
 }
 
 async function sendMessage() {
