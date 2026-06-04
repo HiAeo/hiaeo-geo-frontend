@@ -161,15 +161,13 @@ const routes = [
   {
     path: '/xiaozhi',
     component: () => import('../components/xiaozhi/XiaoZhiChat.vue'),
-    meta: { title: '小智 · 360智见AI智能助手', layout: 'none' },
-    children: [
-      {
-        path: 'admin',
-        name: 'xiaozhi-admin',
-        component: () => import('../components/xiaozhi/XiaoZhiAdmin.vue'),
-        meta: { title: '小智后台 · 知识库管理', layout: 'none' }
-      }
-    ]
+    meta: { title: '小智 · 360智见AI智能助手', layout: 'none' }
+  },
+  {
+    path: '/xiaozhi/admin',
+    name: 'xiaozhi-admin',
+    component: () => import('../components/xiaozhi/XiaoZhiAdmin.vue'),
+    meta: { title: '小智后台 · 知识库管理', layout: 'none' }
   },
 
   // 关于我们页面
