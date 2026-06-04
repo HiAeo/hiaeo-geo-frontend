@@ -55,13 +55,27 @@
 
       <!-- 底部用户区域 -->
       <div class="sidebar-footer">
-        <div class="user-area" @click="showLoginModal = true" :style="{ cursor: userName ? 'default' : 'pointer' }">
-          <div class="user-avatar-circle">{{ userName ? userName.charAt(0).toUpperCase() : 'U' }}</div>
-          <span class="user-name">{{ userName || '未登录' }}</span>
+        <!-- 用户登录区（左侧） -->
+        <button class="user-login-btn" @click="showLoginModal = true" v-if="!userName">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          <span>登 录</span>
+        </button>
+        <div class="user-area" v-else>
+          <div class="user-avatar-circle">{{ userName.charAt(0).toUpperCase() }}</div>
+          <span class="user-name">{{ userName }}</span>
         </div>
+
+        <!-- 管理后台入口（右侧） -->
         <a href="/xiaozhi/admin" class="admin-link-sm" target="_blank" title="管理后台">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 10a3 3 0 100-6 3 3 0 000 6zM13 13.5a7 7 0 10-10 0" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="1.5" y1="6" x2="14.5" y2="6" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="4" cy="4.25" r="0.8" fill="currentColor"/>
+            <circle cx="7" cy="4.25" r="0.8" fill="currentColor"/>
+            <circle cx="10" cy="4.25" r="0.8" fill="currentColor"/>
           </svg>
         </a>
       </div>
@@ -98,7 +112,6 @@
         </div>
       </div>
     </Teleport>
-    </aside>
 
     <!-- 右侧聊天区 -->
     <main class="chat-main">
@@ -641,6 +654,24 @@ function scrollToBottom() {
   border-top: 1px solid #F0F0F0;
   flex-shrink: 0;
 }
+.user-login-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #165DFF, #0F4CD0);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.user-login-btn:hover {
+  box-shadow: 0 2px 10px rgba(22, 93, 255, 0.35);
+  transform: translateY(-1px);
+}
 .user-area {
   display: flex;
   align-items: center;
@@ -668,9 +699,9 @@ function scrollToBottom() {
   white-space: nowrap;
 }
 .admin-link-sm {
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -678,8 +709,9 @@ function scrollToBottom() {
   text-decoration: none;
   transition: all 0.2s;
   flex-shrink: 0;
+  border: 1px solid #E5E7EB;
 }
-.admin-link-sm:hover { background: #F5F7FA; color: #165DFF; }
+.admin-link-sm:hover { background: #F5F7FA; color: #165DFF; border-color: #165DFF; }
 
 /* ====== 聊天主区域 ====== */
 .chat-main {
@@ -884,7 +916,7 @@ function scrollToBottom() {
   margin: 0 auto;
   background: #fff;
   border-radius: 14px;
-  padding: 12px 16px;
+  padding: 14px 18px;
   border: 1px solid #E5E7EB;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -894,15 +926,20 @@ function scrollToBottom() {
 }
 .input-wrapper textarea {
   flex: 1;
-  border: none;
-  outline: none;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none;
+  appearance: none;
   background: transparent;
-  font-size: 14px;
+  font-size: 15px;
   color: #1D2129;
   resize: none;
   max-height: 120px;
   line-height: 1.6;
   font-family: inherit;
+  padding: 0;
+  margin: 0;
 }
 .input-wrapper textarea::placeholder { color: #C9CDD4; }
 .send-btn {
