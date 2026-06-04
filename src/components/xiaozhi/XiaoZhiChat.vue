@@ -503,7 +503,7 @@ async function handleLogin() {
   loginError.value = ''
 
   try {
-    const res = await fetch('/api/v1/auth/phone-login', {
+    const res = await fetch('/api/auth/phone-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone, password })
@@ -549,7 +549,7 @@ async function handleRegister() {
   registerError.value = ''
 
   try {
-    const res = await fetch('/api/v1/auth/phone-register', {
+    const res = await fetch('/api/auth/phone-register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone, password })
