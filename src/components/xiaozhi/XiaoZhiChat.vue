@@ -89,15 +89,17 @@
 
           <!-- Logo -->
           <div class="login-logo">
-            <div class="login-logo-icon">
-              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="32" rx="8" fill="url(#lg)"/>
-                <path d="M8 16L14 10L20 16L14 22Z" fill="#fff" opacity=".9"/>
-                <path d="M14 10L20 16L26 10" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                <defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#165DFF"/><stop offset="1" stop-color="#0F4CD0"/></linearGradient></defs>
-              </svg>
-            </div>
-            <span class="login-brand">智见GEO</span>
+            <svg class="ai360-icon" style="width:44px;height:44px;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path clip-rule="evenodd" d="M12 0h.018c1.473-.002 2.88.261 4.179.754C20.755 2.456 24 6.85 24 12c0 6.627-5.373 12-12 12S0 18.627 0 12 5.373 0 12 0zm8.604 18.967A11.024 11.024 0 0023.07 12c0-1.717-.39-3.344-1.089-4.794a2.59 2.59 0 01-3.214.62 6.278 6.278 0 01-1.333-.992C16.283 5.73 15.109 4.66 13.696 3.9c-3.211-1.729-6.825-1.501-9.695.447A11.033 11.033 0 00.93 12c0 1.663.367 3.241 1.024 4.657.75-.973 2.131-1.346 3.232-.71.667.384 1.257.92 1.837 1.447l.176.16c1.365 1.234 2.794 2.355 4.558 2.965 3.053 1.053 6.356.437 8.847-1.552z" fill="url(#modalLogo0)" fill-rule="evenodd"/>
+              <path d="M5.643 10.312c-.83.11-1.401.766-1.408 1.618a1.715 1.715 0 001.45 1.72c.805.128 1.64-.426 1.87-1.26.046-.167.076-.338.106-.51.025-.14.05-.282.084-.42.318-1.317 1.237-1.95 2.788-1.93 1.086.013 1.318.271 1.68 1.855.017.076.043.151.07.226.26.714.976 1.17 1.67 1.065a1.647 1.647 0 001.38-1.438c.083-.729-.348-1.264-1.122-1.575-.34-.136-.664-.158-.995-.141-.726.037-1.121-.36-1.339-.977a3.359 3.359 0 01-.134-.65c-.014-.093-.027-.186-.043-.278-.156-.887-.835-1.51-1.669-1.532-.791-.02-1.464.551-1.665 1.418l-.06.27-.025.117c-.355 1.636-.974 2.205-2.638 2.422z" fill="url(#modalLogo1)"/>
+              <path d="M18.059 13.644c.989-.206 1.577-.838 1.592-1.697.015-.83-.624-1.582-1.46-1.724-.77-.13-1.599.383-1.844 1.18-.069.22-.117.448-.165.676-.06.29-.122.58-.225.854-.367.986-1.593 1.546-2.926 1.394-.824-.095-1.106-.446-1.342-1.674-.18-.938-.864-1.535-1.681-1.467-.85.07-1.515.829-1.468 1.673.05.892.678 1.44 1.705 1.489 1.375.064 1.75.396 1.926 1.787.067.531.267.967.685 1.288 1.02.783 2.407.208 2.66-1.108l.022-.114c.152-.796.3-1.577 1.04-2.101.36-.255.761-.326 1.166-.397.105-.019.21-.037.315-.06z" fill="url(#modalLogo2)"/>
+              <defs>
+                <linearGradient id="modalLogo0" x1="12" x2="12" y1="0" y2="24"><stop stop-color="#12B7FA"/><stop offset="1" stop-color="#006FBB"/></linearGradient>
+                <linearGradient id="modalLogo1" x1="11.943" x2="11.943" y1="6.085" y2="17.778"><stop stop-color="#006FBB"/><stop offset="1" stop-color="#12B7FA"/></linearGradient>
+                <linearGradient id="modalLogo2" x1="11.943" x2="11.943" y1="6.085" y2="17.778"><stop stop-color="#006FBB"/><stop offset="1" stop-color="#12B7FA"/></linearGradient>
+              </defs>
+            </svg>
+            <span class="login-brand">360智见GEO助手</span>
           </div>
 
           <!-- Tab 切换 -->
@@ -501,7 +503,7 @@ async function handleLogin() {
   loginError.value = ''
 
   try {
-    const res = await fetch('/api/v1/auth/login', {
+    const res = await fetch('/api/v1/auth/phone-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone, password })
@@ -509,7 +511,7 @@ async function handleLogin() {
 
     if (res.ok) {
       const data = await res.json()
-      userName.value = data.user?.phone || phone
+      userName.value = data.user?.name || data.user?.phone || phone
       localStorage.setItem('xiaozhi_user_name', userName.value)
       localStorage.setItem('xiaozhi_user_token', data.accessToken || data.token || '')
       showLoginModal.value = false
@@ -547,7 +549,7 @@ async function handleRegister() {
   registerError.value = ''
 
   try {
-    const res = await fetch('/api/v1/auth/register', {
+    const res = await fetch('/api/v1/auth/phone-register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone, password })
@@ -555,7 +557,7 @@ async function handleRegister() {
 
     if (res.ok) {
       const data = await res.json()
-      userName.value = data.user?.phone || phone
+      userName.value = data.user?.name || data.user?.phone || phone
       localStorage.setItem('xiaozhi_user_name', userName.value)
       localStorage.setItem('xiaozhi_user_token', data.accessToken || data.token || '')
       showLoginModal.value = false
@@ -1102,22 +1104,13 @@ function scrollToBottom() {
 /* Logo */
 .login-logo {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 22px;
 }
-.login-logo-icon {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-}
-.login-logo-icon svg {
-  width: 100%;
-  height: 100%;
-}
 .login-brand {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 700;
   color: #1D2129;
   letter-spacing: 0.5px;
